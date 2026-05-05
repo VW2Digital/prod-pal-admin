@@ -105,7 +105,6 @@ export function createSmtpProvider(cfg: SmtpConfig): EmailProvider {
         try {
           const headers: Record<string, string> = {
             "Message-ID": `<${messageId}@${cfg.host}>`,
-            "MIME-Version": "1.0",
           };
           if (input.correlationId) headers["X-Correlation-ID"] = input.correlationId;
 

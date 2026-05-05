@@ -44,6 +44,7 @@ import CustomerDashboard from "./pages/CustomerDashboard";
 import CartPage from "./pages/CartPage";
 import CartCheckout from "./pages/CartCheckout";
 import ResetPassword from "./pages/ResetPassword";
+import ForgotPassword from "./pages/ForgotPassword";
 import AdminSupportPage from "./pages/AdminSupportPage";
 import AdminReviewsPage from "./pages/AdminReviewsPage";
 import PopupList from "./pages/PopupList";
@@ -101,6 +102,7 @@ const App = () => (
           <Route path="/cliente/login" element={<CustomerLogin />} />
           <Route path="/minha-conta" element={<CustomerDashboard />} />
           <Route path="/redefinir-senha" element={<ResetPassword />} />
+          <Route path="/recuperar-senha" element={<ForgotPassword />} />
           <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
           <Route path="/termos-de-uso" element={<TermsOfUse />} />
           <Route path="/contato" element={<ContactPage />} />

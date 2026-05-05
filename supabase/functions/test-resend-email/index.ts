@@ -6,6 +6,15 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 
+function encodeMimeSubject(subject: string): string {
+  // eslint-disable-next-line no-control-regex
+  if (!/[^\x20-\x7e]/.test(subject)) return subject;
+  const bytes = new TextEncoder().encode(subject);
+  let bin = "";
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return `=?UTF-8?B?${btoa(bin)}?=`;
+}
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -98,7 +107,7 @@ serve(async (req) => {
       await client.send({
         from: fromHeader,
         to: [to],
-        subject: finalSubject,
+        subject: encodeMimeSubject(finalSubject),
         content: "auto",
         html,
       });

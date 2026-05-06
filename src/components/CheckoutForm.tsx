@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchSetting } from '@/lib/api';
 import { gtagEvent } from '@/lib/gtag';
@@ -17,6 +17,7 @@ import { CreditCard, QrCode, Loader2, CheckCircle2, Copy, AlertCircle, MapPin, T
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCart } from '@/contexts/CartContext';
 import { useMercadoPago } from '@/hooks/useMercadoPago';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface CheckoutFormProps {
   productName: string;
@@ -215,6 +216,24 @@ const CheckoutForm = ({ productName, productId, cartProductIds, paymentDescripti
   const totalValue = subtotalBeforeCoupon - couponDiscount;
   const pixDiscountValue = pixDiscountPercent > 0 ? totalValue * (pixDiscountPercent / 100) : 0;
   const pixTotalValue = totalValue - pixDiscountValue;
+
+  // Skeleton flash quando variação/quantidade/frete/cupom mudam para evitar flicker com dados antigos
+  const [totalsRecalculating, setTotalsRecalculating] = useState(false);
+  const totalsKey = `${dosage}-${safeQuantity}-${safeUnitPrice}-${selectedShipping?.id ?? 'none'}-${couponDiscount}-${pixDiscountPercent}`;
+  const totalsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const firstTotalsRender = useRef(true);
+  useEffect(() => {
+    if (firstTotalsRender.current) {
+      firstTotalsRender.current = false;
+      return;
+    }
+    setTotalsRecalculating(true);
+    if (totalsTimerRef.current) clearTimeout(totalsTimerRef.current);
+    totalsTimerRef.current = setTimeout(() => setTotalsRecalculating(false), 280);
+    return () => {
+      if (totalsTimerRef.current) clearTimeout(totalsTimerRef.current);
+    };
+  }, [totalsKey]);
 
   const handleApplyCoupon = (coupon: any) => {
     setValidatingCoupon(true);

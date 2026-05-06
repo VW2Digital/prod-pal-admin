@@ -90,7 +90,7 @@ const GatewayFallbackLogsPage = () => {
       <AdminPageHeader
         title="Fallbacks de Gateway"
         description="Histórico de tentativas de pagamento que migraram para um gateway alternativo após rejeição."
-        icon={<Shuffle className="w-6 h-6" />}
+        icon={Shuffle}
       />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

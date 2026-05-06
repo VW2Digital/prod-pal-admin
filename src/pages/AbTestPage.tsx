@@ -14,6 +14,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import {
+  loadAbConfig,
+  saveAbConfig,
+  DEFAULT_AB_CONFIG,
+  formatDiscountBadge,
+  type AbTestConfig,
+  type AbVariantConfig,
+} from '@/lib/abTestConfig';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -86,6 +97,8 @@ export default function AbTestPage() {
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState<PreviewProduct[]>([]);
   const [selectedProductId, setSelectedProductId] = useState<string>('');
+  const [config, setConfig] = useState<AbTestConfig>(DEFAULT_AB_CONFIG);
+  const [savingConfig, setSavingConfig] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -105,6 +118,7 @@ export default function AbTestPage() {
   useEffect(() => {
     load();
     loadProducts();
+    loadAbConfig(true).then(setConfig).catch(() => {});
   }, []);
 
   const loadProducts = async () => {
@@ -132,6 +146,32 @@ export default function AbTestPage() {
     () => products.find((p) => p.id === selectedProductId) || null,
     [products, selectedProductId],
   );
+
+  const updateVariant = (variant: 'A' | 'B', patch: Partial<AbVariantConfig>) => {
+    setConfig((prev) => ({ ...prev, [variant]: { ...prev[variant], ...patch } }));
+  };
+
+  const handleSaveConfig = async () => {
+    setSavingConfig(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Sessão expirada.');
+        return;
+      }
+      await saveAbConfig(config, user.id);
+      toast.success('Configuração das variantes salva.');
+    } catch (e: any) {
+      toast.error('Falha ao salvar: ' + (e?.message || 'erro desconhecido'));
+    } finally {
+      setSavingConfig(false);
+    }
+  };
+
+  const handleResetConfig = () => {
+    setConfig(DEFAULT_AB_CONFIG);
+    toast.info('Valores padrão restaurados (não salvo ainda).');
+  };
 
   const statsA = useMemo(() => aggregate(rows, 'A'), [rows]);
   const statsB = useMemo(() => aggregate(rows, 'B'), [rows]);
@@ -256,8 +296,8 @@ export default function AbTestPage() {
           {previewProduct ? (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <PreviewCard variant="A" product={previewProduct} />
-                <PreviewCard variant="B" product={previewProduct} />
+                <PreviewCard variant="A" product={previewProduct} cfg={config.A} />
+                <PreviewCard variant="B" product={previewProduct} cfg={config.B} />
               </div>
               <p className="text-xs text-muted-foreground mt-4">
                 Prévias reproduzem o card de catálogo usando dados reais do produto selecionado.
@@ -266,6 +306,27 @@ export default function AbTestPage() {
           ) : (
             <p className="text-sm text-muted-foreground">Nenhum produto com variação disponível para preview.</p>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Editor de configuração das variantes */}
+      <Card>
+        <CardHeader>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <CardTitle className="text-base">Configuração das variantes</CardTitle>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={handleResetConfig}>
+                Restaurar padrão
+              </Button>
+              <Button size="sm" onClick={handleSaveConfig} disabled={savingConfig}>
+                {savingConfig ? 'Salvando…' : 'Salvar configuração'}
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <VariantEditor variant="A" cfg={config.A} onChange={(p) => updateVariant('A', p)} />
+          <VariantEditor variant="B" cfg={config.B} onChange={(p) => updateVariant('B', p)} />
         </CardContent>
       </Card>
 

@@ -1,7 +1,6 @@
 import SettingsSkeleton from '@/components/admin/settings/SettingsSkeleton';
 import { useState, useEffect } from 'react';
 import { fetchSetting, upsertSetting, getCurrentUser } from '@/lib/api';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -10,6 +9,7 @@ import WebhookUrlCard from '@/components/admin/WebhookUrlCard';
 import GatewayToggles from '@/components/admin/settings/GatewayToggles';
 import EnvironmentSelect from '@/components/admin/settings/payment/EnvironmentSelect';
 import PasswordField from '@/components/admin/settings/payment/PasswordField';
+import TextField from '@/components/admin/settings/payment/TextField';
 
 interface Props { isActive: boolean; onActivate: () => void }
 
@@ -109,14 +109,18 @@ const MercadoPagoSettings = ({ isActive, onActivate }: Props) => {
         onChange={setAccessToken}
         placeholder={env === 'sandbox' ? 'TEST-...' : 'APP_USR-...'}
       />
-      <div className="space-y-2">
-        <Label>Public Key</Label>
-        <Input value={publicKey} onChange={(e) => setPublicKey(e.target.value)} placeholder={env === 'sandbox' ? 'TEST-...' : 'APP_USR-...'} />
-      </div>
-      <div className="space-y-2">
-        <Label>Client ID</Label>
-        <Input value={clientId} onChange={(e) => setClientId(e.target.value)} placeholder="Ex: 3427228834545577" />
-      </div>
+      <TextField
+        label="Public Key"
+        value={publicKey}
+        onChange={setPublicKey}
+        placeholder={env === 'sandbox' ? 'TEST-...' : 'APP_USR-...'}
+      />
+      <TextField
+        label="Client ID"
+        value={clientId}
+        onChange={setClientId}
+        placeholder="Ex: 3427228834545577"
+      />
       <PasswordField label="Client Secret" value={clientSecret} onChange={setClientSecret} placeholder="Ex: gCED4b..." />
       <WebhookUrlCard
         gatewayName="Mercado Pago"

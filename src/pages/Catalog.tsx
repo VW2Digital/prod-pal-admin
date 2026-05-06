@@ -27,12 +27,16 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { TRUST_BAR_ICONS, DEFAULT_TRUST_BAR, DEFAULT_TRUST_BAR_BG, DEFAULT_TRUST_BAR_SPEED, type TrustBarItem } from '@/pages/settings/SettingsTrustBar';
 import { ProductCardSkeletonGrid } from '@/components/ProductCardSkeleton';
 import { getAbContext, trackAbEvent } from '@/lib/abTest';
+import { loadAbConfig, getCachedAbConfig, formatDiscountBadge, DEFAULT_AB_CONFIG, type AbTestConfig } from '@/lib/abTestConfig';
 import ProductCardImageCarousel from '@/components/ProductCardImageCarousel';
 
 const Catalog = () => {
   const { totalItems, addToCart } = useCart();
   // A/B test do card de produto
   const ab = useMemo(() => getAbContext(), []);
+  const [abConfig, setAbConfig] = useState<AbTestConfig>(getCachedAbConfig());
+  useEffect(() => { loadAbConfig().then(setAbConfig).catch(() => {}); }, []);
+  const variantCfg = abConfig[ab.variant] || DEFAULT_AB_CONFIG[ab.variant];
   const impressionsLogged = useRef<Set<string>>(new Set());
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();

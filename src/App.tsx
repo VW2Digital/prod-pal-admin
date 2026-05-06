@@ -59,6 +59,7 @@ const AdminSupportPage = lazy(() => import("./pages/AdminSupportPage"));
 const AdminReviewsPage = lazy(() => import("./pages/AdminReviewsPage"));
 const PopupList = lazy(() => import("./pages/PopupList"));
 const PaymentLogsPage = lazy(() => import("./pages/PaymentLogsPage"));
+const GatewayFallbackLogsPage = lazy(() => import("./pages/GatewayFallbackLogsPage"));
 const WholesalePricingPage = lazy(() => import("./pages/WholesalePricingPage"));
 const WebhookLogsPage = lazy(() => import("./pages/WebhookLogsPage"));
 const CartAbandonmentLogsPage = lazy(() => import("./pages/CartAbandonmentLogsPage"));
@@ -136,6 +137,7 @@ const App = () => (
             <Route path="avaliacoes" element={<AdminReviewsPage />} />
             <Route path="suporte" element={<AdminSupportPage />} />
             <Route path="falhas-pagamento" element={<PaymentLogsPage />} />
+            <Route path="fallbacks-gateway" element={<GatewayFallbackLogsPage />} />
             <Route path="webhooks-logs" element={<WebhookLogsPage />} />
             <Route path="carrinho-abandonado" element={<CartAbandonmentLogsPage />} />
             <Route path="links-pagamento" element={<PaymentLinksPage />} />

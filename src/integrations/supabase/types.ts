@@ -508,6 +508,54 @@ export type Database = {
         }
         Relationships: []
       }
+      gateway_fallback_logs: {
+        Row: {
+          amount: number | null
+          created_at: string
+          customer_email: string | null
+          customer_name: string | null
+          fallback_gateway: string
+          id: string
+          metadata: Json | null
+          order_id: string | null
+          original_gateway: string
+          outcome: string
+          outcome_message: string | null
+          payment_method: string | null
+          reason: string | null
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          fallback_gateway: string
+          id?: string
+          metadata?: Json | null
+          order_id?: string | null
+          original_gateway: string
+          outcome?: string
+          outcome_message?: string | null
+          payment_method?: string | null
+          reason?: string | null
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          fallback_gateway?: string
+          id?: string
+          metadata?: Json | null
+          order_id?: string | null
+          original_gateway?: string
+          outcome?: string
+          outcome_message?: string | null
+          payment_method?: string | null
+          reason?: string | null
+        }
+        Relationships: []
+      }
       gateway_settings_audit: {
         Row: {
           created_at: string

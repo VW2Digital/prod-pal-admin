@@ -13,6 +13,8 @@ import { useCart } from '@/contexts/CartContext';
 import Header from '@/components/Header';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
+import JsonLd from '@/components/seo/JsonLd';
+import usePublicBaseUrl from '@/hooks/usePublicBaseUrl';
 import productHeroImg from '@/assets/product-hero.png';
 import testimonial1 from '@/assets/testimonial-1.jpg';
 import testimonial2 from '@/assets/testimonial-2.jpg';

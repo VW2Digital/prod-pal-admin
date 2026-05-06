@@ -371,6 +371,41 @@ function PreviewCard({ variant, product, cfg }: { variant: 'A' | 'B'; product: P
   const integerPart = Math.floor(finalPrice).toLocaleString('pt-BR');
   const decimalPart = finalPrice.toFixed(2).split('.')[1];
 
+  // Logging diagnóstico da prévia (não polui métricas reais).
+  // Identifica produto + variação exibidos no card de preview por variante.
+  const impressionLoggedRef = useRef<string | null>(null);
+  useEffect(() => {
+    const key = `${variant}:${product.id}:${variation?.id ?? 'none'}`;
+    if (impressionLoggedRef.current === key) return;
+    impressionLoggedRef.current = key;
+    // eslint-disable-next-line no-console
+    console.info('[ab-preview] impression', {
+      source: 'admin-ab-preview',
+      variant,
+      product_id: product.id,
+      product_name: product.name,
+      variation_id: variation?.id ?? null,
+      variation_dosage: variation?.dosage ?? null,
+      price,
+      final_price: finalPrice,
+      discount_pct: discount,
+      cta_text: cfg.ctaText,
+    });
+  }, [variant, product.id, product.name, variation?.id, variation?.dosage, price, finalPrice, discount, cfg.ctaText]);
+
+  const handleCtaClick = () => {
+    // eslint-disable-next-line no-console
+    console.info('[ab-preview] cta_click', {
+      source: 'admin-ab-preview',
+      variant,
+      product_id: product.id,
+      product_name: product.name,
+      variation_id: variation?.id ?? null,
+      variation_dosage: variation?.dosage ?? null,
+      cta_text: cfg.ctaText,
+    });
+  };
+
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
@@ -495,6 +530,7 @@ function PreviewCard({ variant, product, cfg }: { variant: 'A' | 'B'; product: P
                   : 'w-full text-xs'
               }
               type="button"
+              onClick={handleCtaClick}
             >
               {isB ? (
                 <>

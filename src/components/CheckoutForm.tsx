@@ -2167,43 +2167,49 @@ const CheckoutForm = ({ productName, productId, cartProductIds, paymentDescripti
           )}
         </div>
 
-        <div className="border-t border-border/50 pt-3">
-          <div className="space-y-1 mb-3">
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Produtos</span>
-              <span>R$ {baseProductTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-            </div>
-            {selectedShipping && (
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Frete ({selectedShipping.company})</span>
-                {qualifiesForFreeShipping ? (
-                  <span className="text-primary font-medium">
-                    <span className="line-through text-muted-foreground mr-1">R$ {(selectedShipping.price || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                    Grátis
-                  </span>
-                ) : (
-                  <span>R$ {shippingCost.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+        <div className="border-t border-border/50 pt-3" key={`totals-pay-${totalsKey}-${paymentMethod}`}>
+          <div className="mb-3">
+            {totalsRecalculating ? (
+              <TotalsSkeleton withCoupon={couponDiscount > 0} withPixDiscount={paymentMethod === 'pix' && pixDiscountPercent > 0} />
+            ) : (
+              <div className="space-y-1">
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Produtos</span>
+                  <span>R$ {baseProductTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                </div>
+                {selectedShipping && (
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>Frete ({selectedShipping.company})</span>
+                    {qualifiesForFreeShipping ? (
+                      <span className="text-primary font-medium">
+                        <span className="line-through text-muted-foreground mr-1">R$ {(selectedShipping.price || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                        Grátis
+                      </span>
+                    ) : (
+                      <span>R$ {shippingCost.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                    )}
+                  </div>
                 )}
+                {couponDiscount > 0 && (
+                  <div className="flex justify-between text-xs text-success">
+                    <span>Cupom {appliedCouponCode} ({couponLabel})</span>
+                    <span>- R$ {couponDiscount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                  </div>
+                )}
+                {paymentMethod === 'pix' && pixDiscountPercent > 0 && (
+                  <div className="flex justify-between text-xs text-success">
+                    <span>Desconto PIX ({pixDiscountPercent}%)</span>
+                    <span>- R$ {pixDiscountValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                  </div>
+                )}
+                <div className="flex justify-between items-center pt-1">
+                  <span className="text-sm text-muted-foreground">Total</span>
+                  <span className="text-lg font-bold text-foreground">
+                    R$ {(paymentMethod === 'pix' ? pixTotalValue : totalValue).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                  </span>
+                </div>
               </div>
             )}
-            {couponDiscount > 0 && (
-              <div className="flex justify-between text-xs text-success">
-                <span>Cupom {appliedCouponCode} ({couponLabel})</span>
-                <span>- R$ {couponDiscount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-              </div>
-            )}
-            {paymentMethod === 'pix' && pixDiscountPercent > 0 && (
-              <div className="flex justify-between text-xs text-success">
-                <span>Desconto PIX ({pixDiscountPercent}%)</span>
-                <span>- R$ {pixDiscountValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-              </div>
-            )}
-            <div className="flex justify-between items-center pt-1">
-              <span className="text-sm text-muted-foreground">Total</span>
-              <span className="text-lg font-bold text-foreground">
-                R$ {(paymentMethod === 'pix' ? pixTotalValue : totalValue).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-              </span>
-            </div>
           </div>
           <Button onClick={handlePayment} disabled={processing} className="w-full">
             {processing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}

@@ -1,8 +1,6 @@
 import SettingsSkeleton from '@/components/admin/settings/SettingsSkeleton';
 import { useState, useEffect } from 'react';
 import { fetchSetting, upsertSetting, getCurrentUser } from '@/lib/api';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, KeyRound } from 'lucide-react';
@@ -11,6 +9,7 @@ import WebhookUrlCard from '@/components/admin/WebhookUrlCard';
 import GatewayToggles from '@/components/admin/settings/GatewayToggles';
 import EnvironmentSelect from '@/components/admin/settings/payment/EnvironmentSelect';
 import PasswordField from '@/components/admin/settings/payment/PasswordField';
+import TextField from '@/components/admin/settings/payment/TextField';
 import SaveTestButtons from '@/components/admin/settings/payment/SaveTestButtons';
 import { useGatewayConnectionTest } from '@/components/admin/settings/payment/useGatewayConnectionTest';
 
@@ -101,30 +100,32 @@ const PagBankSettings = ({ isActive, onActivate }: Props) => {
       <GatewayToggles gateway="pagbank" fallbackSupported={false} />
       <EnvironmentSelect value={env} onChange={handleEnvChange} />
       <PasswordField label="Token (Bearer)" value={token} onChange={setToken} placeholder="Token do painel PagBank" />
-      <div className="space-y-2">
-        <Label>Public Key (Criptografia de Cartão)</Label>
-        <div className="flex gap-2">
-          <Input value={publicKey} onChange={(e) => setPublicKey(e.target.value)} placeholder="MIIBIjANBgkqhki..." className="flex-1" />
+      <TextField
+        label="Public Key (Criptografia de Cartão)"
+        value={publicKey}
+        onChange={setPublicKey}
+        placeholder="MIIBIjANBgkqhki..."
+        trailing={
           <Button variant="outline" size="sm" disabled={generating || !token} onClick={handleGenerateKey} className="whitespace-nowrap">
             {generating ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <KeyRound className="w-4 h-4 mr-1" />}
             Gerar
           </Button>
-        </div>
-      </div>
+        }
+      />
       <WebhookUrlCard
         gatewayName="PagBank"
         functionSlug="pagbank-webhook"
         cadastroHint="no painel do PagBank, em Aplicações → Notificações"
         eventos={["CHECKOUT.PAID", "CHECKOUT.CANCELED", "ORDER.PAID"]}
       />
-      <div className="space-y-2">
-        <Label className="text-xs text-muted-foreground">URL de Redirecionamento</Label>
-        <Input readOnly value={redirectUrl} className="bg-muted text-xs" onClick={(e) => {
-          (e.target as HTMLInputElement).select();
-          navigator.clipboard.writeText(redirectUrl);
-          toast({ title: 'URL copiada!' });
-        }} />
-      </div>
+      <TextField
+        label="URL de Redirecionamento"
+        value={redirectUrl}
+        onChange={setRedirectUrl}
+        readOnly
+        className="bg-muted text-xs cursor-pointer"
+        hint="Clique para copiar."
+      />
       <SaveTestButtons
         isActive={isActive}
         saving={saving}

@@ -261,7 +261,7 @@ if ! command -v supabase >/dev/null 2>&1; then
     dpkg -i /tmp/supabase.deb >/dev/null
     rm -f /tmp/supabase.deb
 fi
-ok "Supabase CLI $(supabase --version 2>&1 | head -1)"
+ok "Supabase CLI $(supabase --version 2>&1 | awk 'NR==1')"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 6. Firewall (apenas portas necessárias)

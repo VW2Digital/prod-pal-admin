@@ -605,9 +605,14 @@ const ProductCheckout = () => {
                     </p>
                     <div className="flex items-center gap-0">
                       <button
-                        onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                        onClick={() => {
+                          const minTier = wholesaleTiers.length > 0
+                            ? Math.min(...wholesaleTiers.map(t => t.min_quantity))
+                            : 1;
+                          setQuantity((q) => Math.max(minTier, q - 1));
+                        }}
                         className="w-10 h-10 border border-border rounded-l-lg flex items-center justify-center hover:bg-muted transition-colors"
-                        disabled={quantity <= 1}
+                        disabled={quantity <= (wholesaleTiers.length > 0 ? Math.min(...wholesaleTiers.map(t => t.min_quantity)) : 1)}
                       >
                         <Minus className="w-4 h-4 text-foreground" />
                       </button>

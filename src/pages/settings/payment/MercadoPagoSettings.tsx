@@ -10,6 +10,7 @@ import GatewayToggles from '@/components/admin/settings/GatewayToggles';
 import EnvironmentSelect from '@/components/admin/settings/payment/EnvironmentSelect';
 import PasswordField from '@/components/admin/settings/payment/PasswordField';
 import TextField from '@/components/admin/settings/payment/TextField';
+import GatewayAccountList from '@/components/admin/settings/payment/GatewayAccountList';
 
 interface Props { isActive: boolean; onActivate: () => void }
 

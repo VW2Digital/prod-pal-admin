@@ -666,6 +666,48 @@ export type Database = {
           },
         ]
       }
+      gateway_accounts: {
+        Row: {
+          active: boolean
+          created_at: string
+          credentials: Json
+          environment: string
+          gateway: string
+          id: string
+          is_primary: boolean
+          label: string
+          last_used_at: string | null
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          credentials?: Json
+          environment?: string
+          gateway: string
+          id?: string
+          is_primary?: boolean
+          label: string
+          last_used_at?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          credentials?: Json
+          environment?: string
+          gateway?: string
+          id?: string
+          is_primary?: boolean
+          label?: string
+          last_used_at?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       gateway_fallback_logs: {
         Row: {
           amount: number | null
@@ -768,6 +810,7 @@ export type Database = {
           customer_user_id: string | null
           delivery_status: string | null
           dosage: string | null
+          gateway_account_id: string | null
           gateway_environment: string | null
           id: string
           installments: number
@@ -808,6 +851,7 @@ export type Database = {
           customer_user_id?: string | null
           delivery_status?: string | null
           dosage?: string | null
+          gateway_account_id?: string | null
           gateway_environment?: string | null
           id?: string
           installments?: number
@@ -848,6 +892,7 @@ export type Database = {
           customer_user_id?: string | null
           delivery_status?: string | null
           dosage?: string | null
+          gateway_account_id?: string | null
           gateway_environment?: string | null
           id?: string
           installments?: number
@@ -1751,6 +1796,28 @@ export type Database = {
       increment_coupon_usage: {
         Args: { _coupon_code: string }
         Returns: boolean
+      }
+      pick_next_gateway_account: {
+        Args: { _gateway: string }
+        Returns: {
+          active: boolean
+          created_at: string
+          credentials: Json
+          environment: string
+          gateway: string
+          id: string
+          is_primary: boolean
+          label: string
+          last_used_at: string | null
+          sort_order: number
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "gateway_accounts"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       validate_wholesale_minimum: {
         Args: { _quantity: number; _variation_id: string }

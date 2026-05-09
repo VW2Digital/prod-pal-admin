@@ -4,11 +4,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Loader2, ShieldCheck, User as UserIcon } from 'lucide-react';
+import { ArrowLeft, Loader2, ShieldCheck, User as UserIcon, KeyRound, Mail, Eye, EyeOff } from 'lucide-react';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import iconUsuarioDetalhe from '@/assets/icon-usuario-detalhe-3d.png';
 import { useToast } from '@/hooks/use-toast';
 import AdminUserAddresses from '@/components/admin/AdminUserAddresses';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface UserDetail {
   id: string;
@@ -33,6 +35,10 @@ const UserDetailPage = () => {
   const { toast } = useToast();
   const [user, setUser] = useState<UserDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [newPassword, setNewPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [savingPassword, setSavingPassword] = useState(false);
+  const [sendingReset, setSendingReset] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -73,6 +79,47 @@ const UserDetailPage = () => {
       </div>
     );
   }
+
+  const handleSetPassword = async () => {
+    if (!user) return;
+    if (!newPassword || newPassword.length < 6) {
+      toast({ title: 'Senha muito curta', description: 'Use no mínimo 6 caracteres.', variant: 'destructive' });
+      return;
+    }
+    setSavingPassword(true);
+    try {
+      const res = await supabase.functions.invoke('admin-users', {
+        method: 'POST',
+        body: { action: 'set_password', userId: user.id, newPassword },
+      });
+      if (res.error) throw new Error(res.error.message);
+      if ((res.data as any)?.error) throw new Error((res.data as any).error);
+      toast({ title: 'Senha atualizada', description: 'A nova senha já está ativa para o usuário.' });
+      setNewPassword('');
+    } catch (err: any) {
+      toast({ title: 'Erro ao atualizar senha', description: err.message, variant: 'destructive' });
+    } finally {
+      setSavingPassword(false);
+    }
+  };
+
+  const handleSendReset = async () => {
+    if (!user) return;
+    setSendingReset(true);
+    try {
+      const res = await supabase.functions.invoke('admin-users', {
+        method: 'POST',
+        body: { action: 'send_reset_email', userId: user.id, redirectTo: `${window.location.origin}/redefinir-senha` },
+      });
+      if (res.error) throw new Error(res.error.message);
+      if ((res.data as any)?.error) throw new Error((res.data as any).error);
+      toast({ title: 'Email enviado', description: `Link de redefinição enviado para ${user.email}.` });
+    } catch (err: any) {
+      toast({ title: 'Erro ao enviar email', description: err.message, variant: 'destructive' });
+    } finally {
+      setSendingReset(false);
+    }
+  };
 
   return (
     <div className="space-y-6 w-full">
@@ -141,6 +188,68 @@ const UserDetailPage = () => {
           <InfoRow label="ID" value={user.id} />
         </CardContent>
       </Card>
+
+      <Card className="md:col-span-2">
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <KeyRound className="w-4 h-4" /> Senha de Acesso
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="new-password" className="text-sm">Definir nova senha manualmente</Label>
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Input
+                    id="new-password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Mínimo 6 caracteres"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    autoComplete="new-password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                <Button onClick={handleSetPassword} disabled={savingPassword || !newPassword}>
+                  {savingPassword ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Salvar'}
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                A nova senha começa a valer imediatamente. Compartilhe com o cliente por um canal seguro.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm">Enviar link de redefinição por email</Label>
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={handleSendReset}
+                disabled={sendingReset || !user.email}
+              >
+                {sendingReset ? (
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                ) : (
+                  <Mail className="w-4 h-4 mr-2" />
+                )}
+                Enviar email para {user.email || '—'}
+              </Button>
+              <p className="text-xs text-muted-foreground">
+                O cliente recebe um link e cria uma nova senha sozinho. Válido por tempo limitado.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <AdminUserAddresses userId={user.id} />
       </div>
     </div>

@@ -81,7 +81,7 @@ serve(async (req) => {
 
     if (method === "POST") {
       const body = await req.json();
-      const { action, userId, role } = body;
+      const { action, userId, role, newPassword, redirectTo } = body;
 
       if (action === "add_role") {
         const { error } = await adminClient.from("user_roles").insert({ user_id: userId, role });
@@ -104,6 +104,32 @@ serve(async (req) => {
         const { error } = await adminClient.auth.admin.deleteUser(userId);
         if (error) throw error;
         return new Response(JSON.stringify({ success: true }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      if (action === "set_password") {
+        if (!userId || !newPassword || typeof newPassword !== "string" || newPassword.length < 6) {
+          throw new Error("Senha inválida (mínimo 6 caracteres)");
+        }
+        const { error } = await adminClient.auth.admin.updateUserById(userId, { password: newPassword });
+        if (error) throw error;
+        return new Response(JSON.stringify({ success: true }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      if (action === "send_reset_email") {
+        // Look up email from auth
+        const { data: u, error: getErr } = await adminClient.auth.admin.getUserById(userId);
+        if (getErr) throw getErr;
+        const email = u?.user?.email;
+        if (!email) throw new Error("Usuário sem email cadastrado");
+        const origin = req.headers.get("origin") || "";
+        const finalRedirect = redirectTo || (origin ? `${origin}/redefinir-senha` : undefined);
+        const { error } = await adminClient.auth.resetPasswordForEmail(email, finalRedirect ? { redirectTo: finalRedirect } : undefined);
+        if (error) throw error;
+        return new Response(JSON.stringify({ success: true, email }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }

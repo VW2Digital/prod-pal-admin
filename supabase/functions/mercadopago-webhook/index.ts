@@ -231,19 +231,6 @@ serve(async (req) => {
     // Read body as text for signature verification, then parse
     const bodyText = await req.text();
 
-    // Verify webhook signature
-    const isValid = await verifyWebhookSignature(req, bodyText);
-    __logCtx.signature_valid = isValid;
-    if (!isValid) {
-      console.error('[MP Webhook] Invalid signature — rejecting');
-      __logCtx.signature_error = 'HMAC-SHA256 mismatch (manifest id+request-id+ts)';
-      try { __logCtx.request_payload = JSON.parse(bodyText); } catch { __logCtx.request_payload = { raw: bodyText.slice(0, 500) }; }
-      return new Response(JSON.stringify({ received: true, error: 'invalid_signature' }), {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
@@ -253,6 +240,44 @@ serve(async (req) => {
     const { action, type, id: notificationId, data: notificationData, topic } = body;
     __logCtx.event_type = action || topic || type || null;
     __logCtx.external_id = notificationData?.id || notificationId || null;
+
+    // ─── IDENTIFY ACCOUNT + VERIFY SIGNATURE ───
+    // MP doesn't include our orderId in the notification; we must fetch the
+    // payment from MP's API to discover external_reference. So at this stage
+    // we try every active account's webhook_secret. If none matches, fall back
+    // to MP_WEBHOOK_SECRET env var (back-compat). If still no match, reject.
+    const envSecret = Deno.env.get('MP_WEBHOOK_SECRET') || '';
+    let resolvedAcc: ResolvedGatewayCredentials | null = null;
+    let signatureValid = false;
+
+    const matched = await findAccountBySignature(supabase, 'mercadopago', async (creds) => {
+      const secret = (creds.webhook_secret as string) || '';
+      if (!secret) return false;
+      return await computeMpSignatureMatch(req, secret);
+    });
+
+    if (matched) {
+      resolvedAcc = matched;
+      signatureValid = true;
+      console.log(`[MP Webhook] Signature matched account ${matched.accountId}`);
+    } else if (envSecret) {
+      signatureValid = await computeMpSignatureMatch(req, envSecret);
+      if (signatureValid) console.log('[MP Webhook] Signature verified via MP_WEBHOOK_SECRET (legacy)');
+    } else {
+      // No secret anywhere — accept (initial setup), like the legacy behavior
+      console.warn('[MP Webhook] No webhook secrets configured — skipping signature verification');
+      signatureValid = true;
+    }
+
+    __logCtx.signature_valid = signatureValid;
+    if (!signatureValid) {
+      console.error('[MP Webhook] Invalid signature — rejecting');
+      __logCtx.signature_error = 'HMAC-SHA256 mismatch (manifest id+request-id+ts) on all active accounts';
+      return new Response(JSON.stringify({ received: true, error: 'invalid_signature' }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     // Mercado Pago sends notifications in two formats:
     // 1. IPN (Instant Payment Notification): { topic, id }

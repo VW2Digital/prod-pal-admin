@@ -8,6 +8,7 @@ import EnvironmentSelect from '@/components/admin/settings/payment/EnvironmentSe
 import PasswordField from '@/components/admin/settings/payment/PasswordField';
 import SaveTestButtons from '@/components/admin/settings/payment/SaveTestButtons';
 import { useGatewayConnectionTest } from '@/components/admin/settings/payment/useGatewayConnectionTest';
+import GatewayAccountList from '@/components/admin/settings/payment/GatewayAccountList';
 
 interface Props { isActive: boolean; onActivate: () => void }
 
@@ -55,6 +56,7 @@ const AsaasSettings = ({ isActive, onActivate }: Props) => {
   return (
     <div className="space-y-4">
       <GatewayToggles gateway="asaas" />
+      <GatewayAccountList gateway="asaas" />
       <EnvironmentSelect value={env} onChange={setEnv} />
       <PasswordField label="API Key" value={apiKey} onChange={setApiKey} placeholder="$aact_..." />
       <PasswordField label="Token de Autenticação do Webhook" value={webhookToken} onChange={setWebhookToken} placeholder="Token definido no Asaas" />

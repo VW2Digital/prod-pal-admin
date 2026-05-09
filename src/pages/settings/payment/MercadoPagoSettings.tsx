@@ -10,6 +10,7 @@ import GatewayToggles from '@/components/admin/settings/GatewayToggles';
 import EnvironmentSelect from '@/components/admin/settings/payment/EnvironmentSelect';
 import PasswordField from '@/components/admin/settings/payment/PasswordField';
 import TextField from '@/components/admin/settings/payment/TextField';
+import GatewayAccountList from '@/components/admin/settings/payment/GatewayAccountList';
 
 interface Props { isActive: boolean; onActivate: () => void }
 
@@ -89,6 +90,7 @@ const MercadoPagoSettings = ({ isActive, onActivate }: Props) => {
   return (
     <div className="space-y-4">
       <GatewayToggles gateway="mercadopago" />
+      <GatewayAccountList gateway="mercadopago" />
       <EnvironmentSelect value={env} onChange={handleEnvChange} />
       <div className="space-y-2">
         <Label>Modo de Checkout</Label>

@@ -2,12 +2,15 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Pencil, Trash2, Star, Plus, Power, Loader2, PlugZap, CheckCircle2, XCircle, ChevronDown } from 'lucide-react';
+import { Pencil, Trash2, Star, Plus, Power, Loader2, PlugZap, CheckCircle2, XCircle, ChevronDown, Info } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
   DropdownMenuSeparator, DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+} from '@/components/ui/dialog';
 import {
   GatewayAccount,
   GatewayKey,
@@ -31,7 +34,10 @@ const GatewayAccountList = ({ gateway }: Props) => {
   const [addOpen, setAddOpen] = useState(false);
   const [editing, setEditing] = useState<GatewayAccount | null>(null);
   const [testingId, setTestingId] = useState<string | null>(null);
-  const [testResults, setTestResults] = useState<Record<string, { ok: boolean; message: string }>>({});
+  const [testResults, setTestResults] = useState<Record<string, { ok: boolean; message: string; payload?: any }>>({});
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [detailAccount, setDetailAccount] = useState<GatewayAccount | null>(null);
+  const [detailPayload, setDetailPayload] = useState<any>(null);
 
   const load = async () => {
     setLoading(true);
@@ -84,14 +90,23 @@ const GatewayAccountList = ({ gateway }: Props) => {
       if (error) throw error;
       const ok = Boolean(data?.ok);
       const envLabel = (environmentOverride || acc.environment) === 'production' ? 'Produção' : 'Sandbox';
-      setTestResults((p) => ({ ...p, [acc.id]: { ok, message: `[${envLabel}] ${data?.message || (ok ? 'OK' : 'Falhou')}` } }));
+      setTestResults((p) => ({ ...p, [acc.id]: { ok, message: `[${envLabel}] ${data?.message || (ok ? 'OK' : 'Falhou')}`, payload: data } }));
+      if (!ok) {
+        setDetailAccount(acc);
+        setDetailPayload(data);
+        setDetailOpen(true);
+      }
       toast({
         title: ok ? 'Credenciais válidas' : 'Falha no teste',
         description: `${envLabel}: ${data?.message ?? ''}`,
         variant: ok ? 'default' : 'destructive',
       });
     } catch (err: any) {
-      setTestResults((p) => ({ ...p, [acc.id]: { ok: false, message: err.message } }));
+      const payload = { ok: false, message: err.message, error: err };
+      setTestResults((p) => ({ ...p, [acc.id]: { ok: false, message: err.message, payload } }));
+      setDetailAccount(acc);
+      setDetailPayload(payload);
+      setDetailOpen(true);
       toast({ title: 'Erro ao testar', description: err.message, variant: 'destructive' });
     } finally {
       setTestingId(null);
@@ -139,7 +154,20 @@ const GatewayAccountList = ({ gateway }: Props) => {
                 {testResults[acc.id] && (
                   <p className={`text-[11px] mt-0.5 flex items-center gap-1 ${testResults[acc.id].ok ? 'text-emerald-600' : 'text-destructive'}`}>
                     {testResults[acc.id].ok ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
-                    {testResults[acc.id].message}
+                    <span className="truncate">{testResults[acc.id].message}</span>
+                    {testResults[acc.id].payload && (
+                      <button
+                        type="button"
+                        className="ml-1 inline-flex items-center gap-0.5 text-foreground/70 hover:text-foreground underline"
+                        onClick={() => {
+                          setDetailAccount(acc);
+                          setDetailPayload(testResults[acc.id].payload);
+                          setDetailOpen(true);
+                        }}
+                      >
+                        <Info className="w-3 h-3" /> detalhes
+                      </button>
+                    )}
                   </p>
                 )}
               </div>
@@ -216,6 +244,83 @@ const GatewayAccountList = ({ gateway }: Props) => {
         account={editing}
         onSaved={load}
       />
+
+      <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {detailPayload?.ok
+                ? <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                : <XCircle className="w-5 h-5 text-destructive" />}
+              Diagnóstico — {detailAccount?.label}
+            </DialogTitle>
+            <DialogDescription>
+              Gateway: <strong>{detailPayload?.gateway || gateway}</strong> · Ambiente: <strong>{detailPayload?.environment || detailAccount?.environment}</strong>
+              {detailPayload?.durationMs != null && <> · {detailPayload.durationMs}ms</>}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            <div className={`rounded-md border p-3 text-sm ${detailPayload?.ok ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-destructive/30 bg-destructive/5'}`}>
+              <p className="font-medium">{detailPayload?.message || 'Sem mensagem retornada.'}</p>
+              {detailPayload?.details?.hint && (
+                <p className="text-xs text-muted-foreground mt-1">{detailPayload.details.hint}</p>
+              )}
+            </div>
+
+            {detailPayload?.details?.request && (
+              <div>
+                <p className="text-xs font-semibold text-muted-foreground mb-1">Requisição</p>
+                <pre className="text-[11px] bg-muted rounded-md p-2 overflow-auto max-h-32">
+{JSON.stringify(detailPayload.details.request, null, 2)}
+                </pre>
+              </div>
+            )}
+
+            {detailPayload?.details?.status != null && (
+              <p className="text-xs">
+                <span className="font-semibold text-muted-foreground">HTTP status:</span>{' '}
+                <code className={`px-1.5 py-0.5 rounded ${detailPayload.details.status >= 400 ? 'bg-destructive/10 text-destructive' : 'bg-emerald-500/10 text-emerald-700'}`}>
+                  {detailPayload.details.status}
+                </code>
+              </p>
+            )}
+
+            {detailPayload?.details?.response !== undefined && (
+              <div>
+                <p className="text-xs font-semibold text-muted-foreground mb-1">Resposta do gateway</p>
+                <pre className="text-[11px] bg-muted rounded-md p-2 overflow-auto max-h-64">
+{JSON.stringify(detailPayload.details.response, null, 2)}
+                </pre>
+              </div>
+            )}
+
+            {detailPayload?.details?.raw && typeof detailPayload.details.raw === 'string' && detailPayload.details.raw.length > 0 && (
+              <details className="text-xs">
+                <summary className="cursor-pointer text-muted-foreground">Resposta crua (raw)</summary>
+                <pre className="text-[11px] bg-muted rounded-md p-2 overflow-auto max-h-48 mt-1">{detailPayload.details.raw}</pre>
+              </details>
+            )}
+
+            <details className="text-xs">
+              <summary className="cursor-pointer text-muted-foreground">Payload completo</summary>
+              <pre className="text-[11px] bg-muted rounded-md p-2 overflow-auto max-h-64 mt-1">
+{JSON.stringify(detailPayload, null, 2)}
+              </pre>
+            </details>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => navigator.clipboard.writeText(JSON.stringify(detailPayload, null, 2))}
+            >
+              Copiar JSON
+            </Button>
+            <Button onClick={() => setDetailOpen(false)}>Fechar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

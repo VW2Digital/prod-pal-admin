@@ -13,75 +13,96 @@ interface TestResult {
   details?: Record<string, unknown>;
 }
 
+async function probe(
+  url: string,
+  init: RequestInit,
+): Promise<{ status: number; ok: boolean; body: unknown; raw: string; url: string; method: string }> {
+  const res = await fetch(url, init);
+  const raw = await res.text();
+  let body: unknown = raw;
+  try { body = JSON.parse(raw); } catch { /* keep text */ }
+  return { status: res.status, ok: res.ok, body, raw, url, method: (init.method as string) || 'GET' };
+}
+
 async function testAsaas(creds: Record<string, string>, environment: string): Promise<TestResult> {
   const apiKey = creds.api_key;
-  if (!apiKey) return { ok: false, message: 'api_key ausente' };
+  if (!apiKey) return { ok: false, message: 'api_key ausente', details: { hint: 'Cadastre o campo api_key na conta.' } };
   const baseUrl = environment === 'production'
     ? 'https://api.asaas.com/v3'
     : 'https://sandbox.asaas.com/api/v3';
-  const res = await fetch(`${baseUrl}/finance/getCurrentBalance`, {
+  const r = await probe(`${baseUrl}/finance/getCurrentBalance`, {
     headers: { access_token: apiKey, 'Content-Type': 'application/json' },
   });
-  const body = await res.json().catch(() => ({}));
-  if (res.ok) {
-    return { ok: true, message: `Conectado (${environment}). Saldo: R$ ${body.totalBalance ?? 0}`, details: body };
+  const b: any = r.body;
+  if (r.ok) {
+    return { ok: true, message: `Conectado (${environment}). Saldo: R$ ${b?.totalBalance ?? 0}`, details: { request: { url: r.url, method: r.method }, response: r.body, status: r.status } };
   }
-  return { ok: false, message: `Asaas ${res.status}: ${body?.errors?.[0]?.description || body?.message || 'falha de autenticação'}` };
+  return {
+    ok: false,
+    message: `Asaas ${r.status}: ${b?.errors?.[0]?.description || b?.message || 'falha de autenticação'}`,
+    details: { request: { url: r.url, method: r.method }, response: r.body, status: r.status, raw: r.raw.slice(0, 2000) },
+  };
 }
 
 async function testMercadoPago(creds: Record<string, string>): Promise<TestResult> {
   const token = creds.access_token;
-  if (!token) return { ok: false, message: 'access_token ausente' };
-  const res = await fetch('https://api.mercadopago.com/users/me', {
+  if (!token) return { ok: false, message: 'access_token ausente', details: { hint: 'Cadastre o campo access_token na conta.' } };
+  const r = await probe('https://api.mercadopago.com/users/me', {
     headers: { Authorization: `Bearer ${token}` },
   });
-  const body = await res.json().catch(() => ({}));
-  if (res.ok) {
-    return { ok: true, message: `Conectado como ${body.nickname || body.email || body.id}`, details: { id: body.id, site_id: body.site_id } };
+  const b: any = r.body;
+  if (r.ok) {
+    return { ok: true, message: `Conectado como ${b?.nickname || b?.email || b?.id}`, details: { request: { url: r.url, method: r.method }, response: { id: b?.id, site_id: b?.site_id, nickname: b?.nickname }, status: r.status } };
   }
-  return { ok: false, message: `Mercado Pago ${res.status}: ${body?.message || 'token inválido'}` };
+  return {
+    ok: false,
+    message: `Mercado Pago ${r.status}: ${b?.message || 'token inválido'}`,
+    details: { request: { url: r.url, method: r.method }, response: r.body, status: r.status, raw: r.raw.slice(0, 2000) },
+  };
 }
 
 async function testPagBank(creds: Record<string, string>, environment: string): Promise<TestResult> {
   const token = creds.token;
-  if (!token) return { ok: false, message: 'token ausente' };
+  if (!token) return { ok: false, message: 'token ausente', details: { hint: 'Cadastre o campo token na conta.' } };
   const baseUrl = environment === 'production' ? 'https://api.pagseguro.com' : 'https://sandbox.api.pagseguro.com';
-  // POST /public-keys com type=card é leve e exige token válido
-  const res = await fetch(`${baseUrl}/public-keys`, {
+  const r = await probe(`${baseUrl}/public-keys`, {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', Accept: 'application/json' },
     body: JSON.stringify({ type: 'card' }),
   });
-  const body = await res.json().catch(() => ({}));
-  if (res.ok || res.status === 200) {
-    return { ok: true, message: `Conectado (${environment}). Public key obtida.`, details: { hasKey: Boolean(body.public_key) } };
+  const b: any = r.body;
+  if (r.ok) {
+    return { ok: true, message: `Conectado (${environment}). Public key obtida.`, details: { request: { url: r.url, method: r.method }, response: { hasKey: Boolean(b?.public_key) }, status: r.status } };
   }
-  if (res.status === 401 || res.status === 403) {
-    return { ok: false, message: `PagBank ${res.status}: token rejeitado` };
+  if (r.status === 401 || r.status === 403) {
+    return { ok: false, message: `PagBank ${r.status}: token rejeitado`, details: { request: { url: r.url, method: r.method }, response: r.body, status: r.status, raw: r.raw.slice(0, 2000) } };
   }
-  return { ok: false, message: `PagBank ${res.status}: ${body?.error_messages?.[0]?.description || JSON.stringify(body).slice(0, 120)}` };
+  return {
+    ok: false,
+    message: `PagBank ${r.status}: ${b?.error_messages?.[0]?.description || JSON.stringify(b).slice(0, 120)}`,
+    details: { request: { url: r.url, method: r.method }, response: r.body, status: r.status, raw: r.raw.slice(0, 2000) },
+  };
 }
 
 async function testPagarMe(creds: Record<string, string>): Promise<TestResult> {
   const secret = creds.secret_key;
-  if (!secret) return { ok: false, message: 'secret_key ausente' };
+  if (!secret) return { ok: false, message: 'secret_key ausente', details: { hint: 'Cadastre o campo secret_key na conta.' } };
   const auth = btoa(`${secret}:`);
-  const res = await fetch('https://api.pagar.me/core/v5/balance', {
+  const r = await probe('https://api.pagar.me/core/v5/balance', {
     headers: { Authorization: `Basic ${auth}` },
   });
-  const body = await res.json().catch(() => ({}));
-  if (res.ok) {
-    return { ok: true, message: `Conectado. Disponível: ${body.available?.amount ?? 0}`, details: body };
+  const b: any = r.body;
+  if (r.ok) {
+    return { ok: true, message: `Conectado. Disponível: ${b?.available?.amount ?? 0}`, details: { request: { url: r.url, method: r.method }, response: r.body, status: r.status } };
   }
-  if (res.status === 404) {
-    // 404 ainda significa autenticado (recurso inexistente para a conta) — chave válida
-    return { ok: true, message: 'Chave aceita (sem recurso de saldo)' };
+  if (r.status === 404) {
+    return { ok: true, message: 'Chave aceita (sem recurso de saldo)', details: { request: { url: r.url, method: r.method }, response: r.body, status: r.status } };
   }
-  return { ok: false, message: `Pagar.me ${res.status}: ${body?.message || 'chave inválida'}` };
+  return {
+    ok: false,
+    message: `Pagar.me ${r.status}: ${b?.message || 'chave inválida'}`,
+    details: { request: { url: r.url, method: r.method }, response: r.body, status: r.status, raw: r.raw.slice(0, 2000) },
+  };
 }
 
 Deno.serve(async (req) => {
@@ -117,6 +138,7 @@ Deno.serve(async (req) => {
       ? environment_override
       : (account.environment || 'sandbox');
 
+    const startedAt = Date.now();
     let result: TestResult;
     try {
       switch (gateway) {
@@ -127,15 +149,16 @@ Deno.serve(async (req) => {
         default: result = { ok: false, message: `Gateway ${gateway} não suportado` };
       }
     } catch (e) {
-      result = { ok: false, message: `Falha de rede: ${(e as Error).message}` };
+      result = { ok: false, message: `Falha de rede: ${(e as Error).message}`, details: { error: String(e), stack: (e as Error).stack } };
     }
+    const durationMs = Date.now() - startedAt;
 
-    return new Response(JSON.stringify({ ...result, gateway, environment: env, label: account.label }), {
+    return new Response(JSON.stringify({ ...result, gateway, environment: env, label: account.label, durationMs, testedAt: new Date().toISOString() }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     });
   } catch (e) {
-    return new Response(JSON.stringify({ ok: false, message: (e as Error).message }), {
+    return new Response(JSON.stringify({ ok: false, message: (e as Error).message, details: { stack: (e as Error).stack } }), {
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }

@@ -70,8 +70,8 @@ const ForgotPassword = () => {
               </h1>
               <p className="text-muted-foreground text-sm mt-1">
                 {sent
-                  ? `Enviamos um link de redefinição para ${email}. Verifique sua caixa de entrada e a pasta de spam.`
-                  : 'Informe seu email e enviaremos um link para você criar uma nova senha.'}
+                  ? `Enviamos um código de redefinição para ${email}. Verifique sua caixa de entrada e a pasta de spam.`
+                  : 'Informe seu email e enviaremos um código para você criar uma nova senha.'}
               </p>
             </div>
           </CardHeader>
@@ -111,7 +111,7 @@ const ForgotPassword = () => {
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                  Enviar link de recuperação
+                  Enviar código de recuperação
                 </Button>
                 <Link to="/cliente/login" className="block">
                   <Button type="button" variant="ghost" className="w-full">

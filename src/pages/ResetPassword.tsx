@@ -138,7 +138,7 @@ const ResetPassword = () => {
   );
 
   const strengthLabel = ['Muito fraca', 'Fraca', 'Média', 'Boa', 'Forte'][score];
-  const strengthColor = ['bg-destructive', 'bg-destructive', 'bg-amber-500', 'bg-amber-400', 'bg-primary'][score];
+  const strengthColor = ['bg-destructive', 'bg-destructive', 'bg-secondary', 'bg-primary/70', 'bg-primary'][score];
 
   return (
     <div className="min-h-screen flex flex-col bg-background">

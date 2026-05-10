@@ -1,4 +1,4 @@
-// Valida token de redefinição e atualiza senha do usuário.
+// Valida código de redefinição e atualiza senha do usuário.
 // Endpoint público — sem JWT.
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -25,13 +25,21 @@ serve(async (req) => {
 
   try {
     const body = await req.json();
-    const token = String(body.token ?? "");
+    const email = String(body.email ?? "").toLowerCase().trim();
+    const code = String(body.code ?? "").toUpperCase().replace(/[^A-Z0-9]/g, "");
     const action = String(body.action ?? "verify"); // "verify" ou "reset"
     const newPassword = body.password ? String(body.password) : null;
 
-    if (!token || token.length < 32) {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return new Response(
-        JSON.stringify({ error: "Token inválido" }),
+        JSON.stringify({ error: "Email inválido" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    if (!code || code.length !== 8) {
+      return new Response(
+        JSON.stringify({ error: "Código inválido" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
@@ -40,30 +48,31 @@ serve(async (req) => {
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const adminClient = createClient(supabaseUrl, serviceKey);
 
-    const tokenHash = await sha256Hex(token);
+    const tokenHash = await sha256Hex(`${email}:${code}`);
 
     const { data: row, error: selErr } = await adminClient
       .from("password_reset_tokens")
       .select("*")
       .eq("token_hash", tokenHash)
+      .eq("email", email)
       .maybeSingle();
 
     if (selErr) throw selErr;
     if (!row) {
       return new Response(
-        JSON.stringify({ error: "Link inválido ou expirado" }),
+        JSON.stringify({ error: "Código inválido ou expirado" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
     if (row.used_at) {
       return new Response(
-        JSON.stringify({ error: "Este link já foi utilizado" }),
+        JSON.stringify({ error: "Este código já foi utilizado" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
     if (new Date(row.expires_at).getTime() < Date.now()) {
       return new Response(
-        JSON.stringify({ error: "Link expirado. Solicite um novo." }),
+        JSON.stringify({ error: "Código expirado. Solicite um novo." }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
@@ -76,9 +85,9 @@ serve(async (req) => {
     }
 
     // action === "reset"
-    if (!newPassword || newPassword.length < 6) {
+    if (!newPassword || newPassword.length < 8 || !/[A-Z]/.test(newPassword) || !/[a-z]/.test(newPassword) || !/\d/.test(newPassword)) {
       return new Response(
-        JSON.stringify({ error: "Senha deve ter no mínimo 6 caracteres" }),
+        JSON.stringify({ error: "A senha deve ter no mínimo 8 caracteres, com letra maiúscula, minúscula e número." }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }

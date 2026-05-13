@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { AdminSection } from '@/components/admin/AdminSection';
-import { Zap, ArrowLeft, Save } from 'lucide-react';
+import { Zap, ArrowLeft, Save, Plus, Trash2, GripVertical } from 'lucide-react';
 
 interface PaymentLinkOpt { id: string; title: string; slug: string; }
 interface ProductOpt {
@@ -21,6 +21,31 @@ interface ProductOpt {
 
 type Source = 'existing' | 'product';
 type DiscountMode = 'fixed' | 'percent';
+type CampaignMode = 'sale' | 'lead';
+
+interface ThankYouButton {
+  label: string;
+  url: string;
+  color?: string;
+  icon?: string;
+  new_tab?: boolean;
+}
+
+const ICON_OPTIONS = [
+  { value: '', label: 'Nenhum' },
+  { value: 'whatsapp', label: 'WhatsApp' },
+  { value: 'message', label: 'Mensagem' },
+  { value: 'download', label: 'Download' },
+  { value: 'link', label: 'Link' },
+  { value: 'external', label: 'Link externo' },
+  { value: 'mail', label: 'Email' },
+  { value: 'phone', label: 'Telefone' },
+  { value: 'gift', label: 'Presente' },
+  { value: 'star', label: 'Estrela' },
+  { value: 'heart', label: 'Coração' },
+  { value: 'send', label: 'Enviar' },
+  { value: 'check', label: 'Confirmação' },
+];
 
 const slugify = (s: string) =>
   s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -61,6 +86,20 @@ export default function FlashCampaignFormPage() {
   const [bgColor, setBgColor] = useState('#0a0000');
   const [accentColor, setAccentColor] = useState('#ef4444');
   const [active, setActive] = useState(true);
+
+  // Mode + lead capture
+  const [mode, setMode] = useState<CampaignMode>('sale');
+  const [captureLead, setCaptureLead] = useState(false);
+  const [leadFormTitle, setLeadFormTitle] = useState('Garanta sua vaga');
+  const [leadFormSubtitle, setLeadFormSubtitle] = useState('Preencha seus dados para continuar');
+  const [leadCtaText, setLeadCtaText] = useState('QUERO ME INSCREVER');
+
+  // Thank you page
+  const [thankYouHeadline, setThankYouHeadline] = useState('Obrigado!');
+  const [thankYouMessage, setThankYouMessage] = useState('Em instantes você receberá mais informações pelo email e WhatsApp.');
+  const [thankYouBgColor, setThankYouBgColor] = useState('#0a0000');
+  const [thankYouAccentColor, setThankYouAccentColor] = useState('#22c55e');
+  const [thankYouButtons, setThankYouButtons] = useState<ThankYouButton[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -111,6 +150,16 @@ export default function FlashCampaignFormPage() {
         setBgColor(camp.bg_color || '#0a0000');
         setAccentColor(camp.accent_color || '#ef4444');
         setActive(camp.active);
+        if (camp.mode) setMode(camp.mode as CampaignMode);
+        setCaptureLead(!!camp.capture_lead);
+        if (camp.lead_form_title) setLeadFormTitle(camp.lead_form_title);
+        if (camp.lead_form_subtitle) setLeadFormSubtitle(camp.lead_form_subtitle);
+        if (camp.lead_cta_text) setLeadCtaText(camp.lead_cta_text);
+        if (camp.thank_you_headline) setThankYouHeadline(camp.thank_you_headline);
+        if (camp.thank_you_message) setThankYouMessage(camp.thank_you_message);
+        if (camp.thank_you_bg_color) setThankYouBgColor(camp.thank_you_bg_color);
+        if (camp.thank_you_accent_color) setThankYouAccentColor(camp.thank_you_accent_color);
+        if (Array.isArray(camp.thank_you_buttons)) setThankYouButtons(camp.thank_you_buttons);
         setLoading(false);
       }
     })();
@@ -134,11 +183,11 @@ export default function FlashCampaignFormPage() {
       toast({ title: 'Campos obrigatórios', description: 'Preencha título e validade.', variant: 'destructive' });
       return;
     }
-    if (source === 'existing' && !paymentLinkId) {
+    if (mode === 'sale' && source === 'existing' && !paymentLinkId) {
       toast({ title: 'Selecione um link de pagamento', variant: 'destructive' });
       return;
     }
-    if (source === 'product' && (!productId || !variationId || finalUnit <= 0)) {
+    if (mode === 'sale' && source === 'product' && (!productId || !variationId || finalUnit <= 0)) {
       toast({ title: 'Selecione produto, variação e preço promocional válido', variant: 'destructive' });
       return;
     }
@@ -148,7 +197,7 @@ export default function FlashCampaignFormPage() {
 
     // Resolve payment_link_id (auto-create/update when source = product)
     let resolvedLinkId = paymentLinkId;
-    if (source === 'product') {
+    if (mode === 'sale' && source === 'product') {
       const linkPayload = {
         title: `[Campanha] ${title.trim()}`,
         description: `${selectedProduct?.name} ${selectedVariation?.dosage} — ${quantity}x R$ ${finalUnit.toFixed(2)}`,
@@ -177,20 +226,31 @@ export default function FlashCampaignFormPage() {
 
     const payload: any = {
       title: title.trim(), slug: finalSlug, headline: headline.trim(), subheadline: subheadline.trim(),
-      cta_text: ctaText.trim() || 'GARANTIR AGORA', payment_link_id: resolvedLinkId,
+      cta_text: ctaText.trim() || 'GARANTIR AGORA',
+      payment_link_id: mode === 'lead' ? null : resolvedLinkId,
       expires_at: new Date(expiresAt).toISOString(), background_image: bgImage.trim() || null,
       starts_at: startsAt ? new Date(startsAt).toISOString() : null,
       bg_color: bgColor, accent_color: accentColor, active,
       source,
-      product_id: source === 'product' ? productId || null : null,
-      variation_id: source === 'product' ? variationId || null : null,
+      product_id: mode === 'sale' && source === 'product' ? productId || null : null,
+      variation_id: mode === 'sale' && source === 'product' ? variationId || null : null,
       quantity: Number(quantity) || 1,
       discount_mode: discountMode,
       discount_value: Number(discountValue) || 0,
       promo_price: discountMode === 'fixed' ? (Number(promoPrice) || null) : null,
       max_installments: Number(maxInstallments) || 1,
       pix_discount: Number(pixDiscount) || 0,
-      auto_link_id: source === 'product' ? (resolvedLinkId || null) : null,
+      auto_link_id: mode === 'sale' && source === 'product' ? (resolvedLinkId || null) : null,
+      mode,
+      capture_lead: mode === 'lead' ? true : captureLead,
+      lead_form_title: leadFormTitle.trim() || null,
+      lead_form_subtitle: leadFormSubtitle.trim() || null,
+      lead_cta_text: leadCtaText.trim() || null,
+      thank_you_headline: thankYouHeadline.trim() || null,
+      thank_you_message: thankYouMessage.trim() || null,
+      thank_you_bg_color: thankYouBgColor,
+      thank_you_accent_color: thankYouAccentColor,
+      thank_you_buttons: thankYouButtons,
     };
     let error;
     if (isEdit) {
@@ -222,6 +282,16 @@ export default function FlashCampaignFormPage() {
 
       <AdminSection title="Informações básicas">
         <div className="grid gap-4">
+          <div>
+            <Label>Tipo de campanha *</Label>
+            <Select value={mode} onValueChange={(v) => setMode(v as CampaignMode)}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="sale">Venda (com checkout)</SelectItem>
+                <SelectItem value="lead">Somente captura de lead (sem pagamento)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <Label>Título interno *</Label>
@@ -232,6 +302,8 @@ export default function FlashCampaignFormPage() {
               <Input value={slug} onChange={e => setSlug(e.target.value)} placeholder="auto" />
             </div>
           </div>
+          {mode === 'sale' && (
+            <>
           <div>
             <Label>Origem do checkout *</Label>
             <Select value={source} onValueChange={(v) => setSource(v as Source)}>
@@ -336,6 +408,8 @@ export default function FlashCampaignFormPage() {
               )}
             </div>
           )}
+            </>
+          )}
 
           <div className="grid gap-4 md:grid-cols-2">
             <div>
@@ -388,6 +462,127 @@ export default function FlashCampaignFormPage() {
           <div>
             <Label>Imagem de fundo (URL opcional)</Label>
             <Input value={bgImage} onChange={e => setBgImage(e.target.value)} placeholder="https://..." />
+          </div>
+        </div>
+      </AdminSection>
+
+      <AdminSection title="Captura de lead">
+        <div className="grid gap-4">
+          {mode === 'sale' && (
+            <div className="flex items-center gap-2">
+              <Switch checked={captureLead} onCheckedChange={setCaptureLead} />
+              <Label>Coletar nome, email e WhatsApp antes de levar ao checkout</Label>
+            </div>
+          )}
+          {mode === 'lead' && (
+            <div className="rounded-md border border-primary/30 bg-primary/5 p-3 text-sm text-muted-foreground">
+              Em campanhas "somente lead", o formulário sempre é exibido e não há pagamento.
+            </div>
+          )}
+          {(mode === 'lead' || captureLead) && (
+            <>
+              <div>
+                <Label>Título do formulário</Label>
+                <Input value={leadFormTitle} onChange={e => setLeadFormTitle(e.target.value)} />
+              </div>
+              <div>
+                <Label>Subtítulo do formulário</Label>
+                <Input value={leadFormSubtitle} onChange={e => setLeadFormSubtitle(e.target.value)} />
+              </div>
+              <div>
+                <Label>Texto do botão de envio</Label>
+                <Input value={leadCtaText} onChange={e => setLeadCtaText(e.target.value)} />
+              </div>
+            </>
+          )}
+        </div>
+      </AdminSection>
+
+      <AdminSection
+        title="Página de obrigado"
+        description="Exibida após captura do lead (modo lead) ou após pagamento confirmado (modo venda). URL: /relampago/[slug]/obrigado"
+      >
+        <div className="grid gap-4">
+          <div>
+            <Label>Headline</Label>
+            <Input value={thankYouHeadline} onChange={e => setThankYouHeadline(e.target.value)} />
+          </div>
+          <div>
+            <Label>Mensagem</Label>
+            <Textarea rows={3} value={thankYouMessage} onChange={e => setThankYouMessage(e.target.value)} />
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <Label>Cor de fundo</Label>
+              <Input type="color" value={thankYouBgColor} onChange={e => setThankYouBgColor(e.target.value)} />
+            </div>
+            <div>
+              <Label>Cor de destaque</Label>
+              <Input type="color" value={thankYouAccentColor} onChange={e => setThankYouAccentColor(e.target.value)} />
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label>Botões da página</Label>
+              <Button type="button" size="sm" variant="outline"
+                      onClick={() => setThankYouButtons([...thankYouButtons, { label: '', url: '', color: thankYouAccentColor, icon: '', new_tab: true }])}>
+                <Plus className="w-3.5 h-3.5 mr-1" />Adicionar botão
+              </Button>
+            </div>
+            {thankYouButtons.length === 0 && (
+              <p className="text-xs text-muted-foreground">Nenhum botão configurado.</p>
+            )}
+            {thankYouButtons.map((b, i) => (
+              <div key={i} className="rounded-md border border-border bg-muted/30 p-3 grid gap-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <GripVertical className="w-4 h-4 text-muted-foreground" /> Botão {i + 1}
+                  </div>
+                  <Button type="button" size="sm" variant="ghost"
+                          onClick={() => setThankYouButtons(thankYouButtons.filter((_, j) => j !== i))}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div>
+                    <Label>Texto</Label>
+                    <Input value={b.label} onChange={e => {
+                      const next = [...thankYouButtons]; next[i] = { ...b, label: e.target.value }; setThankYouButtons(next);
+                    }} placeholder="Ex: Entrar no grupo VIP" />
+                  </div>
+                  <div>
+                    <Label>URL</Label>
+                    <Input value={b.url} onChange={e => {
+                      const next = [...thankYouButtons]; next[i] = { ...b, url: e.target.value }; setThankYouButtons(next);
+                    }} placeholder="https://..." />
+                  </div>
+                  <div>
+                    <Label>Ícone</Label>
+                    <Select value={b.icon || 'none'} onValueChange={(v) => {
+                      const next = [...thankYouButtons]; next[i] = { ...b, icon: v === 'none' ? '' : v }; setThankYouButtons(next);
+                    }}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {ICON_OPTIONS.map(o => <SelectItem key={o.value || 'none'} value={o.value || 'none'}>{o.label}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Cor de fundo</Label>
+                    <Input type="color" value={b.color || thankYouAccentColor} onChange={e => {
+                      const next = [...thankYouButtons]; next[i] = { ...b, color: e.target.value }; setThankYouButtons(next);
+                    }} />
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch checked={!!b.new_tab} onCheckedChange={(v) => {
+                    const next = [...thankYouButtons]; next[i] = { ...b, new_tab: v }; setThankYouButtons(next);
+                  }} />
+                  <Label>Abrir em nova aba</Label>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </AdminSection>

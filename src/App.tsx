@@ -76,6 +76,8 @@ const UpsellManagerPage = lazy(() => import("./pages/UpsellManagerPage"));
 const RecommendationMetricsPage = lazy(() => import("./pages/RecommendationMetricsPage"));
 const FlashCampaignsPage = lazy(() => import("./pages/FlashCampaignsPage"));
 const FlashCampaignFormPage = lazy(() => import("./pages/FlashCampaignFormPage"));
+const FlashCampaignThankYouPage = lazy(() => import("./pages/FlashCampaignThankYouPage"));
+const FlashCampaignLeadsPage = lazy(() => import("./pages/FlashCampaignLeadsPage"));
 const ResellersPage = lazy(() => import("./pages/ResellersPage"));
 
 import PromoPopup from "./components/PromoPopup";
@@ -129,6 +131,7 @@ const App = () => (
           <Route path="/contato" element={<ContactPage />} />
           <Route path="/pagar/:slug" element={<PaymentLinkCheckout />} />
           <Route path="/relampago/:slug" element={<FlashCampaignPage />} />
+          <Route path="/relampago/:slug/obrigado" element={<FlashCampaignThankYouPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
@@ -159,6 +162,7 @@ const App = () => (
             <Route path="campanhas-relampago" element={<FlashCampaignsPage />} />
             <Route path="campanhas-relampago/nova" element={<FlashCampaignFormPage />} />
             <Route path="campanhas-relampago/:id" element={<FlashCampaignFormPage />} />
+            <Route path="campanhas-relampago/:id/leads" element={<FlashCampaignLeadsPage />} />
             <Route path="templates-email" element={<EmailTemplatesPage />} />
             <Route path="logs-email" element={<EmailLogsPage />} />
             <Route path="eventos-email" element={<EmailEventsPage />} />

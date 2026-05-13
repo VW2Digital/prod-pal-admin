@@ -46,6 +46,28 @@ export default function PaymentLinkCheckout() {
   const [success, setSuccess] = useState(false);
   const [pixData, setPixData] = useState<any>(null);
   const [cardResultData, setCardResultData] = useState<any>(null);
+  const [flashSlug, setFlashSlug] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem('flash_campaign_pending');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed?.slug) setFlashSlug(parsed.slug);
+      }
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    if (!success || !flashSlug) return;
+    const isInReview = cardResultData?.status === 'IN_REVIEW' || cardResultData?.mpStatus === 'in_process';
+    if (isInReview) return;
+    const t = setTimeout(() => {
+      sessionStorage.removeItem('flash_campaign_pending');
+      navigate(`/relampago/${flashSlug}/obrigado`);
+    }, 4000);
+    return () => clearTimeout(t);
+  }, [success, flashSlug, cardResultData, navigate]);
 
   // Card fields
   const [cardNumber, setCardNumber] = useState('');

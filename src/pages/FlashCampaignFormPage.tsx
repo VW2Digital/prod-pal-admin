@@ -150,6 +150,16 @@ export default function FlashCampaignFormPage() {
         setBgColor(camp.bg_color || '#0a0000');
         setAccentColor(camp.accent_color || '#ef4444');
         setActive(camp.active);
+        if (camp.mode) setMode(camp.mode as CampaignMode);
+        setCaptureLead(!!camp.capture_lead);
+        if (camp.lead_form_title) setLeadFormTitle(camp.lead_form_title);
+        if (camp.lead_form_subtitle) setLeadFormSubtitle(camp.lead_form_subtitle);
+        if (camp.lead_cta_text) setLeadCtaText(camp.lead_cta_text);
+        if (camp.thank_you_headline) setThankYouHeadline(camp.thank_you_headline);
+        if (camp.thank_you_message) setThankYouMessage(camp.thank_you_message);
+        if (camp.thank_you_bg_color) setThankYouBgColor(camp.thank_you_bg_color);
+        if (camp.thank_you_accent_color) setThankYouAccentColor(camp.thank_you_accent_color);
+        if (Array.isArray(camp.thank_you_buttons)) setThankYouButtons(camp.thank_you_buttons);
         setLoading(false);
       }
     })();
@@ -173,11 +183,11 @@ export default function FlashCampaignFormPage() {
       toast({ title: 'Campos obrigatórios', description: 'Preencha título e validade.', variant: 'destructive' });
       return;
     }
-    if (source === 'existing' && !paymentLinkId) {
+    if (mode === 'sale' && source === 'existing' && !paymentLinkId) {
       toast({ title: 'Selecione um link de pagamento', variant: 'destructive' });
       return;
     }
-    if (source === 'product' && (!productId || !variationId || finalUnit <= 0)) {
+    if (mode === 'sale' && source === 'product' && (!productId || !variationId || finalUnit <= 0)) {
       toast({ title: 'Selecione produto, variação e preço promocional válido', variant: 'destructive' });
       return;
     }
@@ -187,7 +197,7 @@ export default function FlashCampaignFormPage() {
 
     // Resolve payment_link_id (auto-create/update when source = product)
     let resolvedLinkId = paymentLinkId;
-    if (source === 'product') {
+    if (mode === 'sale' && source === 'product') {
       const linkPayload = {
         title: `[Campanha] ${title.trim()}`,
         description: `${selectedProduct?.name} ${selectedVariation?.dosage} — ${quantity}x R$ ${finalUnit.toFixed(2)}`,
@@ -216,20 +226,31 @@ export default function FlashCampaignFormPage() {
 
     const payload: any = {
       title: title.trim(), slug: finalSlug, headline: headline.trim(), subheadline: subheadline.trim(),
-      cta_text: ctaText.trim() || 'GARANTIR AGORA', payment_link_id: resolvedLinkId,
+      cta_text: ctaText.trim() || 'GARANTIR AGORA',
+      payment_link_id: mode === 'lead' ? null : resolvedLinkId,
       expires_at: new Date(expiresAt).toISOString(), background_image: bgImage.trim() || null,
       starts_at: startsAt ? new Date(startsAt).toISOString() : null,
       bg_color: bgColor, accent_color: accentColor, active,
       source,
-      product_id: source === 'product' ? productId || null : null,
-      variation_id: source === 'product' ? variationId || null : null,
+      product_id: mode === 'sale' && source === 'product' ? productId || null : null,
+      variation_id: mode === 'sale' && source === 'product' ? variationId || null : null,
       quantity: Number(quantity) || 1,
       discount_mode: discountMode,
       discount_value: Number(discountValue) || 0,
       promo_price: discountMode === 'fixed' ? (Number(promoPrice) || null) : null,
       max_installments: Number(maxInstallments) || 1,
       pix_discount: Number(pixDiscount) || 0,
-      auto_link_id: source === 'product' ? (resolvedLinkId || null) : null,
+      auto_link_id: mode === 'sale' && source === 'product' ? (resolvedLinkId || null) : null,
+      mode,
+      capture_lead: mode === 'lead' ? true : captureLead,
+      lead_form_title: leadFormTitle.trim() || null,
+      lead_form_subtitle: leadFormSubtitle.trim() || null,
+      lead_cta_text: leadCtaText.trim() || null,
+      thank_you_headline: thankYouHeadline.trim() || null,
+      thank_you_message: thankYouMessage.trim() || null,
+      thank_you_bg_color: thankYouBgColor,
+      thank_you_accent_color: thankYouAccentColor,
+      thank_you_buttons: thankYouButtons,
     };
     let error;
     if (isEdit) {

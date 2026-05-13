@@ -466,6 +466,127 @@ export default function FlashCampaignFormPage() {
         </div>
       </AdminSection>
 
+      <AdminSection title="Captura de lead">
+        <div className="grid gap-4">
+          {mode === 'sale' && (
+            <div className="flex items-center gap-2">
+              <Switch checked={captureLead} onCheckedChange={setCaptureLead} />
+              <Label>Coletar nome, email e WhatsApp antes de levar ao checkout</Label>
+            </div>
+          )}
+          {mode === 'lead' && (
+            <div className="rounded-md border border-primary/30 bg-primary/5 p-3 text-sm text-muted-foreground">
+              Em campanhas "somente lead", o formulário sempre é exibido e não há pagamento.
+            </div>
+          )}
+          {(mode === 'lead' || captureLead) && (
+            <>
+              <div>
+                <Label>Título do formulário</Label>
+                <Input value={leadFormTitle} onChange={e => setLeadFormTitle(e.target.value)} />
+              </div>
+              <div>
+                <Label>Subtítulo do formulário</Label>
+                <Input value={leadFormSubtitle} onChange={e => setLeadFormSubtitle(e.target.value)} />
+              </div>
+              <div>
+                <Label>Texto do botão de envio</Label>
+                <Input value={leadCtaText} onChange={e => setLeadCtaText(e.target.value)} />
+              </div>
+            </>
+          )}
+        </div>
+      </AdminSection>
+
+      <AdminSection
+        title="Página de obrigado"
+        description="Exibida após captura do lead (modo lead) ou após pagamento confirmado (modo venda). URL: /relampago/[slug]/obrigado"
+      >
+        <div className="grid gap-4">
+          <div>
+            <Label>Headline</Label>
+            <Input value={thankYouHeadline} onChange={e => setThankYouHeadline(e.target.value)} />
+          </div>
+          <div>
+            <Label>Mensagem</Label>
+            <Textarea rows={3} value={thankYouMessage} onChange={e => setThankYouMessage(e.target.value)} />
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <Label>Cor de fundo</Label>
+              <Input type="color" value={thankYouBgColor} onChange={e => setThankYouBgColor(e.target.value)} />
+            </div>
+            <div>
+              <Label>Cor de destaque</Label>
+              <Input type="color" value={thankYouAccentColor} onChange={e => setThankYouAccentColor(e.target.value)} />
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label>Botões da página</Label>
+              <Button type="button" size="sm" variant="outline"
+                      onClick={() => setThankYouButtons([...thankYouButtons, { label: '', url: '', color: thankYouAccentColor, icon: '', new_tab: true }])}>
+                <Plus className="w-3.5 h-3.5 mr-1" />Adicionar botão
+              </Button>
+            </div>
+            {thankYouButtons.length === 0 && (
+              <p className="text-xs text-muted-foreground">Nenhum botão configurado.</p>
+            )}
+            {thankYouButtons.map((b, i) => (
+              <div key={i} className="rounded-md border border-border bg-muted/30 p-3 grid gap-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <GripVertical className="w-4 h-4 text-muted-foreground" /> Botão {i + 1}
+                  </div>
+                  <Button type="button" size="sm" variant="ghost"
+                          onClick={() => setThankYouButtons(thankYouButtons.filter((_, j) => j !== i))}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div>
+                    <Label>Texto</Label>
+                    <Input value={b.label} onChange={e => {
+                      const next = [...thankYouButtons]; next[i] = { ...b, label: e.target.value }; setThankYouButtons(next);
+                    }} placeholder="Ex: Entrar no grupo VIP" />
+                  </div>
+                  <div>
+                    <Label>URL</Label>
+                    <Input value={b.url} onChange={e => {
+                      const next = [...thankYouButtons]; next[i] = { ...b, url: e.target.value }; setThankYouButtons(next);
+                    }} placeholder="https://..." />
+                  </div>
+                  <div>
+                    <Label>Ícone</Label>
+                    <Select value={b.icon || ''} onValueChange={(v) => {
+                      const next = [...thankYouButtons]; next[i] = { ...b, icon: v }; setThankYouButtons(next);
+                    }}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {ICON_OPTIONS.map(o => <SelectItem key={o.value || 'none'} value={o.value || 'none'}>{o.label}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Cor de fundo</Label>
+                    <Input type="color" value={b.color || thankYouAccentColor} onChange={e => {
+                      const next = [...thankYouButtons]; next[i] = { ...b, color: e.target.value }; setThankYouButtons(next);
+                    }} />
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch checked={!!b.new_tab} onCheckedChange={(v) => {
+                    const next = [...thankYouButtons]; next[i] = { ...b, new_tab: v }; setThankYouButtons(next);
+                  }} />
+                  <Label>Abrir em nova aba</Label>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </AdminSection>
+
       <div className="flex justify-end gap-2 pb-4">
         <Button variant="outline" onClick={() => navigate('/admin/campanhas-relampago')}>Cancelar</Button>
         <Button onClick={save} disabled={saving}>

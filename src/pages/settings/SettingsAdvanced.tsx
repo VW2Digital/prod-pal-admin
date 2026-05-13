@@ -4,18 +4,22 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Code, Plus, Trash2 } from 'lucide-react';
+import { Code, Plus, Trash2, Globe } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import SettingsBackButton from './SettingsBackButton';
 import SettingsSkeleton from '@/components/admin/settings/SettingsSkeleton';
 import DeployUpdateCard from '@/components/admin/DeployUpdateCard';
 import SiteUrlCard from '@/components/admin/SiteUrlCard';
 import SupabaseUrlOverrideCard from '@/components/admin/SupabaseUrlOverrideCard';
 
+type ScriptScope = 'all' | 'include' | 'exclude';
 interface ScriptEntry {
   id: string;
   label: string;
   code: string;
+  scope?: ScriptScope;
+  paths?: string[];
 }
 
 const generateId = () => crypto.randomUUID();
@@ -23,9 +27,17 @@ const generateId = () => crypto.randomUUID();
 const parseScripts = (raw: string): ScriptEntry[] => {
   try {
     const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed)) return parsed;
+    if (Array.isArray(parsed)) {
+      return parsed.map((e: any) => ({
+        id: e.id || generateId(),
+        label: e.label || 'Script',
+        code: e.code || '',
+        scope: (e.scope as ScriptScope) || 'all',
+        paths: Array.isArray(e.paths) ? e.paths : [],
+      }));
+    }
   } catch { /* ignore */ }
-  if (raw?.trim()) return [{ id: generateId(), label: 'Script 1', code: raw }];
+  if (raw?.trim()) return [{ id: generateId(), label: 'Script 1', code: raw, scope: 'all', paths: [] }];
   return [];
 };
 
@@ -39,14 +51,14 @@ const ScriptList = ({
   placeholder: string;
 }) => {
   const addScript = () => {
-    onChange([...scripts, { id: generateId(), label: `Script ${scripts.length + 1}`, code: '' }]);
+    onChange([...scripts, { id: generateId(), label: `Script ${scripts.length + 1}`, code: '', scope: 'all', paths: [] }]);
   };
 
   const removeScript = (id: string) => {
     onChange(scripts.filter((s) => s.id !== id));
   };
 
-  const updateScript = (id: string, field: 'label' | 'code', value: string) => {
+  const updateScript = <K extends keyof ScriptEntry>(id: string, field: K, value: ScriptEntry[K]) => {
     onChange(scripts.map((s) => (s.id === id ? { ...s, [field]: value } : s)));
   };
 
@@ -76,6 +88,34 @@ const ScriptList = ({
             onChange={(e) => updateScript(script.id, 'code', e.target.value)}
             placeholder={placeholder}
           />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 pt-2">
+            <div className="space-y-1">
+              <Label className="text-xs flex items-center gap-1"><Globe className="w-3 h-3" /> Aplicar em</Label>
+              <Select
+                value={script.scope || 'all'}
+                onValueChange={(v) => updateScript(script.id, 'scope', v as ScriptScope)}
+              >
+                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todo o site</SelectItem>
+                  <SelectItem value="include">Apenas nas páginas</SelectItem>
+                  <SelectItem value="exclude">Em todas, exceto</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {(script.scope === 'include' || script.scope === 'exclude') && (
+              <div className="space-y-1 md:col-span-2">
+                <Label className="text-xs">Caminhos (um por linha, suporta * curinga)</Label>
+                <textarea
+                  className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-xs font-mono"
+                  value={(script.paths || []).join('\n')}
+                  onChange={(e) => updateScript(script.id, 'paths', e.target.value.split('\n').map((p) => p.trim()).filter(Boolean))}
+                  placeholder={'/\n/checkout/*\n/produto/*'}
+                />
+                <p className="text-[10px] text-muted-foreground">Ex.: <code>/</code> só home, <code>/checkout/*</code> qualquer checkout, <code>/admin/*</code> área admin.</p>
+              </div>
+            )}
+          </div>
         </div>
       ))}
       <Button variant="outline" onClick={addScript} className="w-full gap-2">

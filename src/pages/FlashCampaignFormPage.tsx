@@ -10,7 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { AdminSection } from '@/components/admin/AdminSection';
-import { Zap, ArrowLeft, Save, Plus, Trash2, GripVertical } from 'lucide-react';
+import { Zap, ArrowLeft, Save, Plus, Trash2, GripVertical, Download, Link2, ExternalLink, Mail, Phone, Gift, Star, Heart, Send, CheckCircle2, MessageSquare } from 'lucide-react';
+import { FaWhatsapp, FaTelegram, FaInstagram, FaFacebook, FaYoutube, FaTiktok } from 'react-icons/fa';
 
 interface PaymentLinkOpt { id: string; title: string; slug: string; }
 interface ProductOpt {
@@ -32,19 +33,24 @@ interface ThankYouButton {
 }
 
 const ICON_OPTIONS = [
-  { value: '', label: 'Nenhum' },
-  { value: 'whatsapp', label: 'WhatsApp' },
-  { value: 'message', label: 'Mensagem' },
-  { value: 'download', label: 'Download' },
-  { value: 'link', label: 'Link' },
-  { value: 'external', label: 'Link externo' },
-  { value: 'mail', label: 'Email' },
-  { value: 'phone', label: 'Telefone' },
-  { value: 'gift', label: 'Presente' },
-  { value: 'star', label: 'Estrela' },
-  { value: 'heart', label: 'Coração' },
-  { value: 'send', label: 'Enviar' },
-  { value: 'check', label: 'Confirmação' },
+  { value: '', label: 'Nenhum', Icon: null as any },
+  { value: 'whatsapp', label: 'WhatsApp', Icon: FaWhatsapp },
+  { value: 'telegram', label: 'Telegram', Icon: FaTelegram },
+  { value: 'instagram', label: 'Instagram', Icon: FaInstagram },
+  { value: 'facebook', label: 'Facebook', Icon: FaFacebook },
+  { value: 'youtube', label: 'YouTube', Icon: FaYoutube },
+  { value: 'tiktok', label: 'TikTok', Icon: FaTiktok },
+  { value: 'message', label: 'Mensagem', Icon: MessageSquare },
+  { value: 'download', label: 'Download', Icon: Download },
+  { value: 'link', label: 'Link', Icon: Link2 },
+  { value: 'external', label: 'Link externo', Icon: ExternalLink },
+  { value: 'mail', label: 'Email', Icon: Mail },
+  { value: 'phone', label: 'Telefone', Icon: Phone },
+  { value: 'gift', label: 'Presente', Icon: Gift },
+  { value: 'star', label: 'Estrela', Icon: Star },
+  { value: 'heart', label: 'Coração', Icon: Heart },
+  { value: 'send', label: 'Enviar', Icon: Send },
+  { value: 'check', label: 'Confirmação', Icon: CheckCircle2 },
 ];
 
 const slugify = (s: string) =>

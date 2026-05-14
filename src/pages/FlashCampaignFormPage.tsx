@@ -570,7 +570,14 @@ export default function FlashCampaignFormPage() {
                     }}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        {ICON_OPTIONS.map(o => <SelectItem key={o.value || 'none'} value={o.value || 'none'}>{o.label}</SelectItem>)}
+                        {ICON_OPTIONS.map(o => (
+                          <SelectItem key={o.value || 'none'} value={o.value || 'none'}>
+                            <span className="inline-flex items-center gap-2">
+                              {o.Icon ? <o.Icon className="w-4 h-4" /> : null}
+                              {o.label}
+                            </span>
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>

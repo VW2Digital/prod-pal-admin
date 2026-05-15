@@ -725,7 +725,7 @@ const OrdersPage = () => {
             className="pl-9 w-full sm:w-[250px]"
           />
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
           <Select value={filterPayment} onValueChange={setFilterPayment}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Pagamento" />
@@ -765,6 +765,48 @@ const OrdersPage = () => {
               ))}
             </SelectContent>
           </Select>
+          <Select value={filterCategory} onValueChange={setFilterCategory}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Categoria" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">Todas as categorias</SelectItem>
+              <SelectItem value="__NONE__">Sem categoria</SelectItem>
+              {allCategories.map(cat => (
+                <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <div className="flex items-center gap-2">
+            <Input
+              type="date"
+              value={dateFrom}
+              onChange={e => setDateFrom(e.target.value)}
+              className="w-full"
+              placeholder="De"
+              aria-label="Data inicial"
+            />
+            <span className="text-xs text-muted-foreground">até</span>
+            <Input
+              type="date"
+              value={dateTo}
+              onChange={e => setDateTo(e.target.value)}
+              className="w-full"
+              placeholder="Até"
+              aria-label="Data final"
+            />
+            {(dateFrom || dateTo) && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="shrink-0 h-9 w-9"
+                onClick={() => { setDateFrom(''); setDateTo(''); }}
+                aria-label="Limpar datas"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 

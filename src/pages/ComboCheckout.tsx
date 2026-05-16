@@ -452,11 +452,32 @@ export default function ComboCheckout() {
             {combo.pix_discount_percent > 0 && (
               <p className="text-sm text-muted-foreground">No PIX: <span className="font-semibold text-primary">{fmtBRL(pixPrice)}</span> ({combo.pix_discount_percent}% off)</p>
             )}
-            <div className="text-left bg-background/70 border rounded-lg p-3 mt-3 space-y-1">
+            <div className="text-left bg-background/70 border rounded-lg p-3 mt-3 space-y-2">
               <p className="text-xs font-semibold text-foreground">Inclui:</p>
-              {combo.items.map((i) => (
-                <p key={i.id} className="text-sm text-muted-foreground">• {i.quantity}x {i.product_name}{i.variation_dosage ? ` — ${i.variation_dosage}` : ''}</p>
-              ))}
+              <ul className="space-y-2">
+                {combo.items.map((i) => (
+                  <li key={i.id} className="flex items-center gap-3">
+                    <div className="relative w-14 h-14 shrink-0 rounded-md bg-muted border border-border/60 overflow-hidden">
+                      {i.image ? (
+                        <img src={i.image} alt={i.product_name} loading="lazy" className="w-full h-full object-contain p-1" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                          <Package className="w-5 h-5" />
+                        </div>
+                      )}
+                      {i.quantity > 1 && (
+                        <span className="absolute top-0.5 left-0.5 bg-background/90 text-foreground text-[10px] font-semibold px-1 rounded">
+                          {i.quantity}x
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-sm text-foreground leading-tight">
+                      <span className="font-medium">{i.product_name}</span>
+                      {i.variation_dosage ? <span className="text-muted-foreground"> — {i.variation_dosage}</span> : null}
+                    </p>
+                  </li>
+                ))}
+              </ul>
             </div>
             {combo.description && <p className="text-sm text-muted-foreground whitespace-pre-line text-left pt-2">{combo.description}</p>}
           </CardContent>

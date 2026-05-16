@@ -41,6 +41,8 @@ interface ComboData {
 const fmtBRL = (n: number) =>
   Number(n || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
+const round2 = (n: number) => Math.round((Number(n) || 0) * 100) / 100;
+
 export default function ComboCheckout() {
   const { slug } = useParams<{ slug: string }>();
   const { toast } = useToast();
@@ -409,9 +411,11 @@ export default function ComboCheckout() {
   }
 
   const selectedOpt = installmentOptions.find((o) => o.parcelas === installments);
-  const pixPrice = combo.price - combo.price * ((combo.pix_discount_percent || 0) / 100);
-  const savingsValue = Math.max(0, combo.compare_price - combo.price);
-  const savingsPercent = combo.compare_price > 0 ? Math.round((savingsValue / combo.compare_price) * 100) : 0;
+  const comboPrice = round2(combo.price);
+  const comparePrice = round2(combo.compare_price);
+  const pixPrice = round2(comboPrice - comboPrice * ((combo.pix_discount_percent || 0) / 100));
+  const savingsValue = round2(Math.max(0, comparePrice - comboPrice));
+  const savingsPercent = comparePrice > 0 ? Math.round((savingsValue / comparePrice) * 100) : 0;
 
   return (
     <div className="min-h-screen bg-background">

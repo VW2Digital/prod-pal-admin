@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,7 +28,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { Copy, Pencil, Plus, Trash2, Link2, BarChart3, X } from "lucide-react";
+import { Copy, Pencil, Plus, Trash2, Link2, BarChart3 } from "lucide-react";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { Badge } from "@/components/ui/badge";
 
@@ -69,6 +70,7 @@ const emptyForm = {
 };
 
 export default function ResellersPage() {
+  const navigate = useNavigate();
   const [items, setItems] = useState<Reseller[]>([]);
   const [stats, setStats] = useState<Record<string, Stat>>({});
   const [loading, setLoading] = useState(true);
@@ -76,9 +78,6 @@ export default function ResellersPage() {
   const [editing, setEditing] = useState<Reseller | null>(null);
   const [form, setForm] = useState({ ...emptyForm });
   const [saving, setSaving] = useState(false);
-  const [detail, setDetail] = useState<Reseller | null>(null);
-  const [detailOrders, setDetailOrders] = useState<any[]>([]);
-  const [detailEvents, setDetailEvents] = useState<any[]>([]);
   const [baseUrl, setBaseUrl] = useState("");
 
   useEffect(() => {
@@ -230,25 +229,8 @@ export default function ResellersPage() {
     toast.success("Link copiado");
   }
 
-  async function openDetail(r: Reseller) {
-    setDetail(r);
-    const { data } = await supabase
-      .from("orders")
-      .select("id,created_at,product_name,status,total_value,reseller_commission,customer_name")
-      .eq("reseller_id", r.id)
-      .order("created_at", { ascending: false })
-      .limit(50);
-    setDetailOrders(data || []);
-    const { data: ev } = await supabase
-      .from("reseller_events" as any)
-      .select("created_at,event_type,product_name,amount,session_id,metadata")
-      .eq("reseller_id", r.id)
-      .order("created_at", { ascending: false })
-      .limit(50);
-    setDetailEvents((ev as any[]) || []);
-    setTimeout(() => {
-      document.getElementById("reseller-detail")?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 50);
+  function openDetail(r: Reseller) {
+    navigate(`/admin/revendedores/${r.id}`);
   }
 
   const totals = useMemo(() => {
@@ -447,84 +429,6 @@ export default function ResellersPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      {detail && (
-        <Card id="reseller-detail">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0">
-            <CardTitle className="text-lg">{detail.name} — últimos pedidos</CardTitle>
-            <Button size="icon" variant="ghost" onClick={() => setDetail(null)} title="Fechar">
-              <X className="h-4 w-4" />
-            </Button>
-          </CardHeader>
-          <CardContent className="space-y-6 overflow-x-auto">
-            <div>
-              <h3 className="text-sm font-semibold mb-2">Eventos do funil (últimos 50)</h3>
-              {detailEvents.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Nenhum evento registrado ainda.</p>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Data</TableHead>
-                      <TableHead>Evento</TableHead>
-                      <TableHead>Cliente</TableHead>
-                      <TableHead>Produto</TableHead>
-                      <TableHead>Valor</TableHead>
-                      <TableHead>Sessão</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {detailEvents.map((e: any, idx: number) => (
-                      <TableRow key={idx}>
-                        <TableCell className="text-xs">{new Date(e.created_at).toLocaleString("pt-BR")}</TableCell>
-                        <TableCell><Badge variant="secondary">{e.event_type}</Badge></TableCell>
-                        <TableCell className="text-xs">
-                          {e.metadata?.customer_name || e.metadata?.email || "—"}
-                        </TableCell>
-                        <TableCell className="text-xs">{e.product_name || "—"}</TableCell>
-                        <TableCell className="text-xs">{e.amount ? `R$ ${Number(e.amount).toFixed(2)}` : "—"}</TableCell>
-                        <TableCell className="text-xs font-mono">{e.session_id ? String(e.session_id).slice(0, 8) : "—"}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </div>
-            {detailOrders.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Nenhum pedido vinculado ainda.</p>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Cliente</TableHead>
-                    <TableHead>Produto</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Total</TableHead>
-                    <TableHead>Comissão</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {detailOrders.map((o: any) => (
-                    <TableRow key={o.id}>
-                      <TableCell className="text-xs">{new Date(o.created_at).toLocaleString("pt-BR")}</TableCell>
-                      <TableCell>{o.customer_name}</TableCell>
-                      <TableCell>{o.product_name}</TableCell>
-                      <TableCell>
-                        <Badge variant={PAID.includes(String(o.status).toUpperCase()) ? "default" : "secondary"}>
-                          {o.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>R$ {Number(o.total_value || 0).toFixed(2)}</TableCell>
-                      <TableCell>R$ {Number(o.reseller_commission || 0).toFixed(2)}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }

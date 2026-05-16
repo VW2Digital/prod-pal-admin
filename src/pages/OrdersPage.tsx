@@ -159,7 +159,7 @@ const OrdersPage = () => {
   const [refreshingTracking, setRefreshingTracking] = useState<string | null>(null);
   const [retryingShipping, setRetryingShipping] = useState<string | null>(null);
   const [batchRefreshing, setBatchRefreshing] = useState(false);
-  const [filterPayment, setFilterPayment] = useState('ALL');
+  const [filterPayment, setFilterPayment] = useState<string[]>([]);
   const [filterDelivery, setFilterDelivery] = useState('ALL');
   const [filterCoupon, setFilterCoupon] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
@@ -605,7 +605,7 @@ const OrdersPage = () => {
   const uniqueCoupons = Array.from(new Set(orders.map(o => o.coupon_code).filter(Boolean))) as string[];
 
   const filteredOrders = orders.filter(order => {
-    if (filterPayment !== 'ALL' && order.status !== filterPayment) return false;
+    if (filterPayment.length > 0 && !filterPayment.includes(order.status)) return false;
     if (filterDelivery !== 'ALL' && (order.delivery_status || 'PROCESSING') !== filterDelivery) return false;
     if (filterCoupon === 'WITH_COUPON' && !order.coupon_code) return false;
     if (filterCoupon === 'WITHOUT_COUPON' && order.coupon_code) return false;

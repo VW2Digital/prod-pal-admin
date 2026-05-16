@@ -377,6 +377,24 @@ function ComboForm({ comboId }: { comboId: string }) {
     setItems((prev) => prev.filter((_, i) => i !== idx).map((it, i) => ({ ...it, sort_order: i })));
   };
 
+  const getItemUnitPrice = (it: ComboItemRow): number => {
+    const prod = products.find((p) => p.id === it.product_id);
+    if (!prod) return 0;
+    const variation = it.variation_id
+      ? prod.variations.find((v) => v.id === it.variation_id)
+      : prod.variations[0];
+    if (!variation) return 0;
+    return variation.is_offer && variation.offer_price > 0 ? variation.offer_price : variation.price;
+  };
+
+  const validItemsForSummary = items.filter((it) => it.product_id && it.quantity > 0);
+  const originalTotal = validItemsForSummary.reduce(
+    (sum, it) => sum + getItemUnitPrice(it) * it.quantity,
+    0,
+  );
+  const savingsValue = Math.max(0, originalTotal - (combo.price || 0));
+  const savingsPercent = originalTotal > 0 ? Math.round((savingsValue / originalTotal) * 100) : 0;
+
   const handleSave = async () => {
     if (!combo.name.trim()) { toast({ title: 'Informe o nome do combo', variant: 'destructive' }); return; }
     if (combo.price <= 0) { toast({ title: 'Informe o preço do combo', variant: 'destructive' }); return; }

@@ -909,7 +909,7 @@ function ComboForm({ comboId }: { comboId: string }) {
   const previewUrl = combo.slug ? `/combo/${combo.slug}` : '';
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-6 w-full">
       <div className="flex items-center justify-between gap-3">
         <Button variant="ghost" size="sm" onClick={() => navigate('/admin/combos')}>
           <ArrowLeft className="w-4 h-4 mr-1" /> Voltar

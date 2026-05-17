@@ -54,6 +54,7 @@ import {
   ChevronsUpDown,
   Check,
   Search,
+  Image as ImageIcon,
 } from 'lucide-react';
 
 interface Variation { id: string; dosage: string; in_stock: boolean; price: number; offer_price: number; is_offer: boolean; image_url?: string; images?: string[]; }

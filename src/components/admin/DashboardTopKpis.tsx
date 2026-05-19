@@ -65,11 +65,12 @@ export function DashboardTopKpis({
   totalCustomers,
   customersDelta,
 }: KpiProps) {
+  const { format } = useAdminCurrency();
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <KpiCard
         label="Receita Hoje"
-        value={formatBRL(revenueToday)}
+        value={format(revenueToday)}
         delta={revenueDelta}
         icon={DollarSign}
         tint=""

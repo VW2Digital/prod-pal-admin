@@ -18,6 +18,10 @@ interface BlogPost {
   author_name: string;
   published_at: string | null;
   created_at: string;
+  share_facebook_url?: string | null;
+  share_twitter_url?: string | null;
+  share_linkedin_url?: string | null;
+  share_whatsapp_url?: string | null;
 }
 
 export default function BlogPostPage() {
@@ -32,7 +36,7 @@ export default function BlogPostPage() {
     (async () => {
       const { data } = await supabase
         .from('blog_posts')
-        .select('id,title,excerpt,content,cover_image,author_name,published_at,created_at')
+        .select('id,title,excerpt,content,cover_image,author_name,published_at,created_at,share_facebook_url,share_twitter_url,share_linkedin_url,share_whatsapp_url')
         .eq('slug', slug)
         .eq('published', true)
         .maybeSingle();
@@ -63,13 +67,20 @@ export default function BlogPostPage() {
   const share = (network: 'facebook' | 'twitter' | 'linkedin' | 'whatsapp') => {
     const u = encodeURIComponent(shareUrl);
     const t = encodeURIComponent(shareText);
-    const map = {
+    const overrides: Record<typeof network, string | null | undefined> = {
+      facebook: post?.share_facebook_url,
+      twitter: post?.share_twitter_url,
+      linkedin: post?.share_linkedin_url,
+      whatsapp: post?.share_whatsapp_url,
+    };
+    const defaults = {
       facebook: `https://www.facebook.com/sharer/sharer.php?u=${u}`,
       twitter: `https://twitter.com/intent/tweet?url=${u}&text=${t}`,
       linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${u}`,
       whatsapp: `https://api.whatsapp.com/send?text=${t}%20${u}`,
     };
-    window.open(map[network], '_blank', 'noopener,noreferrer,width=600,height=520');
+    const target = (overrides[network] && overrides[network]!.trim()) || defaults[network];
+    window.open(target, '_blank', 'noopener,noreferrer,width=600,height=520');
   };
 
   const copyLink = async () => {

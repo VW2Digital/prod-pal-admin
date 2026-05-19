@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, Loader2, Upload, Eye, X } from 'lucide-react';
+import { ArrowLeft, Loader2, Upload, Eye, X, Facebook, Twitter, Linkedin, MessageCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import RichTextEditor from '@/components/RichTextEditor';
 
@@ -27,6 +27,7 @@ export default function BlogPostForm() {
   const [form, setForm] = useState({
     title: '', slug: '', excerpt: '', content: '', cover_image: '',
     author_name: '', published: false,
+    share_facebook_url: '', share_twitter_url: '', share_linkedin_url: '', share_whatsapp_url: '',
   });
 
   useEffect(() => {
@@ -46,6 +47,10 @@ export default function BlogPostForm() {
         title: data.title, slug: data.slug, excerpt: data.excerpt || '',
         content: data.content || '', cover_image: data.cover_image || '',
         author_name: data.author_name || '', published: !!data.published,
+        share_facebook_url: (data as any).share_facebook_url || '',
+        share_twitter_url: (data as any).share_twitter_url || '',
+        share_linkedin_url: (data as any).share_linkedin_url || '',
+        share_whatsapp_url: (data as any).share_whatsapp_url || '',
       });
       setLoading(false);
     })();
@@ -90,6 +95,10 @@ export default function BlogPostForm() {
       author_name: form.author_name,
       published: form.published,
       published_at: form.published ? (new Date()).toISOString() : null,
+      share_facebook_url: form.share_facebook_url.trim() || null,
+      share_twitter_url: form.share_twitter_url.trim() || null,
+      share_linkedin_url: form.share_linkedin_url.trim() || null,
+      share_whatsapp_url: form.share_whatsapp_url.trim() || null,
     };
 
     if (isEdit) {
@@ -215,6 +224,55 @@ export default function BlogPostForm() {
               onChange={(e) => update({ cover_image: e.target.value })}
               placeholder="ou cole a URL"
             />
+          </Card>
+
+          <Card className="p-5 space-y-4">
+            <div>
+              <Label>Links de compartilhamento</Label>
+              <p className="text-xs text-muted-foreground mt-1">
+                Opcional. Se preenchidos, substituem o link padrão de cada botão de partilha do post.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs flex items-center gap-2 text-muted-foreground">
+                <Facebook className="h-3.5 w-3.5" /> Facebook
+              </Label>
+              <Input
+                value={form.share_facebook_url}
+                onChange={(e) => update({ share_facebook_url: e.target.value })}
+                placeholder="https://facebook.com/..."
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs flex items-center gap-2 text-muted-foreground">
+                <Twitter className="h-3.5 w-3.5" /> Twitter / X
+              </Label>
+              <Input
+                value={form.share_twitter_url}
+                onChange={(e) => update({ share_twitter_url: e.target.value })}
+                placeholder="https://twitter.com/..."
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs flex items-center gap-2 text-muted-foreground">
+                <Linkedin className="h-3.5 w-3.5" /> LinkedIn
+              </Label>
+              <Input
+                value={form.share_linkedin_url}
+                onChange={(e) => update({ share_linkedin_url: e.target.value })}
+                placeholder="https://linkedin.com/..."
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs flex items-center gap-2 text-muted-foreground">
+                <MessageCircle className="h-3.5 w-3.5" /> WhatsApp
+              </Label>
+              <Input
+                value={form.share_whatsapp_url}
+                onChange={(e) => update({ share_whatsapp_url: e.target.value })}
+                placeholder="https://wa.me/..."
+              />
+            </div>
           </Card>
 
           <div className="flex gap-2">

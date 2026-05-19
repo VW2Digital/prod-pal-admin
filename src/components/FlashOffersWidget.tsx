@@ -3,6 +3,7 @@ import { useLocation, Link } from "react-router-dom";
 import { X, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchSetting } from "@/lib/api";
+import { usePublicCurrency } from "@/lib/publicCurrency";
 
 interface OfferItem {
   id: string;
@@ -42,6 +43,7 @@ function useCountdown(target: Date | null) {
 }
 
 const FlashOffersWidget = () => {
+  const { format: formatBRL } = usePublicCurrency();
   const location = useLocation();
   const [config, setConfig] = useState<WidgetConfig | null>(null);
   const [items, setItems] = useState<OfferItem[]>([]);

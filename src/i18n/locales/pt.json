@@ -317,6 +317,8 @@
   "statusRefunded": "Estornado",
   "statusInReview": "Em Análise",
   "statusDeclined": "Recusado",
+  "statusCancelled": "Cancelado",
+  "statusRefused": "Recusado",
   "deliveryProcessing": "Em Processamento",
   "deliveryProcessingShort": "Processando",
   "deliveryShipped": "Enviado",

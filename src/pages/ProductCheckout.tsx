@@ -870,7 +870,7 @@ const ProductCheckout = () => {
               )}
             </div>
             <p className="text-xs text-muted-foreground pt-2">
-              {product.description}
+              {translateValue(product.description)}
             </p>
             <p className="text-xs text-muted-foreground italic">
               {t('prescriptionNote')}

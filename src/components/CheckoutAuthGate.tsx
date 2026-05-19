@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Loader2, Eye, EyeOff, ShieldCheck, UserPlus, LogIn } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Props {
   onAuthenticated: () => void;
@@ -13,6 +14,7 @@ interface Props {
 
 const CheckoutAuthGate = ({ onAuthenticated }: Props) => {
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [tab, setTab] = useState<'login' | 'signup'>('signup');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -35,12 +37,12 @@ const CheckoutAuthGate = ({ onAuthenticated }: Props) => {
         password: loginPassword,
       });
       if (error) throw error;
-      toast({ title: 'Login realizado!', description: 'Continue sua compra.' });
+      toast({ title: t('loginSuccessful'), description: t('continueYourPurchase') });
       onAuthenticated();
     } catch (err: any) {
       toast({
-        title: 'Erro ao entrar',
-        description: err.message || 'Email ou senha incorretos.',
+        title: t('loginError'),
+        description: err.message || t('invalidEmailOrPassword'),
         variant: 'destructive',
       });
     } finally {
@@ -52,8 +54,8 @@ const CheckoutAuthGate = ({ onAuthenticated }: Props) => {
     e.preventDefault();
     if (password.length < 6) {
       toast({
-        title: 'Senha muito curta',
-        description: 'A senha deve ter pelo menos 6 caracteres.',
+        title: t('passwordTooShort'),
+        description: t('passwordMin6'),
         variant: 'destructive',
       });
       return;
@@ -72,15 +74,15 @@ const CheckoutAuthGate = ({ onAuthenticated }: Props) => {
 
       // If session is returned (auto-confirm enabled), proceed
       if (data.session) {
-        toast({ title: 'Conta criada!', description: 'Continue sua compra.' });
+        toast({ title: t('accountCreated'), description: t('continueYourPurchase') });
         onAuthenticated();
       } else {
         // Detect "email already in use": Supabase returns user with empty identities array
         const identities = (data.user as any)?.identities;
         if (data.user && Array.isArray(identities) && identities.length === 0) {
           toast({
-            title: 'Email já cadastrado',
-            description: 'Este email já possui uma conta. Faça login para continuar.',
+            title: t('emailAlreadyRegistered'),
+            description: t('emailAlreadyHasAccount'),
             variant: 'destructive',
           });
           setTab('login');
@@ -90,12 +92,12 @@ const CheckoutAuthGate = ({ onAuthenticated }: Props) => {
         // Try to sign in immediately (in case email confirmation is required but already trusted)
         const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
         if (!signInError) {
-          toast({ title: 'Conta criada!', description: 'Continue sua compra.' });
+          toast({ title: t('accountCreated'), description: t('continueYourPurchase') });
           onAuthenticated();
         } else {
           toast({
-            title: 'Confirme seu email',
-            description: 'Enviamos um link de confirmação para ' + email + '. Após confirmar, faça login para finalizar.',
+            title: t('confirmYourEmail'),
+            description: t('confirmationLinkSent', { email }),
           });
           setTab('login');
           setLoginEmail(email);
@@ -110,16 +112,16 @@ const CheckoutAuthGate = ({ onAuthenticated }: Props) => {
         msg.includes('duplicate');
       if (isDuplicate) {
         toast({
-          title: 'Email já cadastrado',
-          description: 'Este email já possui uma conta. Faça login para continuar.',
+          title: t('emailAlreadyRegistered'),
+          description: t('emailAlreadyHasAccount'),
           variant: 'destructive',
         });
         setTab('login');
         setLoginEmail(email);
       } else {
         toast({
-          title: 'Erro ao cadastrar',
-          description: err.message || 'Não foi possível criar a conta.',
+          title: t('signupError'),
+          description: err.message || t('couldNotCreateAccount'),
           variant: 'destructive',
         });
       }

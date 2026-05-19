@@ -163,7 +163,7 @@ export default function BlogPostPage() {
             {post.cover_image && (
               <img
                 src={post.cover_image}
-                alt={post.title}
+                alt={tTitle || post.title}
                 className="w-full aspect-[16/9] object-cover rounded-lg border border-border mb-10"
               />
             )}
@@ -171,8 +171,11 @@ export default function BlogPostPage() {
             {/* Conteúdo */}
             <div
               className="prose prose-neutral dark:prose-invert max-w-none prose-headings:text-foreground prose-p:text-foreground prose-a:text-primary prose-strong:text-foreground prose-li:text-foreground"
-              dangerouslySetInnerHTML={{ __html: post.content }}
+              dangerouslySetInnerHTML={{ __html: tContent || post.content }}
             />
+            {lang !== 'pt' && !tContent && post.content && (
+              <p className="text-xs text-muted-foreground mt-3 italic">{t('blog.loading')}</p>
+            )}
           </article>
         )}
       </main>

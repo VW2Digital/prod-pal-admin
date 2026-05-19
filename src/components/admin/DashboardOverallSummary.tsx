@@ -40,16 +40,15 @@ export function DashboardOverallSummary({
   range,
   onRangeChange,
 }: Props) {
-  const { format, currency, meta } = useAdminCurrency();
+  const { format, convert, currency, meta } = useAdminCurrency();
   const sym = meta[currency].symbol;
-  const shortCur = (v: number): string => {
-    if (v >= 1_000_000) return `${sym} ${(v / 1_000_000).toFixed(1)}M`;
-    if (v >= 1_000) return `${sym} ${(v / 1_000).toFixed(0)}k`;
+  const balanceConv = convert(balance);
+  const shortBRL = (v: number): string => {
+    const conv = convert(v);
+    if (conv >= 1_000_000) return `${sym} ${(conv / 1_000_000).toFixed(1)}M`;
+    if (conv >= 1_000) return `${sym} ${(conv / 1_000).toFixed(0)}k`;
     return format(v, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   };
-  // shortCur recebe valor JÁ convertido — então passamos balance via convert antes
-  const { convert } = useAdminCurrency();
-  const balanceConv = convert(balance);
   const rangeLabel: Record<typeof range, string> = {
     month: 'mês passado',
     quarter: 'trimestre passado',

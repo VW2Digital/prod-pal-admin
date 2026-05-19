@@ -52,9 +52,25 @@ const deliveryStatusMap: Record<string, { labelKey: string; variant: 'default' |
   IN_TRANSIT: { labelKey: 'deliveryInTransit', variant: 'secondary', color: 'text-blue-500' },
   DELIVERED: { labelKey: 'deliveryDelivered', variant: 'default', color: 'text-emerald-500' },
   RETURNED: { labelKey: 'deliveryReturned', variant: 'destructive', color: 'text-red-500' },
+  'Em Processamento': { labelKey: 'deliveryProcessing', variant: 'outline', color: 'text-amber-500' },
+  Processando: { labelKey: 'deliveryProcessingShort', variant: 'outline', color: 'text-amber-500' },
+  Enviado: { labelKey: 'deliveryShipped', variant: 'default', color: 'text-blue-500' },
+  'Em Trânsito': { labelKey: 'deliveryInTransit', variant: 'secondary', color: 'text-blue-500' },
+  Entregue: { labelKey: 'deliveryDelivered', variant: 'default', color: 'text-emerald-500' },
+  Devolvido: { labelKey: 'deliveryReturned', variant: 'destructive', color: 'text-red-500' },
 };
 
 const dateLocaleMap = { pt: 'pt-BR', es: 'es-ES', en: 'en-US' } as const;
+
+const deliveryStatusAliases: Record<string, DeliveryFilter> = {
+  'Em Processamento': 'PROCESSING',
+  Processando: 'PROCESSING',
+  Enviado: 'SHIPPED',
+  'Em Trânsito': 'IN_TRANSIT',
+  Entregue: 'DELIVERED',
+};
+
+const normalizeDeliveryStatus = (status?: string | null) => deliveryStatusAliases[status || ''] || status || 'PROCESSING';
 
 type StatusFilter = 'all' | 'PENDING' | 'RECEIVED' | 'CONFIRMED' | 'OVERDUE';
 type DeliveryFilter = 'all' | 'PROCESSING' | 'SHIPPED' | 'IN_TRANSIT' | 'DELIVERED';

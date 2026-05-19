@@ -14,14 +14,17 @@ import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translateValue } from '@/lib/translateValue';
 import { usePublicCurrency } from '@/lib/publicCurrency';
+import { useAITranslateBatch } from '@/hooks/useAITranslate';
 
 const APPLIED_COUPON_KEY = 'applied_coupon_code';
 
 const CartPage = () => {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { format: fmtPrice } = usePublicCurrency();
   const { items, loading, updateQuantity, updateQuantitiesBulk, removeFromCart, totalItems, totalPrice } = useCart();
+  const cartTexts = useMemo(() => items.flatMap((item) => [item.product_name || '', item.dosage || '']), [items]);
+  const translatedCartTexts = useAITranslateBatch(cartTexts, lang);
 
   // Bulk-edit mode: per-item draft quantities, kept in sync when items change
   const [bulkMode, setBulkMode] = useState(false);
@@ -260,20 +263,20 @@ const CartPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Items list */}
             <div className="lg:col-span-2 space-y-3">
-              {items.map((item) => (
+              {items.map((item, idx) => (
                 <Card key={item.variation_id} className="border-border/50 overflow-hidden">
                   <CardContent className="p-4">
                     {/* Top row: image + info */}
                     <div className="flex items-start gap-3">
                       <img
                         src={item.image_url || productHeroImg}
-                        alt={item.product_name}
+                        alt={translatedCartTexts[idx * 2] || item.product_name}
                         className="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-lg border border-border/50 bg-muted p-1 shrink-0"
                       />
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-foreground text-sm leading-tight">{translateValue(item.product_name)}</h3>
+                        <h3 className="font-bold text-foreground text-sm leading-tight">{translatedCartTexts[idx * 2] || translateValue(item.product_name)}</h3>
                         {item.dosage && !item.product_name.toLowerCase().includes(item.dosage.toLowerCase()) && (
-                          <p className="text-xs text-muted-foreground">{item.dosage}</p>
+                          <p className="text-xs text-muted-foreground">{translatedCartTexts[idx * 2 + 1] || item.dosage}</p>
                         )}
                         {item.is_offer && (
                           <p className="text-xs text-muted-foreground line-through">

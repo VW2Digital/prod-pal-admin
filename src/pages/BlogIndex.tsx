@@ -81,7 +81,7 @@ export default function BlogIndex() {
             {/* Sidebar */}
             <aside className="space-y-8 lg:sticky lg:top-24 self-start">
               <div>
-                <p className="text-xs font-semibold tracking-widest text-muted-foreground uppercase mb-3">Categorias</p>
+                <p className="text-xs font-semibold tracking-widest text-muted-foreground uppercase mb-3">{t('blog.categories')}</p>
                 <button
                   onClick={() => setActiveTopic(null)}
                   className={cn(
@@ -89,7 +89,7 @@ export default function BlogIndex() {
                     activeTopic === null ? 'bg-muted text-foreground' : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground',
                   )}
                 >
-                  <BookOpen className="h-4 w-4" /> Blog
+                  <BookOpen className="h-4 w-4" /> {t('blog.blogLabel')}
                 </button>
               </div>
 

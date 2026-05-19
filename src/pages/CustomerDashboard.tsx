@@ -1085,7 +1085,7 @@ const CustomerDashboard = () => {
                 <Card className="border-border/50">
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
-                      <Star className="w-5 h-5" /> Minhas Avaliações
+                      <Star className="w-5 h-5" /> {t('myReviews')}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -1093,7 +1093,7 @@ const CustomerDashboard = () => {
                     {orders.filter(o => ['PAID', 'RECEIVED', 'CONFIRMED', 'RECEIVED_IN_CASH'].includes(o.status)).length === 0 ? (
                       <div className="text-center py-8 space-y-2">
                         <Star className="w-10 h-10 text-muted-foreground/40 mx-auto" />
-                        <p className="text-sm text-muted-foreground">Você ainda não possui pedidos pagos para avaliar.</p>
+                        <p className="text-sm text-muted-foreground">{t('noPaidOrdersToReview')}</p>
                       </div>
                     ) : (
                       <div className="space-y-3">
@@ -1110,7 +1110,7 @@ const CustomerDashboard = () => {
                                     <p className="font-semibold text-sm text-foreground">{translateValue(order.product_name)}</p>
                                     <p className="text-xs text-muted-foreground">
                                       {order.dosage && `${translateValue(order.dosage)} · `}
-                                      Pedido #{order.id.slice(0, 8).toUpperCase()} · {new Date(order.created_at).toLocaleDateString('pt-BR')}
+                                      {t('order')} #{order.id.slice(0, 8).toUpperCase()} · {new Date(order.created_at).toLocaleDateString(dateLocaleMap[lang])}
                                     </p>
                                   </div>
                                   {existingReview ? (
@@ -1129,7 +1129,7 @@ const CustomerDashboard = () => {
                                         setReviewComment('');
                                       }}
                                     >
-                                      <Star className="w-4 h-4 mr-1" /> Avaliar
+                                      <Star className="w-4 h-4 mr-1" /> {t('review')}
                                     </Button>
                                   )}
                                 </div>
@@ -1141,7 +1141,7 @@ const CustomerDashboard = () => {
                                 {isReviewing && !existingReview && (
                                   <div className="space-y-3 pt-2 border-t border-border/50 animate-in fade-in slide-in-from-top-2 duration-200">
                                     <div className="space-y-1">
-                                      <Label className="text-xs">Nota</Label>
+                                      <Label className="text-xs">{t('rating')}</Label>
                                       <div className="flex gap-1">
                                         {[1, 2, 3, 4, 5].map(s => (
                                           <button
@@ -1156,11 +1156,11 @@ const CustomerDashboard = () => {
                                       </div>
                                     </div>
                                     <div className="space-y-1">
-                                      <Label className="text-xs">Comentário (opcional)</Label>
+                                      <Label className="text-xs">{t('optionalComment')}</Label>
                                       <Textarea
                                         value={reviewComment}
                                         onChange={(e) => setReviewComment(e.target.value)}
-                                        placeholder="Conte sua experiência com o produto..."
+                                        placeholder={t('tellProductExperience')}
                                         rows={3}
                                         maxLength={500}
                                       />
@@ -1172,10 +1172,10 @@ const CustomerDashboard = () => {
                                         disabled={reviewSaving}
                                       >
                                         {reviewSaving ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <CheckCircle2 className="w-4 h-4 mr-1" />}
-                                        Enviar Avaliação
+                                        {t('sendReview')}
                                       </Button>
                                       <Button size="sm" variant="ghost" onClick={() => setReviewingOrderId(null)}>
-                                        Cancelar
+                                        {t('cancel')}
                                       </Button>
                                     </div>
                                   </div>
@@ -1209,10 +1209,10 @@ const CustomerDashboard = () => {
       <Dialog open={!!pixModal} onOpenChange={(open) => !open && setPixModal(null)}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-center">Pagar via PIX</DialogTitle>
+            <DialogTitle className="text-center">{t('payViaPix')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 text-center">
-            <p className="text-sm text-muted-foreground">Escaneie o QR Code ou copie o código abaixo</p>
+            <p className="text-sm text-muted-foreground">{t('scanQR')}</p>
             {pixModal?.qrCode && (
               <img src={`data:image/png;base64,${pixModal.qrCode}`} alt="QR Code PIX" className="w-48 h-48 mx-auto rounded-lg border border-border" />
             )}
@@ -1225,9 +1225,9 @@ const CustomerDashboard = () => {
               </div>
             )}
             <p className="text-sm font-semibold text-foreground">
-              Valor: R$ {pixModal?.value?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              {t('value')}: R$ {pixModal?.value?.toLocaleString(dateLocaleMap[lang], { minimumFractionDigits: 2 })}
             </p>
-            <p className="text-xs text-muted-foreground">Após o pagamento, o status será atualizado automaticamente.</p>
+            <p className="text-xs text-muted-foreground">{t('paymentStatusWillUpdateAutomatically')}</p>
           </div>
         </DialogContent>
       </Dialog>

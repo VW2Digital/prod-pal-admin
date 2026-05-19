@@ -613,7 +613,7 @@ const CustomerDashboard = () => {
                   <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
-                      placeholder="Buscar por produto, pedido ou rastreio..."
+                      placeholder={t('searchOrderPlaceholder')}
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-9"
@@ -625,29 +625,29 @@ const CustomerDashboard = () => {
                       onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
                       className="h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                     >
-                      <option value="all">Pagamento: Todos</option>
-                      <option value="PENDING">Pendente</option>
-                      <option value="RECEIVED">Pago</option>
-                      <option value="CONFIRMED">Confirmado</option>
-                      <option value="OVERDUE">Vencido</option>
+                      <option value="all">{t('paymentAll')}</option>
+                      <option value="PENDING">{t('pending')}</option>
+                      <option value="RECEIVED">{t('statusPaid')}</option>
+                      <option value="CONFIRMED">{t('confirmed')}</option>
+                      <option value="OVERDUE">{t('statusOverdue')}</option>
                     </select>
                     <select
                       value={deliveryFilter}
                       onChange={(e) => setDeliveryFilter(e.target.value as DeliveryFilter)}
                       className="h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                     >
-                      <option value="all">Entrega: Todos</option>
-                      <option value="PROCESSING">Processando</option>
-                      <option value="SHIPPED">Enviado</option>
-                      <option value="IN_TRANSIT">Em Trânsito</option>
-                      <option value="DELIVERED">Entregue</option>
+                      <option value="all">{t('deliveryAll')}</option>
+                      <option value="PROCESSING">{t('deliveryProcessingShort')}</option>
+                      <option value="SHIPPED">{t('deliveryShipped')}</option>
+                      <option value="IN_TRANSIT">{t('deliveryInTransit')}</option>
+                      <option value="DELIVERED">{t('deliveryDelivered')}</option>
                     </select>
                   </div>
                 </div>
 
                 {/* Order Count */}
                 <p className="text-sm text-muted-foreground">
-                  {filteredOrders.length} {filteredOrders.length === 1 ? 'pedido encontrado' : 'pedidos encontrados'}
+                  {t(filteredOrders.length === 1 ? 'orderFound' : 'ordersFound', { count: filteredOrders.length })}
                 </p>
 
                 {/* Orders List */}
@@ -655,16 +655,16 @@ const CustomerDashboard = () => {
                   <Card className="border-border/50">
                     <CardContent className="py-12 text-center space-y-3">
                       <Package className="w-12 h-12 text-muted-foreground/40 mx-auto" />
-                      <h3 className="text-base font-semibold text-foreground">Nenhum pedido encontrado</h3>
+                      <h3 className="text-base font-semibold text-foreground">{t('noOrdersFound')}</h3>
                       <p className="text-sm text-muted-foreground max-w-sm mx-auto">
                         {orders.length === 0
-                          ? 'Seus pedidos aparecerão aqui após a primeira compra.'
-                          : 'Tente ajustar os filtros de busca.'
+                          ? t('ordersAppearAfterFirstPurchase')
+                          : t('tryAdjustingSearchFilters')
                         }
                       </p>
                       {orders.length === 0 && (
                         <Link to="/catalogo">
-                          <Button className="mt-2">Ver Catálogo</Button>
+                          <Button className="mt-2">{t('viewCatalog')}</Button>
                         </Link>
                       )}
                     </CardContent>

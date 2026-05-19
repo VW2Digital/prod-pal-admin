@@ -306,12 +306,12 @@ const CustomerDashboard = () => {
           allow_whatsapp_marketing: newWa,
         }, { onConflict: 'user_id' });
       if (error) throw error;
-      toast({ title: 'Preferências atualizadas' });
+      toast({ title: t('preferencesUpdated') });
     } catch (err: any) {
       // Revert on failure
       setAllowEmailMkt(prevEmail);
       setAllowWhatsAppMkt(prevWa);
-      toast({ title: 'Erro ao salvar preferências', description: err.message, variant: 'destructive' });
+      toast({ title: t('preferencesSaveError'), description: err.message, variant: 'destructive' });
     } finally {
       setPrefsSaving(false);
     }
@@ -324,7 +324,7 @@ const CustomerDashboard = () => {
 
   const copyTracking = (code: string) => {
     navigator.clipboard.writeText(code);
-    toast({ title: 'Código copiado!' });
+    toast({ title: t('codeCopied') });
   };
 
   const refreshOrders = () => {
@@ -357,13 +357,13 @@ const CustomerDashboard = () => {
         comment: reviewComment.trim(),
       }, { onConflict: 'user_id,order_id' });
       if (error) throw error;
-      toast({ title: 'Avaliação enviada com sucesso!' });
+      toast({ title: t('reviewSentSuccess') });
       setReviewingOrderId(null);
       setReviewRating(5);
       setReviewComment('');
       fetchReviews(user.id);
     } catch (err: any) {
-      toast({ title: 'Erro ao enviar avaliação', description: err.message, variant: 'destructive' });
+      toast({ title: t('reviewSendError'), description: err.message, variant: 'destructive' });
     } finally {
       setReviewSaving(false);
     }

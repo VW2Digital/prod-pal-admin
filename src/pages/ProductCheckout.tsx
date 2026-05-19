@@ -356,11 +356,11 @@ const ProductCheckout = () => {
   ];
 
   const details = [
-    { label: detailLabels.product_label_active_ingredient?.trim() || t('activeIngredientLabel'), value: product.active_ingredient },
-    { label: detailLabels.product_label_dosage?.trim() || t('dosageLabel'), value: variation?.dosage },
-    { label: detailLabels.product_label_pharma_form?.trim() || t('pharmaForm'), value: product.pharma_form },
-    { label: detailLabels.product_label_admin_route?.trim() || t('adminRoute'), value: product.administration_route },
-    { label: detailLabels.product_label_frequency?.trim() || t('frequency'), value: product.frequency },
+    { label: detailLabels.product_label_active_ingredient?.trim() || t('activeIngredientLabel'), value: translateValue(product.active_ingredient) },
+    { label: detailLabels.product_label_dosage?.trim() || t('dosageLabel'), value: translateValue(variation?.dosage) },
+    { label: detailLabels.product_label_pharma_form?.trim() || t('pharmaForm'), value: translateValue(product.pharma_form) },
+    { label: detailLabels.product_label_admin_route?.trim() || t('adminRoute'), value: translateValue(product.administration_route) },
+    { label: detailLabels.product_label_frequency?.trim() || t('frequency'), value: translateValue(product.frequency) },
   ];
 
   const isDigital = !!variation?.is_digital;

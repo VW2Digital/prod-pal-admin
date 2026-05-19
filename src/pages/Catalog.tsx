@@ -381,6 +381,8 @@ const Catalog = () => {
                 && !cleanName.toLowerCase().includes(variation.dosage.toLowerCase())
                 ? `${cleanName} ${variation.dosage}`
                 : cleanName;
+              const translatedDisplayName = translatedCatalogTexts[idx * 2] || translateValue(displayName);
+              const translatedSubtitle = translatedCatalogTexts[idx * 2 + 1] || translateValue(variation?.subtitle || product.subtitle);
 
               const pixPercentSetting = Number((product as any).pix_discount_percent) || 0;
               const maxInstallmentsSetting = Number((product as any).max_installments) || 6;
@@ -420,7 +422,7 @@ const Catalog = () => {
                       <div className={`relative aspect-[1080/1450] bg-white overflow-hidden ${ab.variant === 'B' ? 'border-b border-border/40' : ''}`}>
                         <ProductCardImageCarousel
                           images={imageList}
-                          alt={displayName}
+                          alt={translatedDisplayName}
                           imageInset="8%"
                           imgClassName="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
                         />
@@ -489,12 +491,12 @@ const Catalog = () => {
                       {/* Content */}
                       <div className="p-3 pt-1.5 space-y-1 flex-1 flex flex-col">
                         <h3 className="font-bold text-foreground text-xs sm:text-sm leading-tight line-clamp-2 group-hover:text-primary transition-colors">
-                          {translateValue(displayName)}
+                          {translatedDisplayName}
                         </h3>
 
                         {(variation?.subtitle || product.subtitle) && (
                           <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2">
-                            {translateValue(variation?.subtitle || product.subtitle)}
+                            {translatedSubtitle}
                           </p>
                         )}
 

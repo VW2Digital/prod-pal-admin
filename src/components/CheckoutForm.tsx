@@ -88,13 +88,14 @@ const ErrorText = ({ msg }: { msg?: string }) =>
   ) : null;
 
 const STEPS = [
-  { key: 'customer', label: 'Dados', icon: User },
-  { key: 'address', label: 'Endereço', icon: MapPin },
-  { key: 'shipping', label: 'Frete', icon: Truck },
-  { key: 'payment', label: 'Pagamento', icon: CreditCard },
+  { key: 'customer', labelKey: 'stepCustomer', icon: User },
+  { key: 'address', labelKey: 'stepAddress', icon: MapPin },
+  { key: 'shipping', labelKey: 'stepShipping', icon: Truck },
+  { key: 'payment', labelKey: 'stepPayment', icon: CreditCard },
 ] as const;
 
 const StepIndicator = ({ currentStep }: { currentStep: CheckoutStep }) => {
+  const { t } = useLanguage();
   const currentIndex = STEPS.findIndex(s => s.key === currentStep);
 
   return (
@@ -123,7 +124,7 @@ const StepIndicator = ({ currentStep }: { currentStep: CheckoutStep }) => {
                   isCompleted || isCurrent ? 'text-foreground' : 'text-muted-foreground/50'
                 }`}
               >
-                {s.label}
+                {t(s.labelKey)}
               </span>
             </div>
             {i < STEPS.length - 1 && (

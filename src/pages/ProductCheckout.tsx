@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { gtagViewItem } from '@/lib/gtag';
 import { fbViewContent } from '@/lib/fbPixel';
 import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom';
@@ -18,6 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 import JsonLd from '@/components/seo/JsonLd';
 import ProductRecommendations from '@/components/ProductRecommendations';
 import usePublicBaseUrl from '@/hooks/usePublicBaseUrl';
+import { useAITranslateBatch } from '@/hooks/useAITranslate';
 import productHeroImg from '@/assets/product-hero.png';
 import testimonial1 from '@/assets/testimonial-1.jpg';
 import testimonial2 from '@/assets/testimonial-2.jpg';
@@ -118,6 +119,11 @@ const VideoTestimonialCard = ({ thumbnail, name, videoUrl }: {thumbnail: string;
 };
 
 const ProductCheckout = () => {
+  const productTexts = useMemo(
+    () => product ? [product.name || '', product.subtitle || '', ...(variations || []).map((v: any) => v.dosage || ''), ...(banners || []).map((b: any) => b.text || '')] : [],
+    [product, variations, banners],
+  );
+  const translatedProductTexts = useAITranslateBatch(productTexts, lang);
   const { id } = useParams<{id: string;}>();
   const navigate = useNavigate();
   const { t, lang } = useLanguage();

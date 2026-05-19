@@ -396,7 +396,7 @@ const CartPage = () => {
             <div>
               <Card className="border-border/50 sticky top-20">
                 <CardContent className="p-5 space-y-4">
-                  <h3 className="font-bold text-foreground">Resumo do Pedido</h3>
+                  <h3 className="font-bold text-foreground">{t('orderSummary')}</h3>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">{previewItems} {previewItems === 1 ? 'item' : 'itens'}</span>

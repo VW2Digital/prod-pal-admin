@@ -778,7 +778,7 @@ const ProductCheckout = () => {
                 <div className="space-y-1.5">
                   {shippingOptions.map((opt) => (
                     <div key={opt.id} className="flex justify-between items-center text-xs">
-                      <span className="text-foreground">{opt.company} — {opt.name} {opt.delivery_time ? `(${t('daysShort', { n: opt.delivery_time })})` : ''}</span>
+                      <span className="text-foreground">{opt.company} — {opt.name} {opt.delivery_time ? `(${t('daysShort', { count: opt.delivery_time })})` : ''}</span>
                       {qualifiesForFreeShipping ? (
                         <div className="flex items-center gap-1.5">
                           <span className="text-muted-foreground line-through">R$ {opt.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>

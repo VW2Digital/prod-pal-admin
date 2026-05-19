@@ -162,7 +162,7 @@
   "calculate": "Calcular",
   "shippingForCep": "Envío para {{cep}}",
   "free": "Gratis",
-  "daysShort": "{{n}} días",
+  "daysShort": "{{count}} días",
   "addToCart": "Añadir al Carrito",
   "customerReviews": "Opiniones de Clientes",
   "ratingSummary_one": "({{avg}}) · {{count}} opinión",
@@ -177,5 +177,7 @@
   "bulletinIndicationText": "Este medicamento está indicado para el tratamiento de la diabetes mellitus tipo 2 en adultos como complemento a la dieta y al ejercicio para mejorar el control glucémico.",
   "bulletinDosageText": "La dosis inicial recomendada es de 2,5 mg una vez por semana. Después de 4 semanas, la dosis debe aumentarse a 5 mg una vez por semana.",
   "bulletinContraText": "Hipersensibilidad al principio activo o a cualquier componente de la formulación. Antecedentes personales o familiares de carcinoma medular de tiroides.",
-  "bulletinPrecautionsText": "No utilizar en pacientes con diabetes tipo 1. Monitorear signos de pancreatitis. Puede causar hipoglucemia cuando se usa con insulina o secretagogos de insulina."
+  "bulletinPrecautionsText": "No utilizar en pacientes con diabetes tipo 1. Monitorear signos de pancreatitis. Puede causar hipoglucemia cuando se usa con insulina o secretagogos de insulina.",
+  "daysShort_one": "{{count}} día",
+  "daysShort_other": "{{count}} días"
 }

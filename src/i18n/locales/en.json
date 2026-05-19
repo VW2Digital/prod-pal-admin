@@ -162,7 +162,7 @@
   "calculate": "Calculate",
   "shippingForCep": "Shipping for ZIP {{cep}}",
   "free": "Free",
-  "daysShort": "{{n}} days",
+  "daysShort": "{{count}} days",
   "addToCart": "Add to Cart",
   "customerReviews": "Customer Reviews",
   "ratingSummary_one": "({{avg}}) · {{count}} review",
@@ -177,5 +177,7 @@
   "bulletinIndicationText": "This medication is indicated for the treatment of type 2 diabetes mellitus in adults as an adjunct to diet and exercise to improve glycemic control.",
   "bulletinDosageText": "The recommended starting dose is 2.5 mg once a week. After 4 weeks, the dose should be increased to 5 mg once a week.",
   "bulletinContraText": "Hypersensitivity to the active ingredient or to any component of the formulation. Personal or family history of medullary thyroid carcinoma.",
-  "bulletinPrecautionsText": "Do not use in patients with type 1 diabetes. Monitor for signs of pancreatitis. May cause hypoglycemia when combined with insulin or insulin secretagogues."
+  "bulletinPrecautionsText": "Do not use in patients with type 1 diabetes. Monitor for signs of pancreatitis. May cause hypoglycemia when combined with insulin or insulin secretagogues.",
+  "daysShort_one": "{{count}} day",
+  "daysShort_other": "{{count}} days"
 }

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { gtagViewItem } from '@/lib/gtag';
 import { fbViewContent } from '@/lib/fbPixel';
 import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom';
@@ -18,6 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 import JsonLd from '@/components/seo/JsonLd';
 import ProductRecommendations from '@/components/ProductRecommendations';
 import usePublicBaseUrl from '@/hooks/usePublicBaseUrl';
+import { useAITranslateBatch } from '@/hooks/useAITranslate';
 import productHeroImg from '@/assets/product-hero.png';
 import testimonial1 from '@/assets/testimonial-1.jpg';
 import testimonial2 from '@/assets/testimonial-2.jpg';
@@ -150,6 +151,22 @@ const ProductCheckout = () => {
   const installmentReqIdRef = useRef(0);
   const shippingReqIdRef = useRef(0);
   const [currentUserId, setCurrentUserId] = useState<string>('anon');
+  const productVariations = product?.product_variations || [];
+  const productTexts = useMemo(() => {
+    if (!product) return [];
+    return [
+      product.name || '',
+      product.subtitle || '',
+      product.active_ingredient || '',
+      product.pharma_form || '',
+      product.administration_route || '',
+      product.frequency || '',
+      ...productVariations.map((v: any) => v.dosage || ''),
+      ...productVariations.map((v: any) => v.subtitle || ''),
+      ...banners.map((b: any) => b.text || ''),
+    ];
+  }, [product, productVariations, banners]);
+  const translatedProductTexts = useAITranslateBatch(productTexts, lang);
   useEffect(() => {
     let active = true;
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -340,6 +357,16 @@ const ProductCheckout = () => {
 
   const variations = product.product_variations || [];
   const variation = variations[selectedVariation];
+  const translatedProductName = translatedProductTexts[0] || product.name;
+  const translatedProductSubtitle = translatedProductTexts[1] || product.subtitle;
+  const activeIngredientOffset = 2;
+  const pharmaFormOffset = 3;
+  const adminRouteOffset = 4;
+  const frequencyOffset = 5;
+  const dosageOffset = 6;
+  const variationSubtitleOffset = dosageOffset + variations.length;
+  const bannerOffset = variationSubtitleOffset + variations.length;
+  const translatedVariationSubtitle = translatedProductTexts[variationSubtitleOffset + selectedVariation] || variation?.subtitle || translatedProductSubtitle;
   const variationImages = variation?.images?.length > 0 ? variation.images : variation?.image_url ? [variation.image_url] : [];
   const images = variationImages.length > 0 ? variationImages : [productHeroImg];
 
@@ -357,11 +384,11 @@ const ProductCheckout = () => {
   ];
 
   const details = [
-    { label: detailLabels.product_label_active_ingredient?.trim() || t('activeIngredientLabel'), value: translateValue(product.active_ingredient) },
-    { label: detailLabels.product_label_dosage?.trim() || t('dosageLabel'), value: translateValue(variation?.dosage) },
-    { label: detailLabels.product_label_pharma_form?.trim() || t('pharmaForm'), value: translateValue(product.pharma_form) },
-    { label: detailLabels.product_label_admin_route?.trim() || t('adminRoute'), value: translateValue(product.administration_route) },
-    { label: detailLabels.product_label_frequency?.trim() || t('frequency'), value: translateValue(product.frequency) },
+    { label: detailLabels.product_label_active_ingredient?.trim() || t('activeIngredientLabel'), value: translatedProductTexts[activeIngredientOffset] || translateValue(product.active_ingredient) },
+    { label: detailLabels.product_label_dosage?.trim() || t('dosageLabel'), value: translatedProductTexts[dosageOffset + selectedVariation] || translateValue(variation?.dosage) },
+    { label: detailLabels.product_label_pharma_form?.trim() || t('pharmaForm'), value: translatedProductTexts[pharmaFormOffset] || translateValue(product.pharma_form) },
+    { label: detailLabels.product_label_admin_route?.trim() || t('adminRoute'), value: translatedProductTexts[adminRouteOffset] || translateValue(product.administration_route) },
+    { label: detailLabels.product_label_frequency?.trim() || t('frequency'), value: translatedProductTexts[frequencyOffset] || translateValue(product.frequency) },
   ];
 
   const isDigital = !!variation?.is_digital;
@@ -382,7 +409,7 @@ const ProductCheckout = () => {
   const productJsonLd: Record<string, any> = {
     '@context': 'https://schema.org/',
     '@type': 'Product',
-    name: variation?.dosage ? `${product.name} ${variation.dosage}` : product.name,
+    name: variation?.dosage ? `${translatedProductName} ${translatedProductTexts[dosageOffset + selectedVariation] || variation.dosage}` : translatedProductName,
     description: (product.description || '').replace(/<[^>]+>/g, '').slice(0, 5000),
     image: absoluteImages.length > 0 ? absoluteImages : undefined,
     sku: variation?.id || product.id,
@@ -423,7 +450,7 @@ const ProductCheckout = () => {
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: t('homeLabel'), item: baseUrl || '/' },
       { '@type': 'ListItem', position: 2, name: t('catalog'), item: `${baseUrl}/catalogo` },
-      { '@type': 'ListItem', position: 3, name: product.name, item: canonicalUrl },
+      { '@type': 'ListItem', position: 3, name: translatedProductName, item: canonicalUrl },
     ],
   };
 
@@ -435,11 +462,11 @@ const ProductCheckout = () => {
       {banners.length > 0 &&
       <div className="bg-black text-white overflow-hidden">
           <div className="animate-marquee whitespace-nowrap py-2 text-xs font-medium tracking-wide">
-            {banners.map((b) =>
-          <span key={b.id} className="mx-8">{b.text}</span>
+            {banners.map((b, idx) =>
+          <span key={b.id} className="mx-8">{translatedProductTexts[bannerOffset + idx] || b.text}</span>
           )}
-            {banners.map((b) =>
-          <span key={`dup-${b.id}`} className="mx-8">{b.text}</span>
+            {banners.map((b, idx) =>
+          <span key={`dup-${b.id}`} className="mx-8">{translatedProductTexts[bannerOffset + idx] || b.text}</span>
           )}
           </div>
         </div>
@@ -455,7 +482,7 @@ const ProductCheckout = () => {
             <div className="relative bg-card rounded-xl border border-border/50 overflow-hidden aspect-square flex items-center justify-center">
               <img
                 src={images[currentImage]}
-                alt={product.name}
+                alt={translatedProductName}
                 className="max-w-[80%] max-h-[80%] object-contain" />
               
               {images.length > 1 &&
@@ -496,7 +523,7 @@ const ProductCheckout = () => {
           {/* Product Info */}
           <AnimatedSection variant="fadeUp" delay={0.2} className="space-y-6">
             <div>
-              <h1 className="text-3xl font-bold text-foreground">{product.name}</h1>
+              <h1 className="text-3xl font-bold text-foreground">{translatedProductName}</h1>
             </div>
 
             {/* Dosage Selector */}
@@ -523,9 +550,9 @@ const ProductCheckout = () => {
                   <CheckCircle2 className="absolute top-2 right-2 w-5 h-5 text-primary" />
                   }
                       {v.image_url && (
-                        <img src={v.image_url} alt={translateValue(v.dosage)} className="w-12 h-12 object-contain mb-1 rounded" />
+                        <img src={v.image_url} alt={translatedProductTexts[dosageOffset + i] || translateValue(v.dosage)} className="w-12 h-12 object-contain mb-1 rounded" />
                       )}
-                      <p className="font-semibold text-foreground">{translateValue(v.dosage)}</p>
+                      <p className="font-semibold text-foreground">{translatedProductTexts[dosageOffset + i] || translateValue(v.dosage)}</p>
                       {v.is_offer && v.offer_price ? (
                         <>
                           <p className="text-muted-foreground text-xs line-through">R$ {Number(v.price).toLocaleString('pt-BR')}</p>
@@ -542,7 +569,7 @@ const ProductCheckout = () => {
 
             {(variation?.subtitle || product.subtitle) && (
               <div className="bg-muted/50 rounded-lg px-4 py-3 border border-border/30">
-                <p className="text-sm text-muted-foreground">{translateValue(variation?.subtitle || product.subtitle)}</p>
+                <p className="text-sm text-muted-foreground">{translatedVariationSubtitle || translateValue(variation?.subtitle || product.subtitle)}</p>
               </div>
             )}
 

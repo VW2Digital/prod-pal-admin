@@ -47,9 +47,6 @@ const Catalog = () => {
   const [searchParams] = useSearchParams();
   const { t, lang } = useLanguage();
   const variantCfg = abConfig[ab.variant] || DEFAULT_AB_CONFIG[ab.variant];
-  const ctaText = variantCfg.ctaText?.trim().toLowerCase() === 'adicionar ao carrinho'
-    ? t('addToCart')
-    : translateValue(variantCfg.ctaText);
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [wholesaleMap, setWholesaleMap] = useState<Record<string, WholesaleTier[]>>({});
@@ -161,6 +158,8 @@ const Catalog = () => {
     () => [...new Set(products.map((p) => p.administration_route).filter(Boolean))],
     [products]
   );
+  const translatedPharmaForms = useAITranslateBatch(pharmaForms, lang);
+  const translatedAdminRoutes = useAITranslateBatch(adminRoutes, lang);
 
   const filtered = useMemo(() => {
     let result = [...products];
@@ -206,6 +205,28 @@ const Catalog = () => {
     return items;
   }, [filtered, sortBy]);
 
+  const catalogTextsToTranslate = useMemo(() => {
+    const arr: string[] = [];
+    flatItems.forEach(({ product, variation }) => {
+      const cleanName = variation?.is_digital
+        ? product.name.replace(/\s+digital\s*$/i, '').trim()
+        : product.name;
+      const displayName = variation?.dosage
+        && !variation?.is_digital
+        && !cleanName.toLowerCase().includes(variation.dosage.toLowerCase())
+        ? `${cleanName} ${variation.dosage}`
+        : cleanName;
+      arr.push(displayName || '');
+      arr.push(variation?.subtitle || product.subtitle || '');
+    });
+    return arr;
+  }, [flatItems]);
+  const translatedCatalogTexts = useAITranslateBatch(catalogTextsToTranslate, lang);
+  const translatedCtaTextBatch = useAITranslateBatch([variantCfg.ctaText || ''], lang);
+  const ctaText = variantCfg.ctaText?.trim().toLowerCase() === 'adicionar ao carrinho'
+    ? t('addToCart')
+    : translatedCtaTextBatch[0] || translateValue(variantCfg.ctaText);
+
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       <Header />
@@ -245,8 +266,8 @@ const Catalog = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">{t('allForms')}</SelectItem>
-                  {pharmaForms.map((f) => (
-                    <SelectItem key={f} value={f}>{f}</SelectItem>
+                  {pharmaForms.map((f, idx) => (
+                    <SelectItem key={f} value={f}>{translatedPharmaForms[idx] || f}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -257,8 +278,8 @@ const Catalog = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">{t('allRoutes')}</SelectItem>
-                  {adminRoutes.map((r) => (
-                    <SelectItem key={r} value={r}>{r}</SelectItem>
+                  {adminRoutes.map((r, idx) => (
+                    <SelectItem key={r} value={r}>{translatedAdminRoutes[idx] || r}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -360,6 +381,8 @@ const Catalog = () => {
                 && !cleanName.toLowerCase().includes(variation.dosage.toLowerCase())
                 ? `${cleanName} ${variation.dosage}`
                 : cleanName;
+              const translatedDisplayName = translatedCatalogTexts[idx * 2] || translateValue(displayName);
+              const translatedSubtitle = translatedCatalogTexts[idx * 2 + 1] || translateValue(variation?.subtitle || product.subtitle);
 
               const pixPercentSetting = Number((product as any).pix_discount_percent) || 0;
               const maxInstallmentsSetting = Number((product as any).max_installments) || 6;
@@ -399,7 +422,7 @@ const Catalog = () => {
                       <div className={`relative aspect-[1080/1450] bg-white overflow-hidden ${ab.variant === 'B' ? 'border-b border-border/40' : ''}`}>
                         <ProductCardImageCarousel
                           images={imageList}
-                          alt={displayName}
+                          alt={translatedDisplayName}
                           imageInset="8%"
                           imgClassName="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
                         />
@@ -468,12 +491,12 @@ const Catalog = () => {
                       {/* Content */}
                       <div className="p-3 pt-1.5 space-y-1 flex-1 flex flex-col">
                         <h3 className="font-bold text-foreground text-xs sm:text-sm leading-tight line-clamp-2 group-hover:text-primary transition-colors">
-                          {translateValue(displayName)}
+                          {translatedDisplayName}
                         </h3>
 
                         {(variation?.subtitle || product.subtitle) && (
                           <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2">
-                            {translateValue(variation?.subtitle || product.subtitle)}
+                            {translatedSubtitle}
                           </p>
                         )}
 

@@ -115,7 +115,7 @@ export default function CombosSection() {
                     </div>
                   )}
                   <h3 className="font-bold text-foreground text-base sm:text-lg leading-tight line-clamp-2 pr-12 mb-3 group-hover:text-primary transition-colors">
-                    {translateValue(c.name)}
+                    {tName}
                   </h3>
 
                   <div className={`grid ${tileGridClass} gap-2 mb-3`}>

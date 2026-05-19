@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { KeyRound, Loader2, CheckCircle2, AlertTriangle, Check, X, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import logoImg from '@/assets/liberty-pharma-logo.png';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type PasswordChecks = {
   length: boolean;
@@ -43,6 +44,7 @@ const ResetPassword = () => {
   const [needsNewCode, setNeedsNewCode] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const checks = evaluatePassword(password);
   const score = strengthScore(checks);
@@ -56,12 +58,12 @@ const ResetPassword = () => {
     setNeedsNewCode(false);
 
     if (!normalizedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-      setFormError('Informe o email usado para solicitar a recuperação.');
+      setFormError(t('enterRecoveryEmail'));
       return;
     }
 
     if (code.length !== 8) {
-      setFormError('Cole o código de 8 caracteres recebido por email.');
+      setFormError(t('paste8CharCode'));
       return;
     }
 
@@ -88,18 +90,18 @@ const ResetPassword = () => {
       setEmail(normalizedEmail);
       setCodeVerified(true);
       toast({
-        title: 'Código validado!',
-        description: 'Agora você já pode criar uma nova senha.',
+        title: t('codeValidated'),
+        description: t('canCreateNewPassword'),
       });
     } catch (err: any) {
       const code = err?.code;
       const msg =
         err?.message ||
-        'Não foi possível validar o código. Solicite um novo código e tente novamente.';
+        t('couldNotValidateCode');
       setFormError(msg);
       setNeedsNewCode(code === 'expired' || code === 'invalid_code' || code === 'used');
       toast({
-        title: code === 'expired' ? 'Código expirado' : 'Código inválido',
+        title: code === 'expired' ? t('codeExpired') : t('invalidCode'),
         description: msg,
         variant: 'destructive',
       });

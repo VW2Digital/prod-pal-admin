@@ -67,9 +67,9 @@ export default function BlogPostPage() {
   const copyLink = async () => {
     try {
       await navigator.clipboard.writeText(shareUrl);
-      toast.success('Link copiado');
+      toast.success(t('blog.linkCopied'));
     } catch {
-      toast.error('Não foi possível copiar');
+      toast.error(t('blog.copyError'));
     }
   };
 

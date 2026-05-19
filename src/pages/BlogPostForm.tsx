@@ -47,6 +47,10 @@ export default function BlogPostForm() {
         title: data.title, slug: data.slug, excerpt: data.excerpt || '',
         content: data.content || '', cover_image: data.cover_image || '',
         author_name: data.author_name || '', published: !!data.published,
+        share_facebook_url: (data as any).share_facebook_url || '',
+        share_twitter_url: (data as any).share_twitter_url || '',
+        share_linkedin_url: (data as any).share_linkedin_url || '',
+        share_whatsapp_url: (data as any).share_whatsapp_url || '',
       });
       setLoading(false);
     })();

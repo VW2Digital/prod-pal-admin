@@ -113,8 +113,8 @@ export default function BlogPostPage() {
               <div className="leading-tight">
                 <p className="text-sm font-semibold text-foreground">{post.author_name || 'Liberty Pharma'}</p>
                 <p className="text-xs text-muted-foreground">
-                  Publicado em{' '}
-                  {new Date(post.published_at || post.created_at).toLocaleDateString('pt-BR', {
+                  {t('blog.publishedOn')}{' '}
+                  {new Date(post.published_at || post.created_at).toLocaleDateString(INTL_LOCALES[lang], {
                     day: '2-digit', month: 'short', year: 'numeric',
                   })}
                 </p>

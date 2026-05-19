@@ -1,5 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { DollarSign, ShoppingBag, Users, ArrowUpRight, ArrowDownRight, LucideIcon } from 'lucide-react';
+import { useAdminCurrency } from '@/contexts/AdminCurrencyContext';
 
 interface KpiProps {
   revenueToday: number;
@@ -9,9 +10,6 @@ interface KpiProps {
   totalCustomers: number;
   customersDelta: number;
 }
-
-const formatBRL = (v: number) =>
-  v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 });
 
 function Delta({ value }: { value: number }) {
   const positive = value >= 0;
@@ -67,11 +65,12 @@ export function DashboardTopKpis({
   totalCustomers,
   customersDelta,
 }: KpiProps) {
+  const { format } = useAdminCurrency();
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <KpiCard
         label="Receita Hoje"
-        value={formatBRL(revenueToday)}
+        value={format(revenueToday)}
         delta={revenueDelta}
         icon={DollarSign}
         tint=""

@@ -6,6 +6,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import type { DateRange } from 'react-day-picker';
+import { useAdminCurrency } from '@/contexts/AdminCurrencyContext';
 
 interface Bar {
   label: string;
@@ -22,17 +23,21 @@ interface Props {
   onCustomRangeChange?: (range: DateRange | undefined) => void;
 }
 
-function shortBRL(v: number): string {
-  if (v >= 1_000_000) return `R$ ${(v / 1_000_000).toFixed(1)}M`;
-  if (v >= 1_000) return `R$ ${(v / 1_000).toFixed(1)}k`;
-  return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
-}
+
 
 /**
  * "Sales Overview" — gráfico de barras com pico destacado e tooltip
  * fixo no maior valor, no estilo da referência.
  */
 export function DashboardSalesOverview({ total, delta, bars, range, onRangeChange, customRange, onCustomRangeChange }: Props) {
+  const { format, convert, currency, meta } = useAdminCurrency();
+  const sym = meta[currency].symbol;
+  const shortBRL = (v: number): string => {
+    const conv = convert(v);
+    if (conv >= 1_000_000) return `${sym} ${(conv / 1_000_000).toFixed(1)}M`;
+    if (conv >= 1_000) return `${sym} ${(conv / 1_000).toFixed(1)}k`;
+    return format(v, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  };
   const max = Math.max(...bars.map((b) => b.value), 1);
   const peakIdx = bars.reduce((best, b, i, arr) => (b.value > arr[best].value ? i : best), 0);
   const positive = delta >= 0;

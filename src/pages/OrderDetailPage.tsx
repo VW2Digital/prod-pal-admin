@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { ArrowLeft, Loader2, Truck, FileText, AlertCircle, ChevronDown, ChevronUp, CreditCard, QrCode, Package } from 'lucide-react';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import iconPedidoDetalhe from '@/assets/icon-pedido-detalhe-3d.png';
+import { useAdminCurrency } from '@/contexts/AdminCurrencyContext';
 
 const statusMap: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline'; badgeClass?: string }> = {
   PENDING: { label: 'Pendente', variant: 'outline' },
@@ -55,6 +56,7 @@ const InfoRow = ({ label, value }: { label: string; value: string | number | nul
 );
 
 const OrderDetailPage = () => {
+  const { format: fmtMoney } = useAdminCurrency();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -150,8 +152,8 @@ const OrderDetailPage = () => {
             <InfoRow label="Produto" value={order.product_name} />
             <InfoRow label="Dosagem" value={order.dosage} />
             <InfoRow label="Quantidade" value={order.quantity} />
-            <InfoRow label="Preço unitário" value={`R$ ${Number(order.unit_price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`} />
-            <InfoRow label="Valor total" value={`R$ ${Number(order.total_value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`} />
+            <InfoRow label="Preço unitário" value={fmtMoney(Number(order.unit_price))} />
+            <InfoRow label="Valor total" value={fmtMoney(Number(order.total_value))} />
             <InfoRow label="Parcelas" value={order.installments} />
           </div>
           <Separator />
@@ -188,7 +190,7 @@ const OrderDetailPage = () => {
             {order.coupon_code && (
               <>
                 <InfoRow label="Cupom" value={order.coupon_code} />
-                <InfoRow label="Desconto cupom" value={`R$ ${Number(order.coupon_discount || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`} />
+                <InfoRow label="Desconto cupom" value={fmtMoney(Number(order.coupon_discount || 0))} />
               </>
             )}
           </div>
@@ -197,7 +199,7 @@ const OrderDetailPage = () => {
             <h4 className="text-sm font-semibold text-foreground mb-1">Entrega</h4>
             <InfoRow label="Status" value={delivery?.label || 'Processando'} />
             <InfoRow label="Transportadora" value={order.shipping_service} />
-            <InfoRow label="Frete" value={order.shipping_cost ? `R$ ${Number(order.shipping_cost).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '-'} />
+            <InfoRow label="Frete" value={order.shipping_cost ? fmtMoney(Number(order.shipping_cost)) : '-'} />
             <InfoRow label="Rastreio" value={order.tracking_code} />
             {order.tracking_url && (
               <div className="flex justify-between py-1.5">

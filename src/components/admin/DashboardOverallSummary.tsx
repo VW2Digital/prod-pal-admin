@@ -1,6 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Wallet, Target, Users, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { useAdminCurrency } from '@/contexts/AdminCurrencyContext';
 
 interface Props {
   balance: number;
@@ -10,15 +11,6 @@ interface Props {
   customersDelta: number;
   range: 'month' | 'quarter' | 'year';
   onRangeChange: (v: 'month' | 'quarter' | 'year') => void;
-}
-
-const formatBRL = (v: number) =>
-  v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
-
-function shortBRL(v: number): string {
-  if (v >= 1_000_000) return `R$ ${(v / 1_000_000).toFixed(1)}M`;
-  if (v >= 1_000) return `R$ ${(v / 1_000).toFixed(0)}k`;
-  return formatBRL(v);
 }
 
 function Delta({ value }: { value: number }) {
@@ -48,6 +40,15 @@ export function DashboardOverallSummary({
   range,
   onRangeChange,
 }: Props) {
+  const { format, convert, currency, meta } = useAdminCurrency();
+  const sym = meta[currency].symbol;
+  const balanceConv = convert(balance);
+  const shortBRL = (v: number): string => {
+    const conv = convert(v);
+    if (conv >= 1_000_000) return `${sym} ${(conv / 1_000_000).toFixed(1)}M`;
+    if (conv >= 1_000) return `${sym} ${(conv / 1_000).toFixed(0)}k`;
+    return format(v, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  };
   const rangeLabel: Record<typeof range, string> = {
     month: 'mês passado',
     quarter: 'trimestre passado',

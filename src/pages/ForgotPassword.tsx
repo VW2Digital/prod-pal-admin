@@ -8,12 +8,14 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Mail, Loader2, CheckCircle2, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import logoImg from '@/assets/liberty-pharma-logo.png';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,13 +29,13 @@ const ForgotPassword = () => {
       if ((data as any)?.error) throw new Error((data as any).error);
       setSent(true);
       toast({
-        title: 'Email enviado!',
-        description: 'Verifique sua caixa de entrada para redefinir sua senha.',
+        title: t('emailSent'),
+        description: t('checkInboxToResetPassword'),
       });
     } catch (err: any) {
       toast({
-        title: 'Erro ao enviar',
-        description: err.message || 'Não foi possível enviar o email de recuperação.',
+        title: t('sendError'),
+        description: err.message || t('couldNotSendRecoveryEmail'),
         variant: 'destructive',
       });
     } finally {
@@ -49,7 +51,7 @@ const ForgotPassword = () => {
             <img src={logoImg} alt="Liberty Pharma" className="h-10 object-contain" />
           </Link>
           <Link to="/catalogo" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Voltar ao catálogo
+            {t('backToCatalog')}
           </Link>
         </div>
       </header>
@@ -66,12 +68,12 @@ const ForgotPassword = () => {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-foreground">
-                {sent ? 'Email Enviado!' : 'Recuperar Senha'}
+                {sent ? t('emailSent') : t('recoverPassword')}
               </h1>
               <p className="text-muted-foreground text-sm mt-1">
                 {sent
-                  ? `Enviamos um código de redefinição para ${email}. Verifique sua caixa de entrada e a pasta de spam.`
-                  : 'Informe seu email e enviaremos um código para você criar uma nova senha.'}
+                  ? t('resetCodeSentToEmail', { email })
+                  : t('enterEmailToCreateNewPassword')}
               </p>
             </div>
           </CardHeader>
@@ -86,19 +88,19 @@ const ForgotPassword = () => {
                     setEmail('');
                   }}
                 >
-                  Enviar para outro email
+                  {t('sendToAnotherEmail')}
                 </Button>
                 <Link to="/cliente/login" className="block">
                   <Button variant="ghost" className="w-full">
                     <ArrowLeft className="w-4 h-4 mr-2" />
-                    Voltar ao login
+                    {t('backToLogin')}
                   </Button>
                 </Link>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">{t('email')}</Label>
                   <Input
                     id="email"
                     type="email"
@@ -111,12 +113,12 @@ const ForgotPassword = () => {
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                  Enviar código de recuperação
+                  {t('sendRecoveryCode')}
                 </Button>
                 <Link to="/cliente/login" className="block">
                   <Button type="button" variant="ghost" className="w-full">
                     <ArrowLeft className="w-4 h-4 mr-2" />
-                    Voltar ao login
+                    {t('backToLogin')}
                   </Button>
                 </Link>
               </form>

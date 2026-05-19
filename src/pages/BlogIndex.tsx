@@ -75,7 +75,7 @@ export default function BlogIndex() {
             <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
           </div>
         ) : posts.length === 0 ? (
-          <Card className="p-12 text-center text-muted-foreground">Nenhum post publicado ainda.</Card>
+          <Card className="p-12 text-center text-muted-foreground">{t('blog.noPosts')}</Card>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-[220px_minmax(0,1fr)] gap-10">
             {/* Sidebar */}

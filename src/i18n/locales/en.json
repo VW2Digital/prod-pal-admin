@@ -317,6 +317,8 @@
   "statusRefunded": "Refunded",
   "statusInReview": "In Review",
   "statusDeclined": "Declined",
+  "statusCancelled": "Cancelled",
+  "statusRefused": "Refused",
   "deliveryProcessing": "Processing",
   "deliveryProcessingShort": "Processing",
   "deliveryShipped": "Shipped",

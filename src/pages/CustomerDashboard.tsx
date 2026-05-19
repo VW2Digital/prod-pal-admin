@@ -25,6 +25,7 @@ import SupportChat from '@/components/SupportChat';
 import CustomerDownloads from '@/components/CustomerDownloads';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 async function sha256Hex(input: string): Promise<string> {
   const buf = new TextEncoder().encode(input.trim().toLowerCase());
@@ -58,6 +59,7 @@ type DeliveryFilter = 'all' | 'PROCESSING' | 'SHIPPED' | 'IN_TRANSIT' | 'DELIVER
 
 const CustomerDashboard = () => {
   const { toast } = useToast();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { totalItems } = useCart();
@@ -478,20 +480,20 @@ const CustomerDashboard = () => {
                     </button>
                   )}
                   <Button variant="default" size="sm" onClick={handleLogout} className="w-full gap-1">
-                    <LogOut className="w-3.5 h-3.5" /> Sair
+                    <LogOut className="w-3.5 h-3.5" /> {t('logout')}
                   </Button>
                 </CardContent>
               </Card>
               <Card className="border-border/50 overflow-hidden">
                 <nav className="flex flex-col">
                   {[
-                    { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-                    { key: 'orders', label: 'Pedidos', icon: Package },
-                    { key: 'downloads', label: 'Downloads', icon: Download },
-                    { key: 'addresses', label: 'Endereços', icon: MapPin },
-                    { key: 'profile', label: 'Detalhes da Conta', icon: User },
-                    { key: 'reviews', label: 'Avaliações', icon: Star },
-                    { key: 'help', label: 'Ajuda', icon: HelpCircle },
+                    { key: 'dashboard', label: t('accountDashboard'), icon: LayoutDashboard },
+                    { key: 'orders', label: t('accountOrders'), icon: Package },
+                    { key: 'downloads', label: t('accountDownloads'), icon: Download },
+                    { key: 'addresses', label: t('accountAddresses'), icon: MapPin },
+                    { key: 'profile', label: t('accountDetails'), icon: User },
+                    { key: 'reviews', label: t('accountReviews'), icon: Star },
+                    { key: 'help', label: t('accountHelp'), icon: HelpCircle },
                   ].map((item) => {
                     const Icon = item.icon;
                     const active = activeTab === item.key;
@@ -516,7 +518,7 @@ const CustomerDashboard = () => {
                     onClick={handleLogout}
                     className="flex items-center gap-2 px-4 py-2.5 text-sm text-left border-l-2 border-transparent text-foreground hover:bg-muted/50"
                   >
-                    <LogOut className="w-4 h-4" /> Sair
+                    <LogOut className="w-4 h-4" /> {t('logout')}
                   </button>
                 </nav>
               </Card>

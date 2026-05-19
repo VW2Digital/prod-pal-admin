@@ -27,6 +27,7 @@ export default function BlogPostForm() {
   const [form, setForm] = useState({
     title: '', slug: '', excerpt: '', content: '', cover_image: '',
     author_name: '', published: false,
+    share_facebook_url: '', share_twitter_url: '', share_linkedin_url: '', share_whatsapp_url: '',
   });
 
   useEffect(() => {

@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Package, Loader2, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import logoImg from '@/assets/liberty-pharma-logo.png';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // Máscara BR: (11) 91234-5678 ou (11) 1234-5678
 const formatPhoneBR = (raw: string) => {
@@ -40,6 +41,7 @@ const CustomerLogin = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
+  const { t } = useLanguage();
   const redirectTo = searchParams.get('redirect') || '/minha-conta';
 
   useEffect(() => {
@@ -55,7 +57,7 @@ const CustomerLogin = () => {
       if (isSignUp) {
         const phoneError = validatePhoneBR(phone);
         if (phoneError) {
-          toast({ title: 'Telefone inválido', description: phoneError, variant: 'destructive' });
+          toast({ title: t('phoneInvalid'), description: phoneError, variant: 'destructive' });
           setLoading(false);
           return;
         }
@@ -82,8 +84,8 @@ const CustomerLogin = () => {
         }
 
         toast({
-          title: 'Conta criada!',
-          description: 'Verifique seu email para confirmar o cadastro.',
+          title: t('accountCreated'),
+          description: t('checkEmailToConfirmSignup'),
         });
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -92,8 +94,8 @@ const CustomerLogin = () => {
       }
     } catch (err: any) {
       toast({
-        title: 'Erro',
-        description: err.message || 'Email ou senha incorretos.',
+        title: t('error'),
+        description: err.message || t('invalidEmailOrPassword'),
         variant: 'destructive',
       });
     } finally {
@@ -111,14 +113,14 @@ const CustomerLogin = () => {
       if (error) throw error;
       if ((data as any)?.error) throw new Error((data as any).error);
       toast({
-        title: 'Email enviado!',
-        description: 'Verifique sua caixa de entrada e copie o código de recuperação.',
+        title: t('emailSent'),
+        description: t('checkInboxForRecoveryCode'),
       });
       setIsForgotPassword(false);
     } catch (err: any) {
       toast({
-        title: 'Erro',
-        description: err.message || 'Não foi possível enviar o email.',
+        title: t('error'),
+        description: err.message || t('couldNotSendEmail'),
         variant: 'destructive',
       });
     } finally {

@@ -179,17 +179,8 @@ const readUrlLang = (): Language | null => {
 };
 
 const detectBrowserLanguage = (): Language => {
-  if (typeof navigator === 'undefined') return 'pt';
-  const candidates = [
-    ...(navigator.languages || []),
-    navigator.language,
-  ].filter(Boolean);
-  for (const raw of candidates) {
-    const lower = raw.toLowerCase();
-    if (lower.startsWith('pt')) return 'pt';
-    if (lower.startsWith('es')) return 'es';
-    if (lower.startsWith('en')) return 'en';
-  }
+  // Português (Portugal) é sempre o idioma padrão.
+  // Deteção automática do browser foi desativada por requisito.
   return 'pt';
 };
 

@@ -1820,9 +1820,9 @@ const CheckoutForm = ({ productName, productId, cartProductIds, paymentDescripti
         <Card className="border-border/50">
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
-              <Truck className="w-4 h-4" /> Escolha o Frete
+              <Truck className="w-4 h-4" /> {t('chooseShipping')}
               {qualifiesForFreeShipping && (
-                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold">Frete Grátis</span>
+                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold">{t('freeShipping')}</span>
               )}
             </CardTitle>
           </CardHeader>
@@ -1830,20 +1830,22 @@ const CheckoutForm = ({ productName, productId, cartProductIds, paymentDescripti
           {loadingShipping ? (
             <div className="flex items-center justify-center py-8 gap-2">
               <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Buscando opções de frete...</span>
+              <span className="text-sm text-muted-foreground">{t('searchingShippingOptions')}</span>
             </div>
           ) : shippingOptions.length === 0 ? (
             <div className="text-center py-6 space-y-2">
-              <p className="text-sm text-muted-foreground">Nenhuma opção de frete disponível para este CEP.</p>
+              <p className="text-sm text-muted-foreground">{t('noShippingOptions')}</p>
               <Button variant="outline" size="sm" onClick={() => setStep('address')}>
-                Alterar endereço
+                {t('changeAddress')}
               </Button>
             </div>
           ) : (
             <>
               {qualifiesForFreeShipping && (
                 <p className="text-sm text-muted-foreground">
-                  Este produto possui frete grátis{freeShippingMinValue && freeShippingMinValue > 0 ? ` para compras até R$ ${freeShippingMinValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : ''}. Escolha a transportadora:
+                  {freeShippingMinValue && freeShippingMinValue > 0
+                    ? t('freeShippingNotice', { amount: freeShippingMinValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) })
+                    : t('freeShippingNoticeNoLimit')}
                 </p>
               )}
               <div className="space-y-2">

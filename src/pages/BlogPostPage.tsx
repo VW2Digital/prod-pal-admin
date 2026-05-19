@@ -5,6 +5,8 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { ChevronRight, Clock, Facebook, Home, Linkedin, Loader2, MessageCircle, Twitter, User } from 'lucide-react';
 import { toast } from 'sonner';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { INTL_LOCALES } from '@/i18n';
 
 interface BlogPost {
   id: string;

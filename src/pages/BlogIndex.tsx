@@ -119,7 +119,7 @@ export default function BlogIndex() {
             {/* Lista de posts */}
             <div className="space-y-12">
               {filtered.length === 0 ? (
-                <Card className="p-10 text-center text-muted-foreground">Nenhum post para este filtro.</Card>
+                <Card className="p-10 text-center text-muted-foreground">{t('blog.noPostsForFilter')}</Card>
               ) : (
                 <>
                   {/* Featured */}

@@ -203,5 +203,7 @@
     "gel": "Gel",
     "creme": "Creme",
     "pdf_bonus": "PDF + Bônus"
-  }
+  },
+  "footerMissionOverride": "",
+  "footerTextOverride": ""
 }

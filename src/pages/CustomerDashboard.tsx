@@ -472,7 +472,7 @@ const CustomerDashboard = () => {
                     <label
                       htmlFor="avatar-upload-input"
                       className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center cursor-pointer shadow-md hover:opacity-90 transition-opacity"
-                      title="Alterar foto"
+                      title={t('changePhoto')}
                     >
                       {avatarUploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
                     </label>
@@ -495,6 +495,8 @@ const CustomerDashboard = () => {
                       type="button"
                       onClick={handleAvatarRemove}
                       disabled={avatarUploading}
+                      title={t('removePhoto')}
+                      aria-label={t('removePhoto')}
                       className="text-[11px] text-muted-foreground hover:text-destructive flex items-center gap-1"
                     >
                       <Trash2 className="w-3 h-3" /> {t('removePhoto')}

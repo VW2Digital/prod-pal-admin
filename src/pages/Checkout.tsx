@@ -31,6 +31,13 @@ const Checkout = () => {
     ? Math.min(...wholesaleTiers.map(t => t.min_quantity))
     : 1;
   const quantity = Math.max(requestedQty, wholesaleMinQty);
+  const variations = product?.product_variations || [];
+  const variation = variations[selectedVariation];
+  const checkoutTexts = useMemo(
+    () => product ? [product.name || '', variation?.dosage || ''] : [],
+    [product, variation?.dosage],
+  );
+  const translatedCheckoutTexts = useAITranslateBatch(checkoutTexts, lang);
 
   useEffect(() => {
     // Auth guard - redirect to login if not authenticated
@@ -94,8 +101,6 @@ const Checkout = () => {
     );
   }
 
-  const variations = product.product_variations || [];
-  const variation = variations[selectedVariation];
   const originalPrice = Number(variation?.price || 0);
   const basePrice = variation?.is_offer && variation?.offer_price ? Number(variation.offer_price) : originalPrice;
   const unitPrice = getEffectivePrice(basePrice, quantity, wholesaleTiers);
@@ -107,11 +112,6 @@ const Checkout = () => {
       ? [variation.image_url]
       : [];
   const mainImage = variationImages.length > 0 ? variationImages[0] : productHeroImg;
-  const checkoutTexts = useMemo(
-    () => product ? [product.name || '', variation?.dosage || ''] : [],
-    [product, variation?.dosage],
-  );
-  const translatedCheckoutTexts = useAITranslateBatch(checkoutTexts, lang);
   const translatedProductName = translatedCheckoutTexts[0] || product.name;
   const translatedDosage = translatedCheckoutTexts[1] || variation?.dosage;
 
@@ -191,7 +191,7 @@ const Checkout = () => {
             productName={translatedProductName}
             productId={product.id}
             paymentDescription={(product as any).fantasy_name || undefined}
-            dosage={variation?.dosage || ''}
+            dosage={translatedDosage || variation?.dosage || ''}
             quantity={quantity}
             unitPrice={unitPrice}
             freeShipping={product.free_shipping}

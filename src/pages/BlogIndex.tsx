@@ -141,7 +141,7 @@ export default function BlogIndex() {
                       <div className="space-y-3 pt-1">
                         <div className="flex items-center gap-2">
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium">
-                            Destaque
+                            {t('blog.featured')}
                           </span>
                           <span className="text-xs text-muted-foreground">
                             {formatDate(featured.published_at, featured.created_at)}

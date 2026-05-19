@@ -63,7 +63,7 @@ const AddressManager = () => {
       if (error) throw error;
       setAddresses((data as any[]) || []);
     } catch (err: any) {
-      toast({ title: 'Erro ao carregar endereços', description: err.message, variant: 'destructive' });
+      toast({ title: t('addressesLoadError'), description: err.message, variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -72,7 +72,7 @@ const AddressManager = () => {
   useEffect(() => { fetchAddresses(); }, []);
 
   const resetForm = () => {
-    setLabel('Casa');
+    setLabel(t('homeAddressLabel'));
     setPostalCode('');
     setStreet('');
     setNumber('');
@@ -206,11 +206,11 @@ const AddressManager = () => {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-          <MapPin className="w-5 h-5" /> Meus Endereços
+          <MapPin className="w-5 h-5" /> {t('myAddresses')}
         </h3>
         {!showForm && (
           <Button size="sm" onClick={() => { resetForm(); setShowForm(true); }}>
-            <Plus className="w-4 h-4 mr-1" /> Novo Endereço
+            <Plus className="w-4 h-4 mr-1" /> {t('newAddressTitle')}
           </Button>
         )}
       </div>
@@ -221,7 +221,7 @@ const AddressManager = () => {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base">
-                {editingId ? 'Editar Endereço' : 'Novo Endereço'}
+                {editingId ? t('editAddressTitle') : t('newAddressTitle')}
               </CardTitle>
               <Button variant="ghost" size="icon" onClick={resetForm}>
                 <X className="w-4 h-4" />

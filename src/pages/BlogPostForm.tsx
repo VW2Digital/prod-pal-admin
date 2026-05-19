@@ -109,84 +109,123 @@ export default function BlogPostForm() {
   if (loading) return <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
 
   return (
-    <div className="space-y-4 w-full">
+    <div className="w-full mx-auto max-w-[1400px] space-y-5">
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <Button variant="ghost" onClick={() => navigate('/admin/blog')} className="gap-2">
           <ArrowLeft className="h-4 w-4" /> Voltar
         </Button>
-        <Button variant="outline" onClick={() => setPreview(true)} className="gap-2">
-          <Eye className="h-4 w-4" /> Preview em tela cheia
-        </Button>
-      </div>
-
-      <Card className="p-6 space-y-4">
-        <h1 className="text-2xl font-bold text-foreground">{isEdit ? 'Editar post' : 'Novo post'}</h1>
-
-        <div className="space-y-2">
-          <Label>Título</Label>
-          <Input value={form.title} onChange={(e) => handleTitleChange(e.target.value)} placeholder="Título do post" />
-        </div>
-
-        <div className="space-y-2">
-          <Label>Slug (URL)</Label>
-          <Input value={form.slug} onChange={(e) => update({ slug: e.target.value })} placeholder="meu-post" />
-          <p className="text-xs text-muted-foreground">URL final: /blog/{form.slug || 'meu-post'}</p>
-        </div>
-
-        <div className="space-y-2">
-          <Label>Autor</Label>
-          <Input value={form.author_name} onChange={(e) => update({ author_name: e.target.value })} placeholder="Nome do autor" />
-        </div>
-
-        <div className="space-y-2">
-          <Label>Resumo</Label>
-          <Textarea value={form.excerpt} onChange={(e) => update({ excerpt: e.target.value })} rows={2} placeholder="Resumo curto exibido na listagem" />
-        </div>
-
-        <div className="space-y-2">
-          <Label>Imagem de capa</Label>
-          <div className="flex items-center gap-3 flex-wrap">
-            {form.cover_image && (
-              <img src={form.cover_image} alt="capa" className="w-32 h-20 object-cover rounded border border-border" />
-            )}
-            <label className="inline-flex items-center gap-2 px-3 py-2 rounded border border-border cursor-pointer hover:bg-muted text-sm">
-              {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-              {form.cover_image ? 'Trocar imagem' : 'Enviar imagem'}
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => { const f = e.target.files?.[0]; if (f) handleUpload(f); }}
-              />
-            </label>
-            {form.cover_image && (
-              <Button variant="ghost" size="sm" onClick={() => update({ cover_image: '' })}>Remover</Button>
-            )}
-          </div>
-          <Input value={form.cover_image} onChange={(e) => update({ cover_image: e.target.value })} placeholder="ou cole a URL" />
-        </div>
-
-        <div className="space-y-2">
-          <Label>Conteúdo</Label>
-          <RichTextEditor value={form.content} onChange={(v) => update({ content: v })} placeholder="Escreva o conteúdo do post..." />
-        </div>
-
-        <div className="flex items-center gap-3 pt-2 border-t border-border">
-          <Switch checked={form.published} onCheckedChange={(v) => update({ published: v })} />
-          <div>
-            <Label className="cursor-pointer">Publicado</Label>
-            <p className="text-xs text-muted-foreground">Quando ativo, fica visível em /blog</p>
-          </div>
-        </div>
-
-        <div className="flex gap-2 pt-4">
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => setPreview(true)} className="gap-2">
+            <Eye className="h-4 w-4" /> Preview
+          </Button>
           <Button onClick={handleSave} disabled={saving} className="gap-2">
             {saving && <Loader2 className="h-4 w-4 animate-spin" />}
             Salvar
           </Button>
-          <Button variant="outline" onClick={() => navigate('/admin/blog')}>Cancelar</Button>
         </div>
-      </Card>
+      </div>
+
+      <div>
+        <h1 className="text-2xl font-bold text-foreground">{isEdit ? 'Editar post' : 'Novo post'}</h1>
+        <p className="text-sm text-muted-foreground">Preencha o conteúdo à esquerda e os metadados à direita.</p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-5 items-start">
+        {/* Coluna principal: conteúdo */}
+        <Card className="p-5 sm:p-6 space-y-5 min-w-0">
+          <div className="space-y-2">
+            <Label>Título</Label>
+            <Input
+              value={form.title}
+              onChange={(e) => handleTitleChange(e.target.value)}
+              placeholder="Título do post"
+              className="text-lg font-semibold h-12"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Resumo</Label>
+            <Textarea
+              value={form.excerpt}
+              onChange={(e) => update({ excerpt: e.target.value })}
+              rows={2}
+              placeholder="Resumo curto exibido na listagem"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Conteúdo</Label>
+            <RichTextEditor
+              value={form.content}
+              onChange={(v) => update({ content: v })}
+              placeholder="Escreva o conteúdo do post..."
+            />
+          </div>
+        </Card>
+
+        {/* Coluna lateral: metadados */}
+        <div className="space-y-5 lg:sticky lg:top-20">
+          <Card className="p-5 space-y-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <Label className="cursor-pointer">Publicado</Label>
+                <p className="text-xs text-muted-foreground">Visível em /blog</p>
+              </div>
+              <Switch checked={form.published} onCheckedChange={(v) => update({ published: v })} />
+            </div>
+
+            <div className="space-y-2 pt-2 border-t border-border">
+              <Label>Slug (URL)</Label>
+              <Input value={form.slug} onChange={(e) => update({ slug: e.target.value })} placeholder="meu-post" />
+              <p className="text-xs text-muted-foreground truncate">/blog/{form.slug || 'meu-post'}</p>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Autor</Label>
+              <Input value={form.author_name} onChange={(e) => update({ author_name: e.target.value })} placeholder="Nome do autor" />
+            </div>
+          </Card>
+
+          <Card className="p-5 space-y-3">
+            <Label>Imagem de capa</Label>
+            {form.cover_image && (
+              <img
+                src={form.cover_image}
+                alt="capa"
+                className="w-full aspect-[16/9] object-cover rounded border border-border"
+              />
+            )}
+            <div className="flex flex-wrap items-center gap-2">
+              <label className="inline-flex items-center gap-2 px-3 py-2 rounded border border-border cursor-pointer hover:bg-muted text-sm">
+                {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                {form.cover_image ? 'Trocar' : 'Enviar imagem'}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => { const f = e.target.files?.[0]; if (f) handleUpload(f); }}
+                />
+              </label>
+              {form.cover_image && (
+                <Button variant="ghost" size="sm" onClick={() => update({ cover_image: '' })}>Remover</Button>
+              )}
+            </div>
+            <Input
+              value={form.cover_image}
+              onChange={(e) => update({ cover_image: e.target.value })}
+              placeholder="ou cole a URL"
+            />
+          </Card>
+
+          <div className="flex gap-2">
+            <Button onClick={handleSave} disabled={saving} className="flex-1 gap-2">
+              {saving && <Loader2 className="h-4 w-4 animate-spin" />}
+              Salvar
+            </Button>
+            <Button variant="outline" onClick={() => navigate('/admin/blog')}>Cancelar</Button>
+          </div>
+        </div>
+      </div>
 
       {preview && (
         <div className="fixed inset-0 z-[100] bg-background overflow-y-auto">

@@ -7,6 +7,7 @@ import { ChevronRight, Clock, Facebook, Home, Linkedin, Loader2, MessageCircle, 
 import { toast } from 'sonner';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { INTL_LOCALES } from '@/i18n';
+import { useAITranslateBatch } from '@/hooks/useAITranslate';
 
 interface BlogPost {
   id: string;

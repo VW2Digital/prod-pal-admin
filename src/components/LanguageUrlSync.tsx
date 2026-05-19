@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useLanguage, type Language } from '@/contexts/LanguageContext';
+import { normalizeLng } from '@/i18n';
 
 const SUPPORTED: Language[] = ['pt-PT', 'es', 'en'];
 
@@ -24,8 +25,9 @@ const LanguageUrlSync = () => {
     lastUrlKey.current = key;
 
     const param = new URLSearchParams(location.search).get('lang');
-    if (param && SUPPORTED.includes(param as Language)) {
-      setLang(param as Language);
+    const normalizedParam = normalizeLng(param || undefined);
+    if (param && SUPPORTED.includes(normalizedParam)) {
+      setLang(normalizedParam);
     }
     refreshSeoTags();
   }, [location.pathname, location.search, setLang, refreshSeoTags]);

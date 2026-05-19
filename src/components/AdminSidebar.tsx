@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Package, LogOut, LayoutDashboard, Settings, ShoppingBag, Users, MessageCircle, Star, AlertTriangle, Mail, LinkIcon, Ticket, FileBarChart, ChevronDown, Activity, Send, Wallet, FlaskConical, Layers, Shuffle, Sparkles, Gauge, Zap, Handshake, Boxes } from 'lucide-react';
+import { Package, LogOut, LayoutDashboard, Settings, ShoppingBag, Users, MessageCircle, Star, AlertTriangle, Mail, LinkIcon, Ticket, FileBarChart, ChevronDown, Activity, Send, Wallet, FlaskConical, Layers, Shuffle, Sparkles, Gauge, Zap, Handshake, Boxes, Newspaper } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
   Sidebar,
@@ -64,6 +64,7 @@ const menuCategories = [
   {
     label: 'Marketing',
     items: [
+      { title: 'Blog', url: '/admin/blog', icon: Newspaper },
       { title: 'Disparo de E-mails', url: '/admin/disparo-emails', icon: Send },
     ],
   },

@@ -205,6 +205,51 @@ export type Database = {
         }
         Relationships: []
       }
+      blog_posts: {
+        Row: {
+          author_name: string | null
+          content: string
+          cover_image: string | null
+          created_at: string
+          excerpt: string | null
+          id: string
+          published: boolean
+          published_at: string | null
+          slug: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          author_name?: string | null
+          content?: string
+          cover_image?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          published?: boolean
+          published_at?: string | null
+          slug: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          author_name?: string | null
+          content?: string
+          cover_image?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          published?: boolean
+          published_at?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       bulk_email_campaigns: {
         Row: {
           audience_type: string

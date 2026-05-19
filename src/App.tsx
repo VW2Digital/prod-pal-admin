@@ -84,6 +84,10 @@ const ResellerDetailPage = lazy(() => import("./pages/ResellerDetailPage"));
 const CombosManagerPage = lazy(() => import("./pages/CombosManagerPage"));
 const ComboCheckout = lazy(() => import("./pages/ComboCheckout"));
 const SettingsFlashOffersWidget = lazy(() => import("./pages/settings/SettingsFlashOffersWidget"));
+const BlogPostsList = lazy(() => import("./pages/BlogPostsList"));
+const BlogPostForm = lazy(() => import("./pages/BlogPostForm"));
+const BlogIndex = lazy(() => import("./pages/BlogIndex"));
+const BlogPostPage = lazy(() => import("./pages/BlogPostPage"));
 
 import PromoPopup from "./components/PromoPopup";
 import FlashOffersWidget from "./components/FlashOffersWidget";
@@ -144,6 +148,8 @@ const App = () => (
           <Route path="/relampago/:slug" element={<FlashCampaignPage />} />
           <Route path="/relampago/:slug/obrigado" element={<FlashCampaignThankYouPage />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/blog" element={<BlogIndex />} />
+          <Route path="/blog/:slug" element={<BlogPostPage />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="produtos" element={<ProductList />} />
@@ -157,6 +163,8 @@ const App = () => (
             <Route path="metricas-recomendacoes" element={<RecommendationMetricsPage />} />
             <Route path="banners" element={<BannerList />} />
             <Route path="popups" element={<PopupList />} />
+            <Route path="blog" element={<BlogPostsList />} />
+            <Route path="blog/:id" element={<BlogPostForm />} />
             <Route path="pedidos" element={<OrdersPage />} />
             <Route path="pedidos/:id" element={<OrderDetailPage />} />
             <Route path="usuarios" element={<UsersPage />} />

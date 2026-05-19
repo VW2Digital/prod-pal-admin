@@ -2039,13 +2039,13 @@ const CheckoutForm = ({ productName, productId, cartProductIds, paymentDescripti
     ) : (
     <Card className="border-border/50">
       <CardHeader>
-        <CardTitle className="text-base">Forma de Pagamento</CardTitle>
+        <CardTitle className="text-base">{t('paymentMethod')}</CardTitle>
         <div className="flex gap-2 mt-2">
           <Button type="button" variant={paymentMethod === 'pix' ? 'default' : 'outline'} size="sm" onClick={() => setPaymentMethod('pix')} className="flex items-center gap-1.5">
             <QrCode className="w-4 h-4" /> PIX
           </Button>
           <Button type="button" variant={paymentMethod === 'credit_card' ? 'default' : 'outline'} size="sm" onClick={() => setPaymentMethod('credit_card')} className="flex items-center gap-1.5">
-            <CreditCard className="w-4 h-4" /> Cartão
+            <CreditCard className="w-4 h-4" /> {t('card')}
           </Button>
         </div>
       </CardHeader>
@@ -2200,20 +2200,20 @@ const CheckoutForm = ({ productName, productId, cartProductIds, paymentDescripti
 
         {/* Coupon */}
         <div className="border-t border-border/50 pt-3 space-y-2">
-          <Label className="text-xs flex items-center gap-1"><Ticket className="w-3 h-3" /> Cupom de desconto</Label>
+          <Label className="text-xs flex items-center gap-1"><Ticket className="w-3 h-3" /> {t('discountCoupon')}</Label>
           {appliedCouponCode ? (
             <div className="flex items-center gap-2 bg-success/10 rounded-lg px-3 py-2">
               <span className="text-sm font-medium text-success flex-1">
                 🎟️ {appliedCouponCode} ({couponLabel})
               </span>
               <Button type="button" variant="ghost" size="sm" onClick={handleRemoveCoupon} className="h-6 px-2 text-xs text-destructive hover:text-destructive">
-                Remover
+                {t('remove')}
               </Button>
             </div>
           ) : loadingCoupons ? (
-            <p className="text-xs text-muted-foreground">Carregando cupons...</p>
+            <p className="text-xs text-muted-foreground">{t('loadingCoupons')}</p>
           ) : availableCoupons.length === 0 ? (
-            <p className="text-xs text-muted-foreground">Nenhum cupom disponível no momento.</p>
+            <p className="text-xs text-muted-foreground">{t('noCouponsAvailable')}</p>
           ) : (
             <div className="flex flex-wrap gap-2">
               {availableCoupons.map((c) => (
@@ -2244,16 +2244,16 @@ const CheckoutForm = ({ productName, productId, cartProductIds, paymentDescripti
             ) : (
               <div className="space-y-1">
                 <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Produtos</span>
+                  <span>{t('products')}</span>
                   <span>R$ {baseProductTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                 </div>
                 {selectedShipping && (
                   <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>Frete ({selectedShipping.company})</span>
+                    <span>{t('shippingWithCompany', { company: selectedShipping.company })}</span>
                     {qualifiesForFreeShipping ? (
                       <span className="text-primary font-medium">
                         <span className="line-through text-muted-foreground mr-1">R$ {(selectedShipping.price || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                        Grátis
+                        {t('free')}
                       </span>
                     ) : (
                       <span>R$ {shippingCost.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
@@ -2262,18 +2262,18 @@ const CheckoutForm = ({ productName, productId, cartProductIds, paymentDescripti
                 )}
                 {couponDiscount > 0 && (
                   <div className="flex justify-between text-xs text-success">
-                    <span>Cupom {appliedCouponCode} ({couponLabel})</span>
+                    <span>{t('couponWithCode', { code: appliedCouponCode, label: couponLabel })}</span>
                     <span>- R$ {couponDiscount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                   </div>
                 )}
                 {paymentMethod === 'pix' && pixDiscountPercent > 0 && (
                   <div className="flex justify-between text-xs text-success">
-                    <span>Desconto PIX ({pixDiscountPercent}%)</span>
+                    <span>{t('pixDiscountLine', { percent: pixDiscountPercent })}</span>
                     <span>- R$ {pixDiscountValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                   </div>
                 )}
                 <div className="flex justify-between items-center pt-1">
-                  <span className="text-sm text-muted-foreground">Total</span>
+                  <span className="text-sm text-muted-foreground">{t('total')}</span>
                   <span className="text-lg font-bold text-foreground">
                     R$ {(paymentMethod === 'pix' ? pixTotalValue : totalValue).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </span>
@@ -2283,12 +2283,12 @@ const CheckoutForm = ({ productName, productId, cartProductIds, paymentDescripti
           </div>
           <Button onClick={handlePayment} disabled={processing} className="w-full">
             {processing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-            {paymentMethod === 'pix' ? 'Gerar PIX' : 'Pagar com Cartão'}
+            {paymentMethod === 'pix' ? t('generatePix') : t('payWithCard')}
           </Button>
         </div>
 
         <button type="button" onClick={() => setStep('shipping')} className="text-xs text-muted-foreground hover:text-foreground w-full text-center">
-          ← Voltar ao frete
+          ← {t('backToShipping')}
         </button>
       </CardContent>
     </Card>

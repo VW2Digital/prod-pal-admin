@@ -532,15 +532,15 @@ const CustomerDashboard = () => {
                 <Card className="border-border/50">
                   <CardContent className="p-6 space-y-3">
                     <h2 className="text-lg font-semibold text-foreground">
-                      Olá, {userName}!
+                      {t('helloUser', { name: userName })}
                     </h2>
                     <p className="text-sm text-muted-foreground">
-                      A partir do painel da sua conta você pode visualizar seus{' '}
-                      <button onClick={() => setActiveTab('orders')} className="text-primary hover:underline font-medium">pedidos recentes</button>,
-                      gerenciar seus{' '}
-                      <button onClick={() => setActiveTab('addresses')} className="text-primary hover:underline font-medium">endereços de entrega e cobrança</button>,
-                      e{' '}
-                      <button onClick={() => setActiveTab('profile')} className="text-primary hover:underline font-medium">editar sua senha e detalhes da conta</button>.
+                      {t('accountPanelIntroStart')}{' '}
+                      <button onClick={() => setActiveTab('orders')} className="text-primary hover:underline font-medium">{t('recentOrders')}</button>,{' '}
+                      {t('accountPanelIntroManage')}{' '}
+                      <button onClick={() => setActiveTab('addresses')} className="text-primary hover:underline font-medium">{t('deliveryAndBillingAddresses')}</button>,{' '}
+                      {t('and')}{' '}
+                      <button onClick={() => setActiveTab('profile')} className="text-primary hover:underline font-medium">{t('editPasswordAndAccountDetails')}</button>.
                     </p>
                   </CardContent>
                 </Card>
@@ -556,7 +556,7 @@ const CustomerDashboard = () => {
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-foreground">{stats.total}</p>
-                      <p className="text-xs text-muted-foreground">Total de Pedidos</p>
+                      <p className="text-xs text-muted-foreground">{t('totalOrders')}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -569,7 +569,7 @@ const CustomerDashboard = () => {
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-foreground">{stats.pending}</p>
-                      <p className="text-xs text-muted-foreground">Pendentes</p>
+                      <p className="text-xs text-muted-foreground">{t('pendingPlural')}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -582,7 +582,7 @@ const CustomerDashboard = () => {
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-foreground">{stats.shipped}</p>
-                      <p className="text-xs text-muted-foreground">Enviados</p>
+                      <p className="text-xs text-muted-foreground">{t('shippedPlural')}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -597,7 +597,7 @@ const CustomerDashboard = () => {
                       <p className="text-2xl font-bold text-foreground">
                         R$ {stats.totalSpent.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </p>
-                      <p className="text-xs text-muted-foreground">Total Gasto</p>
+                      <p className="text-xs text-muted-foreground">{t('totalSpent')}</p>
                     </div>
                   </div>
                 </CardContent>

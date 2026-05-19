@@ -17,6 +17,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import { AdminCurrencyProvider } from '@/contexts/AdminCurrencyContext';
+import { AdminCurrencySwitcher } from '@/components/admin/AdminCurrencySwitcher';
 
 const AdminLayout = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -139,6 +141,7 @@ const AdminLayout = () => {
   }
 
   return (
+    <AdminCurrencyProvider>
     <SidebarProvider>
       <div className="admin-theme min-h-screen flex w-full overflow-x-hidden bg-background">
         <AdminSidebar />
@@ -188,6 +191,8 @@ const AdminLayout = () => {
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
+
+              <AdminCurrencySwitcher />
 
               <Button
                 variant="ghost"
@@ -241,6 +246,7 @@ const AdminLayout = () => {
         </div>
       </div>
     </SidebarProvider>
+    </AdminCurrencyProvider>
   );
 };
 

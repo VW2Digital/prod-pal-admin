@@ -188,14 +188,14 @@ const ResetPassword = () => {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-foreground">
-                {success ? 'Senha Redefinida!' : codeVerified ? 'Criar Nova Senha' : 'Validar Código'}
+                {success ? t('passwordResetDone') : codeVerified ? t('createNewPassword') : t('validateCode')}
               </h1>
               <p className="text-muted-foreground text-sm mt-1">
                 {success
-                  ? 'Sua senha foi alterada com sucesso. Redirecionando...'
+                  ? t('passwordChangedRedirecting')
                   : codeVerified
-                  ? `Código validado para ${email}`
-                  : 'Cole o código recebido por email para liberar a troca de senha.'}
+                  ? t('codeValidatedForEmail', { email })
+                  : t('pasteCodeToChangePassword')}
               </p>
             </div>
           </CardHeader>
@@ -203,13 +203,13 @@ const ResetPassword = () => {
             {success ? (
               <div className="text-center py-4">
                 <Link to="/cliente/login">
-                  <Button variant="outline">Ir para o Login</Button>
+                  <Button variant="outline">{t('goToLogin')}</Button>
                 </Link>
               </div>
             ) : !codeVerified ? (
               <form onSubmit={handleVerifyCode} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">{t('email')}</Label>
                   <Input
                     id="email"
                     type="email"
@@ -221,7 +221,7 @@ const ResetPassword = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="recovery-code">Código de recuperação</Label>
+                  <Label htmlFor="recovery-code">{t('recoveryCode')}</Label>
                   <Input
                     id="recovery-code"
                     inputMode="text"
@@ -244,7 +244,7 @@ const ResetPassword = () => {
                           to="/recuperar-senha"
                           className="inline-block font-semibold underline underline-offset-2 hover:opacity-80"
                         >
-                          Solicitar um novo código agora
+                          {t('requestNewCodeNow')}
                         </Link>
                       )}
                     </div>
@@ -252,21 +252,21 @@ const ResetPassword = () => {
                 )}
                 <Button type="submit" className="w-full" disabled={verifyingCode}>
                   {verifyingCode ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                  Validar código
+                  {t('validateCode')}
                 </Button>
                 <p className="text-xs text-muted-foreground text-center">
-                  O código é válido por 10 minutos após o envio.
+                  {t('codeValidFor10Minutes')}
                 </p>
                 <Link to="/recuperar-senha" className="block">
                   <Button type="button" variant="ghost" className="w-full">
-                    Solicitar novo código
+                    {t('requestNewCode')}
                   </Button>
                 </Link>
               </form>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="password">Nova Senha</Label>
+                  <Label htmlFor="password">{t('newPassword')}
                   <div className="relative">
                     <Input
                       id="password"
@@ -284,7 +284,7 @@ const ResetPassword = () => {
                       type="button"
                       onClick={() => setShowPassword((v) => !v)}
                       className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                      aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                      aria-label={showPassword ? t('hidePassword') : t('showPassword')}
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -301,16 +301,16 @@ const ResetPassword = () => {
                         <span className="text-xs text-muted-foreground w-16 text-right">{strengthLabel}</span>
                       </div>
                       <ul className="grid grid-cols-2 gap-x-3 gap-y-1">
-                        <Requirement ok={checks.length} label="Mín. 8 caracteres" />
-                        <Requirement ok={checks.upper} label="1 letra maiúscula" />
-                        <Requirement ok={checks.lower} label="1 letra minúscula" />
-                        <Requirement ok={checks.digit} label="1 número" />
+                        <Requirement ok={checks.length} label={t('min8Characters')} />
+                        <Requirement ok={checks.upper} label={t('oneUppercaseLetter')} />
+                        <Requirement ok={checks.lower} label={t('oneLowercaseLetter')} />
+                        <Requirement ok={checks.digit} label={t('oneNumber')} />
                       </ul>
                     </div>
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="confirm-password">Confirmar Nova Senha</Label>
+                  <Label htmlFor="confirm-password">{t('confirmNewPassword')}</Label>
                   <Input
                     id="confirm-password"
                     type={showPassword ? 'text' : 'password'}

@@ -171,6 +171,11 @@ const Checkout = () => {
                 </div>
               );
             })()}
+            {!isBRL && (
+              <p className="mt-3 text-[11px] text-muted-foreground text-center">
+                * Valores convertidos para referência. A cobrança é processada em Reais (BRL).
+              </p>
+            )}
           </div>
 
           {/* Checkout Form */}

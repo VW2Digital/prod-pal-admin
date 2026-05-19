@@ -89,7 +89,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const t = useCallback(
     (key: string, options?: Record<string, unknown>): string =>
       i18nT(key, options as any) as string,
-    [i18nT],
+    [i18nT, lang],
   );
 
   return (

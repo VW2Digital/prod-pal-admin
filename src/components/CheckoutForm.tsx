@@ -1637,7 +1637,7 @@ const CheckoutForm = ({ productName, productId, cartProductIds, paymentDescripti
         <Card className="border-border/50">
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
-              <MapPin className="w-4 h-4" /> Endereço de Entrega
+              <MapPin className="w-4 h-4" /> {t('deliveryAddress')}
             </CardTitle>
           </CardHeader>
         <CardContent className="space-y-3">
@@ -1647,7 +1647,7 @@ const CheckoutForm = ({ productName, productId, cartProductIds, paymentDescripti
               {/* If multiple addresses, show selector */}
               {savedAddresses.length > 1 && (
                 <div className="space-y-1.5">
-                  <Label className="text-xs">Selecione o endereço</Label>
+                  <Label className="text-xs">{t('selectAddress')}</Label>
                   <select
                     value={selectedAddressId}
                     onChange={(e) => {
@@ -1669,7 +1669,7 @@ const CheckoutForm = ({ productName, productId, cartProductIds, paymentDescripti
                         {a.label} — {a.street}, {a.number} ({a.city}/{a.state})
                       </option>
                     ))}
-                    <option value="new">+ Novo endereço</option>
+                    <option value="new">+ {t('newAddress')}</option>
                   </select>
                 </div>
               )}
@@ -1678,12 +1678,12 @@ const CheckoutForm = ({ productName, productId, cartProductIds, paymentDescripti
               <div className="bg-muted/50 rounded-lg p-4 border border-border/50 space-y-1">
                 <p className="text-sm font-medium text-foreground">{addrStreet}, {addrNumber}{addrComplement ? ` - ${addrComplement}` : ''}</p>
                 <p className="text-xs text-muted-foreground">{addrDistrict} — {addrCity}/{addrState}</p>
-                <p className="text-xs text-muted-foreground">CEP: {addrPostalCode}</p>
+                <p className="text-xs text-muted-foreground">{t('cep')}: {addrPostalCode}</p>
               </div>
 
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" onClick={() => setEditingAddress(true)} className="flex-1">
-                  Editar endereço
+                  {t('editAddress')}
                 </Button>
                 {savedAddresses.length <= 1 && (
                   <Button variant="outline" size="sm" onClick={() => {
@@ -1692,14 +1692,14 @@ const CheckoutForm = ({ productName, productId, cartProductIds, paymentDescripti
                     setAddrComplement(''); setAddrDistrict(''); setAddrCity(''); setAddrState('');
                     setEditingAddress(true);
                   }} className="flex-1">
-                    Usar outro endereço
+                    {t('useAnotherAddress')}
                   </Button>
                 )}
               </div>
 
               <Button onClick={handleAddressNext} disabled={loadingShipping} className="w-full">
                 {loadingShipping ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                Continuar
+                {t('continue')}
               </Button>
             </div>
           ) : (

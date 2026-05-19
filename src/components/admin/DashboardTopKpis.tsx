@@ -2,6 +2,15 @@ import { Card, CardContent } from '@/components/ui/card';
 import { DollarSign, ShoppingBag, Users, ArrowUpRight, ArrowDownRight, LucideIcon } from 'lucide-react';
 import { useAdminCurrency } from '@/contexts/AdminCurrencyContext';
 
+interface KpiProps {
+  revenueToday: number;
+  revenueDelta: number;
+  ordersToday: number;
+  ordersDelta: number;
+  totalCustomers: number;
+  customersDelta: number;
+}
+
 function Delta({ value }: { value: number }) {
   const positive = value >= 0;
   const Icon = positive ? ArrowUpRight : ArrowDownRight;

@@ -119,11 +119,6 @@ const VideoTestimonialCard = ({ thumbnail, name, videoUrl }: {thumbnail: string;
 };
 
 const ProductCheckout = () => {
-  const productTexts = useMemo(
-    () => product ? [product.name || '', product.subtitle || '', ...(variations || []).map((v: any) => v.dosage || ''), ...(banners || []).map((b: any) => b.text || '')] : [],
-    [product, variations, banners],
-  );
-  const translatedProductTexts = useAITranslateBatch(productTexts, lang);
   const { id } = useParams<{id: string;}>();
   const navigate = useNavigate();
   const { t, lang } = useLanguage();
@@ -346,6 +341,17 @@ const ProductCheckout = () => {
 
   const variations = product.product_variations || [];
   const variation = variations[selectedVariation];
+  const productTexts = [
+    product.name || '',
+    product.subtitle || '',
+    ...variations.map((v: any) => v.dosage || ''),
+    ...banners.map((b: any) => b.text || ''),
+  ];
+  const translatedProductTexts = useAITranslateBatch(productTexts, lang);
+  const translatedProductName = translatedProductTexts[0] || product.name;
+  const translatedProductSubtitle = translatedProductTexts[1] || product.subtitle;
+  const dosageOffset = 2;
+  const bannerOffset = dosageOffset + variations.length;
   const variationImages = variation?.images?.length > 0 ? variation.images : variation?.image_url ? [variation.image_url] : [];
   const images = variationImages.length > 0 ? variationImages : [productHeroImg];
 
@@ -388,7 +394,7 @@ const ProductCheckout = () => {
   const productJsonLd: Record<string, any> = {
     '@context': 'https://schema.org/',
     '@type': 'Product',
-    name: variation?.dosage ? `${product.name} ${variation.dosage}` : product.name,
+    name: variation?.dosage ? `${translatedProductName} ${translatedProductTexts[dosageOffset + selectedVariation] || variation.dosage}` : translatedProductName,
     description: (product.description || '').replace(/<[^>]+>/g, '').slice(0, 5000),
     image: absoluteImages.length > 0 ? absoluteImages : undefined,
     sku: variation?.id || product.id,
@@ -429,7 +435,7 @@ const ProductCheckout = () => {
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: t('homeLabel'), item: baseUrl || '/' },
       { '@type': 'ListItem', position: 2, name: t('catalog'), item: `${baseUrl}/catalogo` },
-      { '@type': 'ListItem', position: 3, name: product.name, item: canonicalUrl },
+      { '@type': 'ListItem', position: 3, name: translatedProductName, item: canonicalUrl },
     ],
   };
 
@@ -441,11 +447,11 @@ const ProductCheckout = () => {
       {banners.length > 0 &&
       <div className="bg-black text-white overflow-hidden">
           <div className="animate-marquee whitespace-nowrap py-2 text-xs font-medium tracking-wide">
-            {banners.map((b) =>
-          <span key={b.id} className="mx-8">{b.text}</span>
+            {banners.map((b, idx) =>
+          <span key={b.id} className="mx-8">{translatedProductTexts[bannerOffset + idx] || b.text}</span>
           )}
-            {banners.map((b) =>
-          <span key={`dup-${b.id}`} className="mx-8">{b.text}</span>
+            {banners.map((b, idx) =>
+          <span key={`dup-${b.id}`} className="mx-8">{translatedProductTexts[bannerOffset + idx] || b.text}</span>
           )}
           </div>
         </div>
@@ -461,7 +467,7 @@ const ProductCheckout = () => {
             <div className="relative bg-card rounded-xl border border-border/50 overflow-hidden aspect-square flex items-center justify-center">
               <img
                 src={images[currentImage]}
-                alt={product.name}
+                alt={translatedProductName}
                 className="max-w-[80%] max-h-[80%] object-contain" />
               
               {images.length > 1 &&
@@ -502,7 +508,7 @@ const ProductCheckout = () => {
           {/* Product Info */}
           <AnimatedSection variant="fadeUp" delay={0.2} className="space-y-6">
             <div>
-              <h1 className="text-3xl font-bold text-foreground">{product.name}</h1>
+              <h1 className="text-3xl font-bold text-foreground">{translatedProductName}</h1>
             </div>
 
             {/* Dosage Selector */}
@@ -529,9 +535,9 @@ const ProductCheckout = () => {
                   <CheckCircle2 className="absolute top-2 right-2 w-5 h-5 text-primary" />
                   }
                       {v.image_url && (
-                        <img src={v.image_url} alt={translateValue(v.dosage)} className="w-12 h-12 object-contain mb-1 rounded" />
+                        <img src={v.image_url} alt={translatedProductTexts[dosageOffset + i] || translateValue(v.dosage)} className="w-12 h-12 object-contain mb-1 rounded" />
                       )}
-                      <p className="font-semibold text-foreground">{translateValue(v.dosage)}</p>
+                      <p className="font-semibold text-foreground">{translatedProductTexts[dosageOffset + i] || translateValue(v.dosage)}</p>
                       {v.is_offer && v.offer_price ? (
                         <>
                           <p className="text-muted-foreground text-xs line-through">R$ {Number(v.price).toLocaleString('pt-BR')}</p>
@@ -548,7 +554,7 @@ const ProductCheckout = () => {
 
             {(variation?.subtitle || product.subtitle) && (
               <div className="bg-muted/50 rounded-lg px-4 py-3 border border-border/30">
-                <p className="text-sm text-muted-foreground">{translateValue(variation?.subtitle || product.subtitle)}</p>
+                <p className="text-sm text-muted-foreground">{translatedProductSubtitle || translateValue(variation?.subtitle || product.subtitle)}</p>
               </div>
             )}
 

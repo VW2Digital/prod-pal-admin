@@ -403,7 +403,7 @@ const CustomerDashboard = () => {
   const filteredOrders = useMemo(() => {
     return orders.filter(o => {
       if (statusFilter !== 'all' && o.status !== statusFilter) return false;
-      if (deliveryFilter !== 'all' && o.delivery_status !== deliveryFilter) return false;
+      if (deliveryFilter !== 'all' && normalizeDeliveryStatus(o.delivery_status) !== deliveryFilter) return false;
       if (searchTerm) {
         const term = searchTerm.toLowerCase();
         return (
@@ -689,7 +689,8 @@ const CustomerDashboard = () => {
                   <div className="space-y-3">
                     {filteredOrders.map((order) => {
                       const paymentStatus = paymentStatusMap[order.status] || { labelKey: order.status, variant: 'outline' as const, icon: Clock, color: '', badgeClass: '' };
-                      const deliveryStatus = deliveryStatusMap[order.delivery_status] || { labelKey: order.delivery_status || 'deliveryProcessing', variant: 'outline' as const, color: '' };
+                      const normalizedDeliveryStatus = normalizeDeliveryStatus(order.delivery_status);
+                      const deliveryStatus = deliveryStatusMap[order.delivery_status] || deliveryStatusMap[normalizedDeliveryStatus] || { labelKey: 'deliveryProcessing', variant: 'outline' as const, color: '' };
                       const PaymentIcon = paymentStatus.icon;
                       const isExpanded = expandedOrder === order.id;
 
@@ -790,9 +791,9 @@ const CustomerDashboard = () => {
                                     <div
                                       className="absolute top-4 left-0 h-0.5 bg-primary transition-all duration-500"
                                       style={{
-                                        width: order.delivery_status === 'DELIVERED' ? '100%'
-                                          : order.delivery_status === 'IN_TRANSIT' ? '66%'
-                                          : order.delivery_status === 'SHIPPED' ? '33%'
+                                        width: normalizedDeliveryStatus === 'DELIVERED' ? '100%'
+                                          : normalizedDeliveryStatus === 'IN_TRANSIT' ? '66%'
+                                          : normalizedDeliveryStatus === 'SHIPPED' ? '33%'
                                           : '0%'
                                       }}
                                     />
@@ -803,7 +804,7 @@ const CustomerDashboard = () => {
                                       { key: 'DELIVERED', labelKey: 'deliveryDelivered', icon: CheckCircle2 },
                                     ].map((step, i) => {
                                       const statusOrder = ['PROCESSING', 'SHIPPED', 'IN_TRANSIT', 'DELIVERED'];
-                                      const currentIdx = statusOrder.indexOf(order.delivery_status || 'PROCESSING');
+                                      const currentIdx = statusOrder.indexOf(normalizedDeliveryStatus);
                                       const stepIdx = statusOrder.indexOf(step.key);
                                       const isActive = stepIdx <= currentIdx;
                                       const isCurrent = stepIdx === currentIdx;

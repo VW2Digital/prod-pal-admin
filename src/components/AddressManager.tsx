@@ -312,9 +312,9 @@ const AddressManager = () => {
         <Card className="border-border/50">
           <CardContent className="py-10 text-center space-y-3">
             <MapPin className="w-10 h-10 text-muted-foreground/40 mx-auto" />
-            <p className="text-sm text-muted-foreground">Nenhum endereço cadastrado</p>
+            <p className="text-sm text-muted-foreground">{t('noAddresses')}</p>
             <Button size="sm" onClick={() => setShowForm(true)}>
-              <Plus className="w-4 h-4 mr-1" /> Adicionar Endereço
+              <Plus className="w-4 h-4 mr-1" /> {t('addAddress')}
             </Button>
           </CardContent>
         </Card>
@@ -328,7 +328,7 @@ const AddressManager = () => {
                     <span className="font-semibold text-foreground text-sm">{addr.label}</span>
                     {addr.is_default && (
                       <Badge variant="default" className="text-[10px] px-1.5 py-0">
-                        <Star className="w-2.5 h-2.5 mr-0.5" /> Padrão
+                        <Star className="w-2.5 h-2.5 mr-0.5" /> {t('default')}
                       </Badge>
                     )}
                   </div>
@@ -336,15 +336,15 @@ const AddressManager = () => {
                 <div className="text-sm text-muted-foreground space-y-0.5">
                   <p>{addr.street}, {addr.number}{addr.complement ? ` - ${addr.complement}` : ''}</p>
                   <p>{addr.district} - {addr.city}/{addr.state}</p>
-                  <p>CEP: {addr.postal_code.replace(/(\d{5})(\d{3})/, '$1-$2')}</p>
+                  <p>{t('cep')}: {addr.postal_code.replace(/(\d{5})(\d{3})/, '$1-$2')}</p>
                 </div>
                 <div className="flex gap-1.5 pt-1">
                   <Button variant="outline" size="sm" className="text-xs h-7" onClick={() => handleEdit(addr)}>
-                    Editar
+                    {t('edit')}
                   </Button>
                   {!addr.is_default && (
                     <Button variant="outline" size="sm" className="text-xs h-7" onClick={() => handleSetDefault(addr.id)}>
-                      <Star className="w-3 h-3 mr-1" /> Tornar Padrão
+                      <Star className="w-3 h-3 mr-1" /> {t('makeDefault')}
                     </Button>
                   )}
                   <AlertDialog>
@@ -355,14 +355,14 @@ const AddressManager = () => {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Remover endereço?</AlertDialogTitle>
+                        <AlertDialogTitle>{t('removeAddressQuestion')}</AlertDialogTitle>
                         <AlertDialogDescription>
-                          O endereço "{addr.label}" será removido permanentemente.
+                          {t('addressWillBeRemoved', { label: addr.label })}
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDelete(addr.id)}>Remover</AlertDialogAction>
+                        <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => handleDelete(addr.id)}>{t('remove')}</AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>

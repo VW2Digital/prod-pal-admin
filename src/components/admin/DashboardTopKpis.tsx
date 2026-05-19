@@ -1,17 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { DollarSign, ShoppingBag, Users, ArrowUpRight, ArrowDownRight, LucideIcon } from 'lucide-react';
-
-interface KpiProps {
-  revenueToday: number;
-  revenueDelta: number;
-  ordersToday: number;
-  ordersDelta: number;
-  totalCustomers: number;
-  customersDelta: number;
-}
-
-const formatBRL = (v: number) =>
-  v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 });
+import { useAdminCurrency } from '@/contexts/AdminCurrencyContext';
 
 function Delta({ value }: { value: number }) {
   const positive = value >= 0;

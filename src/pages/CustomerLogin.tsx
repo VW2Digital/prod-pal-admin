@@ -22,10 +22,10 @@ const formatPhoneBR = (raw: string) => {
 // Validação BR: DDD 11-99, 10-11 dígitos, móvel (11) começa com 9
 const validatePhoneBR = (raw: string): string | null => {
   const d = raw.replace(/\D/g, '');
-  if (d.length < 10 || d.length > 11) return 'Telefone deve ter 10 ou 11 dígitos (com DDD).';
+  if (d.length < 10 || d.length > 11) return 'phoneDigitsWithDdd';
   const ddd = parseInt(d.slice(0, 2), 10);
-  if (isNaN(ddd) || ddd < 11 || ddd > 99) return 'DDD inválido. Use um DDD válido (entre 11 e 99).';
-  if (d.length === 11 && d[2] !== '9') return 'Celular deve começar com 9 após o DDD.';
+  if (isNaN(ddd) || ddd < 11 || ddd > 99) return 'invalidDdd';
+  if (d.length === 11 && d[2] !== '9') return 'mobileMustStartWith9';
   return null;
 };
 
@@ -57,7 +57,7 @@ const CustomerLogin = () => {
       if (isSignUp) {
         const phoneError = validatePhoneBR(phone);
         if (phoneError) {
-          toast({ title: t('phoneInvalid'), description: phoneError, variant: 'destructive' });
+          toast({ title: t('phoneInvalid'), description: t(phoneError), variant: 'destructive' });
           setLoading(false);
           return;
         }

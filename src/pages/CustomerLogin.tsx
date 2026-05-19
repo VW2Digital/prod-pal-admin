@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Package, Loader2, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import logoImg from '@/assets/liberty-pharma-logo.png';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // Máscara BR: (11) 91234-5678 ou (11) 1234-5678
 const formatPhoneBR = (raw: string) => {
@@ -21,10 +22,10 @@ const formatPhoneBR = (raw: string) => {
 // Validação BR: DDD 11-99, 10-11 dígitos, móvel (11) começa com 9
 const validatePhoneBR = (raw: string): string | null => {
   const d = raw.replace(/\D/g, '');
-  if (d.length < 10 || d.length > 11) return 'Telefone deve ter 10 ou 11 dígitos (com DDD).';
+  if (d.length < 10 || d.length > 11) return 'phoneDigitsWithDdd';
   const ddd = parseInt(d.slice(0, 2), 10);
-  if (isNaN(ddd) || ddd < 11 || ddd > 99) return 'DDD inválido. Use um DDD válido (entre 11 e 99).';
-  if (d.length === 11 && d[2] !== '9') return 'Celular deve começar com 9 após o DDD.';
+  if (isNaN(ddd) || ddd < 11 || ddd > 99) return 'invalidDdd';
+  if (d.length === 11 && d[2] !== '9') return 'mobileMustStartWith9';
   return null;
 };
 
@@ -40,6 +41,7 @@ const CustomerLogin = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
+  const { t } = useLanguage();
   const redirectTo = searchParams.get('redirect') || '/minha-conta';
 
   useEffect(() => {
@@ -55,7 +57,7 @@ const CustomerLogin = () => {
       if (isSignUp) {
         const phoneError = validatePhoneBR(phone);
         if (phoneError) {
-          toast({ title: 'Telefone inválido', description: phoneError, variant: 'destructive' });
+          toast({ title: t('phoneInvalid'), description: t(phoneError), variant: 'destructive' });
           setLoading(false);
           return;
         }
@@ -82,8 +84,8 @@ const CustomerLogin = () => {
         }
 
         toast({
-          title: 'Conta criada!',
-          description: 'Verifique seu email para confirmar o cadastro.',
+          title: t('accountCreated'),
+          description: t('checkEmailToConfirmSignup'),
         });
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -92,8 +94,8 @@ const CustomerLogin = () => {
       }
     } catch (err: any) {
       toast({
-        title: 'Erro',
-        description: err.message || 'Email ou senha incorretos.',
+        title: t('error'),
+        description: err.message || t('invalidEmailOrPassword'),
         variant: 'destructive',
       });
     } finally {
@@ -111,14 +113,14 @@ const CustomerLogin = () => {
       if (error) throw error;
       if ((data as any)?.error) throw new Error((data as any).error);
       toast({
-        title: 'Email enviado!',
-        description: 'Verifique sua caixa de entrada e copie o código de recuperação.',
+        title: t('emailSent'),
+        description: t('checkInboxForRecoveryCode'),
       });
       setIsForgotPassword(false);
     } catch (err: any) {
       toast({
-        title: 'Erro',
-        description: err.message || 'Não foi possível enviar o email.',
+        title: t('error'),
+        description: err.message || t('couldNotSendEmail'),
         variant: 'destructive',
       });
     } finally {
@@ -134,7 +136,7 @@ const CustomerLogin = () => {
             <img src={logoImg} alt="Liberty Pharma" className="h-10 object-contain" />
           </Link>
           <Link to="/catalogo" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Voltar ao catálogo
+            {t('backToCatalog')}
           </Link>
         </div>
       </header>
@@ -147,14 +149,14 @@ const CustomerLogin = () => {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-foreground">
-                {isForgotPassword ? 'Esqueci minha senha' : 'Área do Cliente'}
+                {isForgotPassword ? t('forgotMyPassword') : t('customerArea')}
               </h1>
               <p className="text-muted-foreground text-sm mt-1">
                 {isForgotPassword
-                  ? 'Informe seu email para receber o código de redefinição'
+                  ? t('enterEmailForResetCode')
                   : isSignUp
-                    ? 'Crie sua conta para acompanhar seus pedidos'
-                    : 'Faça login para acompanhar seus pedidos'
+                    ? t('createAccountToTrackOrders')
+                    : t('loginToTrackOrders')
                 }
               </p>
             </div>
@@ -163,7 +165,7 @@ const CustomerLogin = () => {
             {isForgotPassword ? (
               <form onSubmit={handleForgotPassword} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">{t('email')}</Label>
                   <Input
                     id="email"
                     type="email"
@@ -175,24 +177,24 @@ const CustomerLogin = () => {
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                  Enviar código de redefinição
+                  {t('sendResetCode')}
                 </Button>
                 <button
                   type="button"
                   onClick={() => setIsForgotPassword(false)}
                   className="w-full text-sm text-muted-foreground hover:text-foreground flex items-center justify-center gap-1 transition-colors"
                 >
-                  <ArrowLeft className="w-3 h-3" /> Voltar ao login
+                  <ArrowLeft className="w-3 h-3" /> {t('backToLogin')}
                 </button>
               </form>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
                 {isSignUp && (
                   <div className="space-y-2">
-                    <Label htmlFor="name">Nome completo</Label>
+                    <Label htmlFor="name">{t('fullName')}</Label>
                     <Input
                       id="name"
-                      placeholder="Seu nome"
+                      placeholder={t('yourName')}
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       required
@@ -201,7 +203,7 @@ const CustomerLogin = () => {
                 )}
                 {isSignUp && (
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Telefone (WhatsApp)</Label>
+                    <Label htmlFor="phone">{t('whatsappPhone')}</Label>
                     <Input
                       id="phone"
                       type="tel"
@@ -213,12 +215,12 @@ const CustomerLogin = () => {
                       required
                     />
                     <p className="text-xs text-muted-foreground">
-                      Usaremos para avisar você sobre o status do pedido e entrega.
+                      {t('phoneOrderStatusNotice')}
                     </p>
                   </div>
                 )}
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">{t('email')}</Label>
                   <Input
                     id="email"
                     type="email"
@@ -230,14 +232,14 @@ const CustomerLogin = () => {
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="password">Senha</Label>
+                    <Label htmlFor="password">{t('password')}</Label>
                     {!isSignUp && (
                       <button
                         type="button"
                         onClick={() => setIsForgotPassword(true)}
                         className="text-xs text-primary hover:underline"
                       >
-                        Esqueceu a senha?
+                        {t('forgotPasswordQuestion')}
                       </button>
                     )}
                   </div>
@@ -262,16 +264,16 @@ const CustomerLogin = () => {
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                  {isSignUp ? 'Criar Conta' : 'Entrar'}
+                  {isSignUp ? t('createAccount') : t('login')}
                 </Button>
                 <p className="text-sm text-center text-muted-foreground">
-                  {isSignUp ? 'Já tem conta?' : 'Não tem conta?'}{' '}
+                  {isSignUp ? t('alreadyHaveAccount') : t('noAccount')}{' '}
                   <button
                     type="button"
                     onClick={() => setIsSignUp(!isSignUp)}
                     className="text-primary font-medium hover:underline"
                   >
-                    {isSignUp ? 'Fazer login' : 'Criar conta'}
+                    {isSignUp ? t('signInAction') : t('createAccountLower')}
                   </button>
                 </p>
               </form>

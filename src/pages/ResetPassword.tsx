@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { KeyRound, Loader2, CheckCircle2, AlertTriangle, Check, X, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import logoImg from '@/assets/liberty-pharma-logo.png';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type PasswordChecks = {
   length: boolean;
@@ -43,6 +44,7 @@ const ResetPassword = () => {
   const [needsNewCode, setNeedsNewCode] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const checks = evaluatePassword(password);
   const score = strengthScore(checks);
@@ -56,12 +58,12 @@ const ResetPassword = () => {
     setNeedsNewCode(false);
 
     if (!normalizedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-      setFormError('Informe o email usado para solicitar a recuperação.');
+      setFormError(t('enterRecoveryEmail'));
       return;
     }
 
     if (code.length !== 8) {
-      setFormError('Cole o código de 8 caracteres recebido por email.');
+      setFormError(t('paste8CharCode'));
       return;
     }
 
@@ -88,18 +90,18 @@ const ResetPassword = () => {
       setEmail(normalizedEmail);
       setCodeVerified(true);
       toast({
-        title: 'Código validado!',
-        description: 'Agora você já pode criar uma nova senha.',
+        title: t('codeValidated'),
+        description: t('canCreateNewPassword'),
       });
     } catch (err: any) {
       const code = err?.code;
       const msg =
         err?.message ||
-        'Não foi possível validar o código. Solicite um novo código e tente novamente.';
+        t('couldNotValidateCode');
       setFormError(msg);
       setNeedsNewCode(code === 'expired' || code === 'invalid_code' || code === 'used');
       toast({
-        title: code === 'expired' ? 'Código expirado' : 'Código inválido',
+        title: code === 'expired' ? t('codeExpired') : t('invalidCode'),
         description: msg,
         variant: 'destructive',
       });
@@ -113,15 +115,15 @@ const ResetPassword = () => {
     setFormError(null);
 
     if (!codeVerified) {
-      setFormError('Valide o código enviado por email antes de alterar a senha.');
+      setFormError(t('validateCodeBeforeChangingPassword'));
       return;
     }
     if (!allValid) {
-      setFormError('A senha não atende aos requisitos mínimos de segurança.');
+      setFormError(t('passwordDoesNotMeetRequirements'));
       return;
     }
     if (password !== confirmPassword) {
-      setFormError('As senhas não coincidem.');
+      setFormError(t('passwordsDoNotMatch'));
       return;
     }
 
@@ -135,14 +137,14 @@ const ResetPassword = () => {
 
       setSuccess(true);
       toast({
-        title: 'Senha redefinida com sucesso!',
-        description: 'Você será redirecionado para o login em instantes.',
+        title: t('passwordResetSuccess'),
+        description: t('redirectingToLoginSoon'),
       });
       setTimeout(() => navigate('/cliente/login'), 3000);
     } catch (err: any) {
-      const msg = err?.message || 'Não foi possível redefinir sua senha. Tente novamente.';
+      const msg = err?.message || t('couldNotResetPassword');
       setFormError(msg);
-      toast({ title: 'Erro ao redefinir senha', description: msg, variant: 'destructive' });
+      toast({ title: t('passwordResetError'), description: msg, variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -159,7 +161,7 @@ const ResetPassword = () => {
     </li>
   );
 
-  const strengthLabel = ['Muito fraca', 'Fraca', 'Média', 'Boa', 'Forte'][score];
+  const strengthLabel = [t('veryWeak'), t('weak'), t('medium'), t('good'), t('strong')][score];
   const strengthColor = ['bg-destructive', 'bg-destructive', 'bg-secondary', 'bg-primary/70', 'bg-primary'][score];
 
   return (
@@ -186,14 +188,14 @@ const ResetPassword = () => {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-foreground">
-                {success ? 'Senha Redefinida!' : codeVerified ? 'Criar Nova Senha' : 'Validar Código'}
+                {success ? t('passwordResetDone') : codeVerified ? t('createNewPassword') : t('validateCode')}
               </h1>
               <p className="text-muted-foreground text-sm mt-1">
                 {success
-                  ? 'Sua senha foi alterada com sucesso. Redirecionando...'
+                  ? t('passwordChangedRedirecting')
                   : codeVerified
-                  ? `Código validado para ${email}`
-                  : 'Cole o código recebido por email para liberar a troca de senha.'}
+                  ? t('codeValidatedForEmail', { email })
+                  : t('pasteCodeToChangePassword')}
               </p>
             </div>
           </CardHeader>
@@ -201,13 +203,13 @@ const ResetPassword = () => {
             {success ? (
               <div className="text-center py-4">
                 <Link to="/cliente/login">
-                  <Button variant="outline">Ir para o Login</Button>
+                  <Button variant="outline">{t('goToLogin')}</Button>
                 </Link>
               </div>
             ) : !codeVerified ? (
               <form onSubmit={handleVerifyCode} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">{t('email')}</Label>
                   <Input
                     id="email"
                     type="email"
@@ -219,7 +221,7 @@ const ResetPassword = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="recovery-code">Código de recuperação</Label>
+                  <Label htmlFor="recovery-code">{t('recoveryCode')}</Label>
                   <Input
                     id="recovery-code"
                     inputMode="text"
@@ -242,7 +244,7 @@ const ResetPassword = () => {
                           to="/recuperar-senha"
                           className="inline-block font-semibold underline underline-offset-2 hover:opacity-80"
                         >
-                          Solicitar um novo código agora
+                          {t('requestNewCodeNow')}
                         </Link>
                       )}
                     </div>
@@ -250,21 +252,21 @@ const ResetPassword = () => {
                 )}
                 <Button type="submit" className="w-full" disabled={verifyingCode}>
                   {verifyingCode ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                  Validar código
+                  {t('validateCode')}
                 </Button>
                 <p className="text-xs text-muted-foreground text-center">
-                  O código é válido por 10 minutos após o envio.
+                  {t('codeValidFor10Minutes')}
                 </p>
                 <Link to="/recuperar-senha" className="block">
                   <Button type="button" variant="ghost" className="w-full">
-                    Solicitar novo código
+                    {t('requestNewCode')}
                   </Button>
                 </Link>
               </form>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="password">Nova Senha</Label>
+                  <Label htmlFor="password">{t('newPassword')}</Label>
                   <div className="relative">
                     <Input
                       id="password"
@@ -282,7 +284,7 @@ const ResetPassword = () => {
                       type="button"
                       onClick={() => setShowPassword((v) => !v)}
                       className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                      aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                      aria-label={showPassword ? t('hidePassword') : t('showPassword')}
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -299,16 +301,16 @@ const ResetPassword = () => {
                         <span className="text-xs text-muted-foreground w-16 text-right">{strengthLabel}</span>
                       </div>
                       <ul className="grid grid-cols-2 gap-x-3 gap-y-1">
-                        <Requirement ok={checks.length} label="Mín. 8 caracteres" />
-                        <Requirement ok={checks.upper} label="1 letra maiúscula" />
-                        <Requirement ok={checks.lower} label="1 letra minúscula" />
-                        <Requirement ok={checks.digit} label="1 número" />
+                        <Requirement ok={checks.length} label={t('min8Characters')} />
+                        <Requirement ok={checks.upper} label={t('oneUppercaseLetter')} />
+                        <Requirement ok={checks.lower} label={t('oneLowercaseLetter')} />
+                        <Requirement ok={checks.digit} label={t('oneNumber')} />
                       </ul>
                     </div>
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="confirm-password">Confirmar Nova Senha</Label>
+                  <Label htmlFor="confirm-password">{t('confirmNewPassword')}</Label>
                   <Input
                     id="confirm-password"
                     type={showPassword ? 'text' : 'password'}
@@ -323,7 +325,7 @@ const ResetPassword = () => {
                   {confirmPassword.length > 0 && (
                     <p className={`text-xs flex items-center gap-1 ${passwordsMatch ? 'text-primary' : 'text-destructive'}`}>
                       {passwordsMatch ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
-                      {passwordsMatch ? 'As senhas coincidem' : 'As senhas não coincidem'}
+                      {passwordsMatch ? t('passwordsMatch') : t('passwordsDoNotMatch')}
                     </p>
                   )}
                 </div>
@@ -339,7 +341,7 @@ const ResetPassword = () => {
                   disabled={loading || !allValid || !passwordsMatch}
                 >
                   {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                  Redefinir Senha
+                  {t('resetPassword')}
                 </Button>
               </form>
             )}

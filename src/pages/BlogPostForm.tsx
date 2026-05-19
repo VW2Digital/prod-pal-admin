@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, Loader2, Upload, Eye, X } from 'lucide-react';
+import { ArrowLeft, Loader2, Upload, Eye, X, Facebook, Twitter, Linkedin, MessageCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import RichTextEditor from '@/components/RichTextEditor';
 

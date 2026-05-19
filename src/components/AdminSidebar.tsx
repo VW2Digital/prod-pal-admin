@@ -64,6 +64,7 @@ const menuCategories = [
   {
     label: 'Marketing',
     items: [
+      { title: 'Blog', url: '/admin/blog', icon: Newspaper },
       { title: 'Disparo de E-mails', url: '/admin/disparo-emails', icon: Send },
     ],
   },

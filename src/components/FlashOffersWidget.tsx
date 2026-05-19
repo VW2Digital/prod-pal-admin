@@ -3,6 +3,7 @@ import { useLocation, Link } from "react-router-dom";
 import { X, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchSetting } from "@/lib/api";
+import { usePublicCurrency } from "@/lib/publicCurrency";
 
 interface OfferItem {
   id: string;
@@ -22,8 +23,7 @@ interface WidgetConfig {
   title: string;
 }
 
-const formatBRL = (v: number) =>
-  v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+// formatBRL agora vem do hook usePublicCurrency dentro do componente
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -43,6 +43,7 @@ function useCountdown(target: Date | null) {
 }
 
 const FlashOffersWidget = () => {
+  const { format: formatBRL } = usePublicCurrency();
   const location = useLocation();
   const [config, setConfig] = useState<WidgetConfig | null>(null);
   const [items, setItems] = useState<OfferItem[]>([]);

@@ -1707,7 +1707,7 @@ const CheckoutForm = ({ productName, productId, cartProductIds, paymentDescripti
               {/* Full address form */}
               {savedAddresses.length > 0 && (
                 <div className="space-y-1.5">
-                  <Label className="text-xs">Endereço salvo</Label>
+                  <Label className="text-xs">{t('savedAddress')}</Label>
                   <select
                     value={selectedAddressId}
                     onChange={(e) => {
@@ -1729,12 +1729,12 @@ const CheckoutForm = ({ productName, productId, cartProductIds, paymentDescripti
                         {a.label} — {a.street}, {a.number} ({a.city}/{a.state})
                       </option>
                     ))}
-                    <option value="new">+ Novo endereço</option>
+                    <option value="new">+ {t('newAddress')}</option>
                   </select>
                 </div>
               )}
               <div className="space-y-1.5">
-                <Label className="text-xs">CEP *</Label>
+                <Label className="text-xs">{t('cep')} *</Label>
                 <Input
                   value={addrPostalCode}
                   onChange={(e) => {
@@ -1747,32 +1747,32 @@ const CheckoutForm = ({ productName, productId, cartProductIds, paymentDescripti
                   className={addressErrors.postalCode ? 'border-destructive' : ''}
                 />
                 <ErrorText msg={addressErrors.postalCode} />
-                {fetchingCep && <p className="text-xs text-muted-foreground">Buscando endereço...</p>}
+                {fetchingCep && <p className="text-xs text-muted-foreground">{t('fetchingAddress')}</p>}
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs">Endereço *</Label>
-                <Input value={addrStreet} onChange={(e) => { setAddrStreet(e.target.value); setAddressErrors(p => ({ ...p, address: undefined })); }} placeholder="Rua, Avenida..." className={addressErrors.address ? 'border-destructive' : ''} />
+                <Label className="text-xs">{t('address')} *</Label>
+                <Input value={addrStreet} onChange={(e) => { setAddrStreet(e.target.value); setAddressErrors(p => ({ ...p, address: undefined })); }} placeholder={t('streetPlaceholder')} className={addressErrors.address ? 'border-destructive' : ''} />
                 <ErrorText msg={addressErrors.address} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label className="text-xs">Número *</Label>
+                  <Label className="text-xs">{t('addressNumber')} *</Label>
                   <Input value={addrNumber} onChange={(e) => { setAddrNumber(e.target.value); setAddressErrors(p => ({ ...p, number: undefined })); }} placeholder="123" className={addressErrors.number ? 'border-destructive' : ''} />
                   <ErrorText msg={addressErrors.number} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs">Complemento</Label>
-                  <Input value={addrComplement} onChange={(e) => setAddrComplement(e.target.value)} placeholder="Apto, Bloco..." />
+                  <Label className="text-xs">{t('complement')}</Label>
+                  <Input value={addrComplement} onChange={(e) => setAddrComplement(e.target.value)} placeholder={t('complementPlaceholder')} />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs">Bairro *</Label>
+                <Label className="text-xs">{t('district')} *</Label>
                 <Input value={addrDistrict} onChange={(e) => { setAddrDistrict(e.target.value); setAddressErrors(p => ({ ...p, district: undefined })); }} placeholder="Centro" className={addressErrors.district ? 'border-destructive' : ''} />
                 <ErrorText msg={addressErrors.district} />
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <div className="col-span-2 space-y-1.5">
-                  <Label className="text-xs">Cidade *</Label>
+                  <Label className="text-xs">{t('city')} *</Label>
                   <Input value={addrCity} onChange={(e) => { setAddrCity(e.target.value); setAddressErrors(p => ({ ...p, city: undefined })); }} placeholder="São Paulo" className={addressErrors.city ? 'border-destructive' : ''} />
                   <ErrorText msg={addressErrors.city} />
                 </div>

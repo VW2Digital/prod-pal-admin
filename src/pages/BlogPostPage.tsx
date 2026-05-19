@@ -50,8 +50,15 @@ export default function BlogPostPage() {
     return Math.max(1, Math.round(words / 200));
   }, [post?.content]);
 
+  // Tradução dinâmica de título, resumo, autor e conteúdo (HTML) via IA
+  const sourceTexts = useMemo(
+    () => [post?.title || '', post?.excerpt || '', post?.author_name || '', post?.content || ''],
+    [post?.title, post?.excerpt, post?.author_name, post?.content],
+  );
+  const [tTitle, tExcerpt, tAuthor, tContent] = useAITranslateBatch(sourceTexts, lang);
+
   const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
-  const shareText = post?.title || '';
+  const shareText = tTitle || '';
 
   const share = (network: 'facebook' | 'twitter' | 'linkedin' | 'whatsapp') => {
     const u = encodeURIComponent(shareUrl);

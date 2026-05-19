@@ -232,7 +232,7 @@ const CustomerLogin = () => {
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="password">{t('password')}
+                    <Label htmlFor="password">{t('password')}</Label>
                     {!isSignUp && (
                       <button
                         type="button"

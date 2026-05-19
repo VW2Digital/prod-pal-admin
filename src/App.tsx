@@ -84,6 +84,10 @@ const ResellerDetailPage = lazy(() => import("./pages/ResellerDetailPage"));
 const CombosManagerPage = lazy(() => import("./pages/CombosManagerPage"));
 const ComboCheckout = lazy(() => import("./pages/ComboCheckout"));
 const SettingsFlashOffersWidget = lazy(() => import("./pages/settings/SettingsFlashOffersWidget"));
+const BlogPostsList = lazy(() => import("./pages/BlogPostsList"));
+const BlogPostForm = lazy(() => import("./pages/BlogPostForm"));
+const BlogIndex = lazy(() => import("./pages/BlogIndex"));
+const BlogPostPage = lazy(() => import("./pages/BlogPostPage"));
 
 import PromoPopup from "./components/PromoPopup";
 import FlashOffersWidget from "./components/FlashOffersWidget";

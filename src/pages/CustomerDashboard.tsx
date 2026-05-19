@@ -672,8 +672,8 @@ const CustomerDashboard = () => {
                 ) : (
                   <div className="space-y-3">
                     {filteredOrders.map((order) => {
-                      const paymentStatus = paymentStatusMap[order.status] || { label: order.status, variant: 'outline' as const, icon: Clock, color: '', badgeClass: '' };
-                      const deliveryStatus = deliveryStatusMap[order.delivery_status] || { label: order.delivery_status || 'Em Processamento', variant: 'outline' as const, color: '' };
+                      const paymentStatus = paymentStatusMap[order.status] || { labelKey: order.status, variant: 'outline' as const, icon: Clock, color: '', badgeClass: '' };
+                      const deliveryStatus = deliveryStatusMap[order.delivery_status] || { labelKey: order.delivery_status || 'deliveryProcessing', variant: 'outline' as const, color: '' };
                       const PaymentIcon = paymentStatus.icon;
                       const isExpanded = expandedOrder === order.id;
 
@@ -699,7 +699,7 @@ const CustomerDashboard = () => {
                               </div>
                               <div className="flex items-center gap-2 shrink-0">
                                 <span className="text-xs text-muted-foreground">
-                                  {new Date(order.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                  {new Date(order.created_at).toLocaleDateString(dateLocaleMap[lang], { day: '2-digit', month: 'short', year: 'numeric' })}
                                 </span>
                                 <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                               </div>
@@ -710,11 +710,11 @@ const CustomerDashboard = () => {
                               <div className="flex flex-wrap gap-1.5">
                                 <Badge variant={paymentStatus.variant} className={`flex items-center gap-1 text-xs ${paymentStatus.badgeClass || ''}`}>
                                   <PaymentIcon className="w-3 h-3" />
-                                  {paymentStatus.label}
+                                  {t(paymentStatus.labelKey)}
                                 </Badge>
                                 <Badge variant={deliveryStatus.variant} className="flex items-center gap-1 text-xs">
                                   <Truck className="w-3 h-3" />
-                                  {deliveryStatus.label}
+                                  {t(deliveryStatus.labelKey)}
                                 </Badge>
                               </div>
                               <div className="flex items-center gap-2">

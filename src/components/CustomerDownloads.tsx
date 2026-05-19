@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, Download, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { translateValue } from '@/lib/translateValue';
 
 interface DownloadableFile {
   id: string;
@@ -27,6 +29,7 @@ const formatBytes = (bytes: number) => {
 
 const CustomerDownloads = ({ userId }: { userId: string }) => {
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [files, setFiles] = useState<DownloadableFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [downloading, setDownloading] = useState<string | null>(null);
@@ -114,7 +117,7 @@ const CustomerDownloads = ({ userId }: { userId: string }) => {
         if (!cancelled) setFiles(list);
       } catch (err: any) {
         if (!cancelled) {
-          toast({ title: 'Erro ao carregar downloads', description: err.message, variant: 'destructive' });
+          toast({ title: t('downloadsLoadError'), description: err.message, variant: 'destructive' });
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -122,7 +125,7 @@ const CustomerDownloads = ({ userId }: { userId: string }) => {
     };
     load();
     return () => { cancelled = true; };
-  }, [userId, toast]);
+  }, [userId, toast, t]);
 
   const handleDownload = async (file: DownloadableFile) => {
     setDownloading(file.id);
@@ -131,10 +134,10 @@ const CustomerDownloads = ({ userId }: { userId: string }) => {
         body: { file_id: file.id },
       });
       if (error) throw error;
-      if (!data?.url) throw new Error('Link de download indisponível');
+      if (!data?.url) throw new Error(t('downloadLinkUnavailable'));
       window.open(data.url, '_blank', 'noopener');
     } catch (err: any) {
-      toast({ title: 'Erro ao baixar', description: err.message, variant: 'destructive' });
+      toast({ title: t('downloadError'), description: err.message, variant: 'destructive' });
     } finally {
       setDownloading(null);
     }

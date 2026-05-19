@@ -847,7 +847,7 @@ const CustomerDashboard = () => {
                                     <div className="flex items-start gap-2">
                                       <MapPin className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
                                       <div className="text-sm">
-                                        <p className="text-xs text-muted-foreground font-medium mb-1">Endereço de Entrega</p>
+                                        <p className="text-xs text-muted-foreground font-medium mb-1">{t('deliveryAddress')}</p>
                                         <p className="text-foreground">
                                           {order.customer_address}, {order.customer_number}
                                           {order.customer_complement ? ` - ${order.customer_complement}` : ''}
@@ -855,7 +855,7 @@ const CustomerDashboard = () => {
                                         <p className="text-muted-foreground">
                                           {order.customer_district} - {order.customer_city}/{order.customer_state}
                                         </p>
-                                        <p className="text-muted-foreground">CEP: {order.customer_postal_code}</p>
+                                        <p className="text-muted-foreground">{t('cep')}: {order.customer_postal_code}</p>
                                       </div>
                                     </div>
                                   </div>
@@ -864,11 +864,11 @@ const CustomerDashboard = () => {
                                 {/* Tracking & Shipping Info */}
                                 {(order.tracking_code || order.shipping_service) && (
                                   <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 space-y-3">
-                                    <p className="text-xs font-semibold text-primary uppercase tracking-wider">Rastreamento</p>
+                                    <p className="text-xs font-semibold text-primary uppercase tracking-wider">{t('tracking')}</p>
                                     {order.shipping_service && (
                                       <div className="flex items-center gap-2 text-sm">
                                         <Truck className="w-4 h-4 text-muted-foreground" />
-                                        <span className="text-muted-foreground">Transportadora:</span>
+                                        <span className="text-muted-foreground">{t('carrier')}:</span>
                                         <span className="font-medium text-foreground">{order.shipping_service}</span>
                                       </div>
                                     )}
@@ -878,13 +878,13 @@ const CustomerDashboard = () => {
                                           <div className="flex items-center gap-2">
                                             <Package className="w-5 h-5 text-primary" />
                                             <div>
-                                              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Código de Rastreio</p>
+                                              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('trackingCode')}</p>
                                               <p className="font-mono font-bold text-foreground text-lg tracking-widest">{order.tracking_code}</p>
                                             </div>
                                           </div>
                                           <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
                                             <Button variant="outline" size="sm" onClick={() => copyTracking(order.tracking_code)} className="gap-1">
-                                              <Copy className="w-3.5 h-3.5" /> Copiar
+                                              <Copy className="w-3.5 h-3.5" /> {t('copy')}
                                             </Button>
                                           </div>
                                         </div>
@@ -892,7 +892,7 @@ const CustomerDashboard = () => {
                                           <div className="mt-3" onClick={(e) => e.stopPropagation()}>
                                             <Button asChild className="w-full gap-2" size="sm">
                                               <a href={order.tracking_url} target="_blank" rel="noopener noreferrer">
-                                                <ExternalLink className="w-4 h-4" /> Rastrear Encomenda
+                                                <ExternalLink className="w-4 h-4" /> {t('trackPackage')}
                                               </a>
                                             </Button>
                                           </div>
@@ -901,7 +901,7 @@ const CustomerDashboard = () => {
                                     )}
                                     {order.shipping_cost > 0 && (
                                       <p className="text-xs text-muted-foreground">
-                                        Frete: R$ {Number(order.shipping_cost).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                        {t('shipping')}: R$ {Number(order.shipping_cost).toLocaleString(dateLocaleMap[lang], { minimumFractionDigits: 2 })}
                                       </p>
                                     )}
                                   </div>

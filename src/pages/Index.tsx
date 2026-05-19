@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { fetchProducts } from '@/lib/api';
 import { supabase } from '@/integrations/supabase/client';
@@ -13,11 +13,14 @@ import BannerCarousel from '@/components/BannerCarousel';
 import CountdownTimer from '@/components/CountdownTimer';
 import productHeroImg from '@/assets/product-hero.png';
 import { usePublicCurrency } from '@/lib/publicCurrency';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useAITranslateBatch } from '@/hooks/useAITranslate';
 
 const Index = () => {
   const { addToCart } = useCart();
   const navigate = useNavigate();
   const { format: fmtPrice } = usePublicCurrency();
+  const { lang } = useLanguage();
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -43,6 +46,11 @@ const Index = () => {
       return vars.map((variation: any) => ({ product, variation }));
     })
     .slice(0, 8);
+  const offerTexts = useMemo(
+    () => offerItems.flatMap(({ product, variation }) => [`${product.name} ${variation.dosage}`.trim(), variation.subtitle || product.subtitle || '']),
+    [offerItems],
+  );
+  const translatedOfferTexts = useAITranslateBatch(offerTexts, lang);
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
@@ -77,6 +85,8 @@ const Index = () => {
                 const discount = Math.round(((price - offerPrice) / price) * 100);
                 const img = variation.images?.[0] || variation.image_url || product.images?.[0] || productHeroImg;
                 const displayName = `${product.name} ${variation.dosage}`;
+                const translatedDisplayName = translatedOfferTexts[idx * 2] || displayName;
+                const translatedSubtitle = translatedOfferTexts[idx * 2 + 1] || (variation.subtitle || product.subtitle);
 
                 return (
                   <StaggerItem key={variation.id || `offer-${idx}`}>
@@ -93,17 +103,17 @@ const Index = () => {
                         <div className="relative aspect-[4/3] sm:aspect-square bg-muted/30 flex items-center justify-center p-4 sm:p-6 overflow-hidden">
                           <img
                             src={img}
-                            alt={displayName}
+                            alt={translatedDisplayName}
                             className="max-w-[75%] max-h-[75%] object-contain group-hover:scale-110 transition-transform duration-500"
                           />
                         </div>
 
                         <div className="p-3 sm:p-4 space-y-1 sm:space-y-2">
                           <h3 className="font-semibold text-foreground text-xs sm:text-sm leading-tight line-clamp-2 group-hover:text-primary transition-colors">
-                            {displayName}
+                            {translatedDisplayName}
                           </h3>
                           {(variation.subtitle || product.subtitle) && (
-                            <p className="text-xs text-muted-foreground line-clamp-1">{variation.subtitle || product.subtitle}</p>
+                            <p className="text-xs text-muted-foreground line-clamp-1">{translatedSubtitle}</p>
                           )}
                           <div className="space-y-1">
                             <p className="text-muted-foreground text-xs line-through">

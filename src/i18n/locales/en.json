@@ -378,6 +378,7 @@
   "notAuthenticated": "Not authenticated",
   "addressUpdated": "Address updated!",
   "addressSaved": "Address saved!",
+  "addressRemoved": "Address removed!",
   "saveError": "Error saving",
   "defaultAddressUpdated": "Default address updated!",
   "myAddresses": "My Addresses",

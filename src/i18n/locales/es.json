@@ -378,6 +378,7 @@
   "notAuthenticated": "No autenticado",
   "addressUpdated": "¡Dirección actualizada!",
   "addressSaved": "¡Dirección guardada!",
+  "addressRemoved": "¡Dirección eliminada!",
   "saveError": "Error al guardar",
   "defaultAddressUpdated": "¡Dirección predeterminada actualizada!",
   "myAddresses": "Mis Direcciones",

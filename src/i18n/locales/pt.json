@@ -378,6 +378,7 @@
   "notAuthenticated": "Não autenticado",
   "addressUpdated": "Endereço atualizado!",
   "addressSaved": "Endereço salvo!",
+  "addressRemoved": "Endereço removido!",
   "saveError": "Erro ao salvar",
   "defaultAddressUpdated": "Endereço padrão atualizado!",
   "myAddresses": "Meus Endereços",

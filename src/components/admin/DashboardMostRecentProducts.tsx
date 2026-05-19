@@ -2,6 +2,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Package } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAdminCurrency } from '@/contexts/AdminCurrencyContext';
 
 interface Variation {
   price?: number;
@@ -21,8 +22,6 @@ interface Props {
   products: Product[];
 }
 
-const formatBRL = (v: number) =>
-  v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 });
 
 function getImage(p: Product): string | null {
   for (const v of p.product_variations || []) {

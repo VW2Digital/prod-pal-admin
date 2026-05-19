@@ -30,6 +30,7 @@ import { ProductCardSkeletonGrid } from '@/components/ProductCardSkeleton';
 import { getAbContext, trackAbEvent } from '@/lib/abTest';
 import { loadAbConfig, getCachedAbConfig, formatDiscountBadge, DEFAULT_AB_CONFIG, type AbTestConfig } from '@/lib/abTestConfig';
 import ProductCardImageCarousel from '@/components/ProductCardImageCarousel';
+import { translateValue } from '@/lib/translateValue';
 
 const Catalog = () => {
   const { totalItems, addToCart } = useCart();
@@ -486,12 +487,12 @@ const Catalog = () => {
                       {/* Content */}
                       <div className="p-3 pt-1.5 space-y-1 flex-1 flex flex-col">
                         <h3 className="font-bold text-foreground text-xs sm:text-sm leading-tight line-clamp-2 group-hover:text-primary transition-colors">
-                          {displayName}
+                          {translateValue(displayName)}
                         </h3>
 
                         {(variation?.subtitle || product.subtitle) && (
                           <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2">
-                            {variation?.subtitle || product.subtitle}
+                            {translateValue(variation?.subtitle || product.subtitle)}
                           </p>
                         )}
 

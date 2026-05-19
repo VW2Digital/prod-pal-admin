@@ -12,10 +12,12 @@ import Footer from '@/components/Footer';
 import BannerCarousel from '@/components/BannerCarousel';
 import CountdownTimer from '@/components/CountdownTimer';
 import productHeroImg from '@/assets/product-hero.png';
+import { usePublicCurrency } from '@/lib/publicCurrency';
 
 const Index = () => {
   const { addToCart } = useCart();
   const navigate = useNavigate();
+  const { format: fmtPrice } = usePublicCurrency();
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -105,10 +107,10 @@ const Index = () => {
                           )}
                           <div className="space-y-1">
                             <p className="text-muted-foreground text-xs line-through">
-                              R$ {price.toLocaleString('pt-BR')}
+                              {fmtPrice(price)}
                             </p>
                             <p className="text-destructive font-bold text-lg sm:text-xl">
-                              R$ {offerPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                              {fmtPrice(offerPrice)}
                             </p>
                             <CountdownTimer variant="compact" />
                           </div>

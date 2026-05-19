@@ -12,8 +12,7 @@ interface LanguageInfo {
 }
 
 export const languages: LanguageInfo[] = [
-  { code: 'pt', flag: 'br', short: 'BR', label: 'Português (Brasil)' },
-  { code: 'pt-PT', flag: 'pt', short: 'PT', label: 'Português (Portugal)' },
+  { code: 'pt-PT', flag: 'pt', short: 'PT', label: 'Português' },
   { code: 'es', flag: 'es', short: 'ES', label: 'Español' },
   { code: 'en', flag: 'gb', short: 'EN', label: 'English' },
 ];
@@ -30,10 +29,12 @@ interface LanguageContextType {
 export const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 const normalize = (raw: string | undefined): Language => {
-  if (!raw) return 'pt';
-  if (raw === 'pt-PT' || raw.toLowerCase() === 'pt-pt') return 'pt-PT';
-  const code = raw.toLowerCase().split('-')[0] as Language;
-  return SUPPORTED.includes(code) ? code : 'pt';
+  if (!raw) return 'pt-PT';
+  const lower = raw.toLowerCase();
+  if (lower.startsWith('pt')) return 'pt-PT';
+  if (lower.startsWith('es')) return 'es';
+  if (lower.startsWith('en')) return 'en';
+  return 'pt-PT';
 };
 
 /**

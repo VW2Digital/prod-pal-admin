@@ -93,7 +93,7 @@ async function fetchRates(): Promise<Record<PublicCurrency, number>> {
 }
 
 export function getCurrencyForLanguage(lang: Language): CurrencyMeta {
-  return LANG_TO_CURRENCY[lang] || LANG_TO_CURRENCY.pt;
+  return LANG_TO_CURRENCY[lang] || LANG_TO_CURRENCY['pt-PT'];
 }
 
 /**

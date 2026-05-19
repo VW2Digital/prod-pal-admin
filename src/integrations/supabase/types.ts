@@ -215,6 +215,10 @@ export type Database = {
           id: string
           published: boolean
           published_at: string | null
+          share_facebook_url: string | null
+          share_linkedin_url: string | null
+          share_twitter_url: string | null
+          share_whatsapp_url: string | null
           slug: string
           title: string
           updated_at: string
@@ -229,6 +233,10 @@ export type Database = {
           id?: string
           published?: boolean
           published_at?: string | null
+          share_facebook_url?: string | null
+          share_linkedin_url?: string | null
+          share_twitter_url?: string | null
+          share_whatsapp_url?: string | null
           slug: string
           title: string
           updated_at?: string
@@ -243,6 +251,10 @@ export type Database = {
           id?: string
           published?: boolean
           published_at?: string | null
+          share_facebook_url?: string | null
+          share_linkedin_url?: string | null
+          share_twitter_url?: string | null
+          share_whatsapp_url?: string | null
           slug?: string
           title?: string
           updated_at?: string

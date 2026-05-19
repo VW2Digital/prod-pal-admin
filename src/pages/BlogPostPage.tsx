@@ -83,9 +83,9 @@ export default function BlogPostPage() {
           </div>
         ) : notFound || !post ? (
           <div className="text-center py-20 max-w-3xl mx-auto px-4">
-            <h1 className="text-2xl font-bold text-foreground">Post não encontrado</h1>
-            <p className="text-muted-foreground mt-2">Ele pode ter sido removido ou ainda não foi publicado.</p>
-            <Link to="/blog" className="inline-block mt-6 text-primary hover:underline">Voltar ao blog</Link>
+            <h1 className="text-2xl font-bold text-foreground">{t('blog.postNotFound')}</h1>
+            <p className="text-muted-foreground mt-2">{t('blog.postNotFoundDesc')}</p>
+            <Link to="/blog" className="inline-block mt-6 text-primary hover:underline">{t('blog.backToBlog')}</Link>
           </div>
         ) : (
           <article className="max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-14">

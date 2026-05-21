@@ -60,7 +60,7 @@ i18n
       es: { translation: es },
       en: { translation: en },
     },
-    fallbackLng: 'es',
+    fallbackLng: 'en',
     supportedLngs: SUPPORTED_LANGUAGES as unknown as string[],
     nonExplicitSupportedLngs: false,
     load: 'currentOnly',

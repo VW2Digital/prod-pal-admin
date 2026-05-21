@@ -61,6 +61,7 @@ const menuCategories = [
   {
     label: 'Marketing',
     items: [
+      { title: 'Banners', url: '/admin/banners', icon: Megaphone },
       { title: 'Blog', url: '/admin/blog', icon: Newspaper },
       { title: 'Disparo de E-mails', url: '/admin/disparo-emails', icon: Send },
     ],

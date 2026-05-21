@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchBannerSlides } from '@/lib/api';
-import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { ChevronLeft, ChevronRight, ArrowRight, ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -13,11 +14,31 @@ const BannerCarousel = () => {
   const [direction, setDirection] = useState(1);
   const [loading, setLoading] = useState(true);
 
+  const [productImages, setProductImages] = useState<Record<string, string>>({});
+
   useEffect(() => {
     fetchBannerSlides(true)
       .then(setSlides)
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    const ids = Array.from(new Set(slides.map((s: any) => s.product_id).filter(Boolean)));
+    if (!ids.length) return;
+    (async () => {
+      const { data } = await supabase
+        .from('products')
+        .select('id, images')
+        .in('id', ids as string[]);
+      if (!data) return;
+      const map: Record<string, string> = {};
+      for (const p of data as any[]) {
+        const img = Array.isArray(p.images) ? p.images[0] : null;
+        if (img) map[p.id] = img;
+      }
+      setProductImages(map);
+    })();
+  }, [slides]);
 
   useEffect(() => {
     if (slides.length <= 1) return;
@@ -64,6 +85,7 @@ const BannerCarousel = () => {
     ? rawTitle.split('|').map((s: string) => s.trim())
     : [rawTitle, ''];
   const ctaLabel = slide.cta_text?.trim() || t?.('shopNow') || 'Shop now';
+  const productImage = slide.product_id ? productImages[slide.product_id] : null;
 
   const SlideContent = (
     <div className="relative w-full h-full bg-background overflow-hidden grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] items-center">
@@ -102,13 +124,25 @@ const BannerCarousel = () => {
         )}
       </div>
 
-      {/* Visual: abstract "product" card */}
+      {/* Visual: product card */}
       <div className="relative hidden lg:flex h-full items-center justify-center bg-muted/40">
         <div className="w-[320px] h-[420px] bg-background shadow-[30px_50px_80px_hsl(var(--foreground)/0.06)] rounded-sm p-8 flex flex-col transition-transform duration-700 hover:-translate-y-2 hover:scale-[1.02]">
-          <div className="w-full h-[250px] bg-muted/60 mb-5 rounded-sm" />
-          <div className="h-2 w-4/5 bg-muted/60 mb-2.5 rounded-full" />
-          <div className="h-2 w-3/5 bg-muted/60 mb-2.5 rounded-full" />
-          <div className="h-2 w-2/5 bg-muted/60 rounded-full" />
+          {productImage ? (
+            <img
+              src={productImage}
+              alt={headlinePart || 'Produto'}
+              className="w-full h-full object-contain"
+            />
+          ) : (
+            <>
+              <div className="w-full h-[250px] bg-muted/60 mb-5 rounded-sm flex items-center justify-center">
+                <ImageIcon className="w-10 h-10 text-muted-foreground/40" />
+              </div>
+              <div className="h-2 w-4/5 bg-muted/60 mb-2.5 rounded-full" />
+              <div className="h-2 w-3/5 bg-muted/60 mb-2.5 rounded-full" />
+              <div className="h-2 w-2/5 bg-muted/60 rounded-full" />
+            </>
+          )}
         </div>
       </div>
     </div>

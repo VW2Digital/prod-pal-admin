@@ -4,7 +4,7 @@ import { normalizeLng } from '@/i18n';
 
 const memCache = new Map<string, string>();
 
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v4';
 
 function loadCache(target: string, text: string): string | null {
   const key = `aitr:${CACHE_VERSION}:${target}:${text}`;

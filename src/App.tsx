@@ -53,6 +53,7 @@ const SettingsProductDetails = lazy(() => import("./pages/settings/SettingsProdu
 const SettingsTrustBar = lazy(() => import("./pages/settings/SettingsTrustBar"));
 const SettingsBackup = lazy(() => import("./pages/settings/SettingsBackup"));
 const SettingsGuides = lazy(() => import("./pages/settings/SettingsGuides"));
+const SettingsLanguages = lazy(() => import("./pages/settings/SettingsLanguages"));
 const OrdersPage = lazy(() => import("./pages/OrdersPage"));
 const OrderDetailPage = lazy(() => import("./pages/OrderDetailPage"));
 const UsersPage = lazy(() => import("./pages/UsersPage"));
@@ -208,7 +209,8 @@ const AppShell = () => (
                 <Route path="configuracoes/categorias" element={<SettingsCategories />} />
                 <Route path="configuracoes/detalhes-produto" element={<SettingsProductDetails />} />
                 <Route path="configuracoes/trust-bar" element={<SettingsTrustBar />} />
-                <Route path="configuracoes/backup" element={<SettingsBackup />} />
+               <Route path="configuracoes/backup" element={<SettingsBackup />} />
+               <Route path="configuracoes/idiomas" element={<SettingsLanguages />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

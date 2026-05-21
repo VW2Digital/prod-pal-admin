@@ -1,4 +1,4 @@
-import { useLanguage, languages } from '@/contexts/LanguageContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,8 +17,10 @@ const FlagIcon = ({ code, className = '' }: { code: string; className?: string }
 );
 
 const LanguageSwitcher = () => {
-  const { lang, setLang } = useLanguage();
-  const current = languages.find((l) => l.code === lang) || languages[0];
+  const { lang, setLang, availableLanguages } = useLanguage();
+  const list = availableLanguages.length > 0 ? availableLanguages : [];
+  if (list.length <= 1) return null;
+  const current = list.find((l) => l.code === lang) || list[0];
 
   return (
     <DropdownMenu>
@@ -27,7 +29,7 @@ const LanguageSwitcher = () => {
         <span className="font-medium">{current.short}</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-[180px]">
-        {languages.map((l) => (
+        {list.map((l) => (
           <DropdownMenuItem
             key={l.code}
             onClick={() => setLang(l.code)}

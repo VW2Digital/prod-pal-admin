@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Image, Palette, Type, Code, LayoutDashboard, CreditCard, Truck, MessageSquare, FileText, Settings, Plug, Tags, ShieldCheck, Database, Search, ChevronRight, X, BookOpen, GraduationCap, ListChecks, Zap } from 'lucide-react';
+import { Image, Palette, Type, Code, LayoutDashboard, CreditCard, Truck, MessageSquare, FileText, Settings, Plug, Tags, ShieldCheck, Database, Search, ChevronRight, X, BookOpen, GraduationCap, ListChecks, Zap, Languages } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import SiteUrlCard from '@/components/admin/SiteUrlCard';
@@ -35,6 +35,7 @@ const categories: { label: string; icon: React.ComponentType<{ className?: strin
       { title: 'Cores do Tema', description: 'Cor primária e identidade visual', icon: Palette, path: 'cores', statusKeys: ['primary_color'] },
       { title: 'Fontes', description: 'Fonte dos títulos e do corpo do texto', icon: Type, path: 'fontes', statusKeys: ['font_heading', 'font_body'] },
       { title: 'CSS Customizado', description: 'Estilos personalizados para a loja', icon: Code, path: 'css', statusKeys: ['custom_css'] },
+      { title: 'Idiomas', description: 'Habilite os idiomas disponíveis e escolha o idioma padrão da loja', icon: Languages, path: 'idiomas', statusKeys: ['enabled_languages', 'default_language'] },
     ],
   },
   {

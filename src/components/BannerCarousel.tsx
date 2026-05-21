@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchBannerSlides } from '@/lib/api';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const BannerCarousel = () => {
+  const { t } = useLanguage();
   const [slides, setSlides] = useState<any[]>([]);
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
@@ -22,7 +24,7 @@ const BannerCarousel = () => {
     const timer = setInterval(() => {
       setDirection(1);
       setCurrent(prev => (prev + 1) % slides.length);
-    }, 5000);
+    }, 6000);
     return () => clearInterval(timer);
   }, [slides.length]);
 
@@ -44,30 +46,74 @@ const BannerCarousel = () => {
     : slide.link_url || null;
 
   const variants = {
-    enter: (dir: number) => ({ x: dir > 0 ? '100%' : '-100%', opacity: 0 }),
+    enter: (dir: number) => ({ x: dir > 0 ? 40 : -40, opacity: 0 }),
     center: { x: 0, opacity: 1 },
-    exit: (dir: number) => ({ x: dir > 0 ? '-100%' : '100%', opacity: 0 }),
+    exit: (dir: number) => ({ x: dir > 0 ? -40 : 40, opacity: 0 }),
   };
 
-  const ImageContent = () => (
-    <picture>
-      {slide.image_mobile && (
-        <source media="(max-width: 639px)" srcSet={slide.image_mobile} />
-      )}
-      {slide.image_tablet && (
-        <source media="(max-width: 1023px)" srcSet={slide.image_tablet} />
-      )}
-      <img
-        src={slide.image_desktop || slide.image_tablet || slide.image_mobile}
-        alt={slide.title || 'Banner'}
-        className="w-full h-full object-contain sm:object-contain lg:object-cover"
+  // Derive headline / sub from the title field. Supports "Headline | Subtitle".
+  const rawTitle: string = slide.title || '';
+  const [headlinePart, subPart] = rawTitle.includes('|')
+    ? rawTitle.split('|').map((s: string) => s.trim())
+    : [rawTitle, ''];
+  const tag = t?.('bannerTag') || 'Exclusive';
+  const ctaLabel = t?.('shopNow') || 'Shop now';
+
+  const SlideContent = (
+    <div className="relative w-full h-full bg-background overflow-hidden grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] items-center">
+      {/* abstract background shape */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-[10%] -right-[5%] w-[600px] h-[600px] rounded-full opacity-60"
+        style={{
+          background:
+            'radial-gradient(circle, hsl(var(--muted)) 0%, transparent 70%)',
+        }}
       />
-    </picture>
+
+      {/* Content */}
+      <div className="relative z-10 px-8 sm:px-12 lg:px-[10%] py-10 lg:py-0 text-center lg:text-left">
+        <span className="block text-[11px] font-bold uppercase tracking-[0.4em] text-accent-foreground/80 mb-4">
+          <span className="text-primary">{tag}</span>
+        </span>
+        <h2 className="font-bold leading-[0.95] tracking-[-0.02em] text-foreground text-[clamp(2.25rem,6vw,5rem)] mb-5">
+          {headlinePart}
+          {subPart && (
+            <span className="block font-extralight text-muted-foreground">
+              {subPart}
+            </span>
+          )}
+        </h2>
+        {slide.subtitle && (
+          <p className="text-base sm:text-lg text-muted-foreground max-w-md mx-auto lg:mx-0 mb-8 leading-relaxed">
+            {slide.subtitle}
+          </p>
+        )}
+        {linkTo && (
+          <div className="flex items-center justify-center lg:justify-start gap-5">
+            <span className="group inline-flex items-center gap-3 px-10 py-5 bg-primary text-primary-foreground text-xs font-semibold uppercase tracking-[0.15em] border border-primary transition-colors duration-500 hover:bg-background hover:text-primary">
+              {ctaLabel}
+              <ArrowRight className="w-4 h-4 transition-transform duration-500 group-hover:translate-x-1" />
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Visual: abstract "product" card */}
+      <div className="relative hidden lg:flex h-full items-center justify-center bg-muted/40">
+        <div className="w-[320px] h-[420px] bg-background shadow-[30px_50px_80px_hsl(var(--foreground)/0.06)] rounded-sm p-8 flex flex-col transition-transform duration-700 hover:-translate-y-2 hover:scale-[1.02]">
+          <div className="w-full h-[250px] bg-muted/60 mb-5 rounded-sm" />
+          <div className="h-2 w-4/5 bg-muted/60 mb-2.5 rounded-full" />
+          <div className="h-2 w-3/5 bg-muted/60 mb-2.5 rounded-full" />
+          <div className="h-2 w-2/5 bg-muted/60 rounded-full" />
+        </div>
+      </div>
+    </div>
   );
 
   return (
-    <div className="relative w-full overflow-hidden bg-muted/30">
-      <div className="relative aspect-[390/300] sm:aspect-[768/400] lg:aspect-[1920/600]">
+    <div className="relative w-full overflow-hidden bg-background">
+      <div className="relative aspect-[390/420] sm:aspect-[768/420] lg:aspect-[1920/600]">
         <AnimatePresence initial={false} custom={direction} mode="popLayout">
           <motion.div
             key={current}
@@ -76,15 +122,15 @@ const BannerCarousel = () => {
             initial="enter"
             animate="center"
             exit="exit"
-            transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             className="absolute inset-0"
           >
             {linkTo ? (
               <Link to={linkTo} className="block w-full h-full">
-                <ImageContent />
+                {SlideContent}
               </Link>
             ) : (
-              <ImageContent />
+              SlideContent
             )}
           </motion.div>
         </AnimatePresence>
@@ -95,7 +141,7 @@ const BannerCarousel = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/60 backdrop-blur-sm hover:bg-background/80 rounded-full h-8 w-8 md:h-10 md:w-10 z-10"
+            className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/60 backdrop-blur-sm hover:bg-background/80 rounded-full h-8 w-8 md:h-10 md:w-10 z-20"
             onClick={prev}
           >
             <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
@@ -103,13 +149,13 @@ const BannerCarousel = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/60 backdrop-blur-sm hover:bg-background/80 rounded-full h-8 w-8 md:h-10 md:w-10 z-10"
+            className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/60 backdrop-blur-sm hover:bg-background/80 rounded-full h-8 w-8 md:h-10 md:w-10 z-20"
             onClick={next}
           >
             <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
           </Button>
 
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
             {slides.map((_, i) => (
               <button
                 key={i}
@@ -117,7 +163,7 @@ const BannerCarousel = () => {
                 className={`h-2 rounded-full transition-all duration-300 ${
                   i === current
                     ? 'bg-primary w-5'
-                    : 'bg-background/60 hover:bg-background/80 w-2'
+                    : 'bg-foreground/20 hover:bg-foreground/40 w-2'
                 }`}
               />
             ))}

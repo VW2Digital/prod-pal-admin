@@ -184,6 +184,11 @@ const CheckoutForm = ({ productName, productId, cartProductIds, paymentDescripti
   const isPagBank = activeGateway === 'pagbank';
   const isPagarMe = activeGateway === 'pagarme';
   const isMpRedirect = isMercadoPago && checkoutMode === 'redirect';
+  const { enabled: shippingEnabled } = useShippingEnabled();
+  const visibleSteps = useMemo(
+    () => (shippingEnabled ? STEPS : STEPS.filter((s) => s.key !== 'shipping')),
+    [shippingEnabled],
+  );
   const safeUnitPrice = Number(unitPrice) || 0;
   const safeQuantity = Number(quantity) || 1;
   const baseProductTotal = safeUnitPrice * safeQuantity;

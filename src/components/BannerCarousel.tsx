@@ -70,7 +70,7 @@ const BannerCarousel = () => {
       {/* abstract background shape */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-[10%] -right-[5%] w-[600px] h-[600px] rounded-full opacity-60"
+        className="pointer-events-none absolute -top-[20%] -right-[20%] w-[320px] h-[320px] sm:w-[480px] sm:h-[480px] lg:-top-[10%] lg:-right-[5%] lg:w-[600px] lg:h-[600px] rounded-full opacity-60"
         style={{
           background:
             'radial-gradient(circle, hsl(var(--muted)) 0%, transparent 70%)',
@@ -78,8 +78,8 @@ const BannerCarousel = () => {
       />
 
       {/* Content */}
-      <div className="relative z-10 px-8 sm:px-12 lg:px-[10%] py-10 lg:py-0 text-center lg:text-left">
-        <h2 className="font-bold leading-[0.95] tracking-[-0.02em] text-foreground text-[clamp(2.25rem,6vw,5rem)] mb-5">
+      <div className="relative z-10 px-6 sm:px-12 lg:px-[10%] py-8 sm:py-10 lg:py-0 text-center lg:text-left">
+        <h2 className="font-bold leading-[0.95] tracking-[-0.02em] text-foreground text-[clamp(1.75rem,7vw,5rem)] mb-3 sm:mb-5">
           {headlinePart}
           {subPart && (
             <span className="block font-extralight text-muted-foreground">
@@ -88,13 +88,13 @@ const BannerCarousel = () => {
           )}
         </h2>
         {slide.subtitle && (
-          <p className="text-base sm:text-lg text-muted-foreground max-w-md mx-auto lg:mx-0 mb-8 leading-relaxed">
+          <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-md mx-auto lg:mx-0 mb-6 sm:mb-8 leading-relaxed">
             {slide.subtitle}
           </p>
         )}
         {linkTo && (
           <div className="flex items-center justify-center lg:justify-start gap-5">
-            <span className="group inline-flex items-center gap-3 px-10 py-5 bg-primary text-primary-foreground text-xs font-semibold uppercase tracking-[0.15em] border border-primary transition-colors duration-500 hover:bg-background hover:text-primary">
+            <span className="group inline-flex items-center gap-2 sm:gap-3 px-6 sm:px-10 py-3 sm:py-5 bg-primary text-primary-foreground text-[11px] sm:text-xs font-semibold uppercase tracking-[0.15em] border border-primary transition-colors duration-500 hover:bg-background hover:text-primary">
               {ctaLabel}
               <ArrowRight className="w-4 h-4 transition-transform duration-500 group-hover:translate-x-1" />
             </span>
@@ -116,7 +116,7 @@ const BannerCarousel = () => {
 
   return (
     <div className="relative w-full overflow-hidden bg-background">
-      <div className="relative aspect-[390/420] sm:aspect-[768/420] lg:aspect-[1920/600]">
+      <div className="relative min-h-[360px] sm:min-h-[440px] lg:min-h-0 lg:aspect-[1920/600]">
         <AnimatePresence initial={false} custom={direction} mode="popLayout">
           <motion.div
             key={current}
@@ -138,6 +138,7 @@ const BannerCarousel = () => {
           </motion.div>
         </AnimatePresence>
       </div>
+
 
       {slides.length > 1 && (
         <>

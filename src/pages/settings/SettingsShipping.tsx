@@ -21,6 +21,7 @@ const SettingsShipping = () => {
   const { publicUrl, browserIsInternal } = usePublicBaseUrl();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [shippingEnabled, setShippingEnabled] = useState(true);
 
   const [melhorEnvioToken, setMelhorEnvioToken] = useState('');
   const [melhorEnvioClientId, setMelhorEnvioClientId] = useState('');

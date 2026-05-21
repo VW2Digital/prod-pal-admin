@@ -63,7 +63,6 @@ const BannerCarousel = () => {
   const [headlinePart, subPart] = rawTitle.includes('|')
     ? rawTitle.split('|').map((s: string) => s.trim())
     : [rawTitle, ''];
-  const tag = t?.('bannerTag') || 'Exclusive';
   const ctaLabel = t?.('shopNow') || 'Shop now';
 
   const SlideContent = (
@@ -80,9 +79,6 @@ const BannerCarousel = () => {
 
       {/* Content */}
       <div className="relative z-10 px-8 sm:px-12 lg:px-[10%] py-10 lg:py-0 text-center lg:text-left">
-        <span className="block text-[11px] font-bold uppercase tracking-[0.4em] text-accent-foreground/80 mb-4">
-          <span className="text-primary">{tag}</span>
-        </span>
         <h2 className="font-bold leading-[0.95] tracking-[-0.02em] text-foreground text-[clamp(2.25rem,6vw,5rem)] mb-5">
           {headlinePart}
           {subPart && (

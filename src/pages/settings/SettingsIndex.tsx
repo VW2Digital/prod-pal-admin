@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Image, Palette, Type, Code, LayoutDashboard, CreditCard, Truck, MessageSquare, FileText, Settings, Plug, Tags, ShieldCheck, Database, Search, ChevronRight, X, BookOpen, GraduationCap, ListChecks, Zap } from 'lucide-react';
+import { Image, Palette, Type, Code, LayoutDashboard, CreditCard, Truck, MessageSquare, FileText, Settings, Plug, Tags, ShieldCheck, Database, Search, ChevronRight, X, BookOpen, GraduationCap, ListChecks, Zap, Languages } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import SiteUrlCard from '@/components/admin/SiteUrlCard';

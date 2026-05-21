@@ -35,6 +35,7 @@ const categories: { label: string; icon: React.ComponentType<{ className?: strin
       { title: 'Cores do Tema', description: 'Cor primária e identidade visual', icon: Palette, path: 'cores', statusKeys: ['primary_color'] },
       { title: 'Fontes', description: 'Fonte dos títulos e do corpo do texto', icon: Type, path: 'fontes', statusKeys: ['font_heading', 'font_body'] },
       { title: 'CSS Customizado', description: 'Estilos personalizados para a loja', icon: Code, path: 'css', statusKeys: ['custom_css'] },
+      { title: 'Idiomas', description: 'Habilite os idiomas disponíveis e escolha o idioma padrão da loja', icon: Languages, path: 'idiomas', statusKeys: ['enabled_languages', 'default_language'] },
     ],
   },
   {

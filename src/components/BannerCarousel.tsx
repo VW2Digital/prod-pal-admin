@@ -6,9 +6,10 @@ import { ChevronLeft, ChevronRight, ArrowRight, ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAITranslateBatch } from '@/hooks/useAITranslate';
 
 const BannerCarousel = () => {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [slides, setSlides] = useState<any[]>([]);
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
@@ -81,10 +82,16 @@ const BannerCarousel = () => {
 
   // Derive headline / sub from the title field. Supports "Headline | Subtitle".
   const rawTitle: string = slide.title || '';
-  const [headlinePart, subPart] = rawTitle.includes('|')
+  const [headlinePartRaw, subPartRaw] = rawTitle.includes('|')
     ? rawTitle.split('|').map((s: string) => s.trim())
     : [rawTitle, ''];
-  const ctaLabel = slide.cta_text?.trim() || t?.('shopNow') || 'Shop now';
+  const ctaLabelRaw = slide.cta_text?.trim() || t?.('shopNow') || 'Shop now';
+  const subtitleRaw = slide.subtitle || '';
+
+  const [headlinePart, subPart, ctaLabel, translatedSubtitle] = useAITranslateBatch(
+    [headlinePartRaw, subPartRaw, ctaLabelRaw, subtitleRaw],
+    lang,
+  );
   const productImage = slide.product_id ? productImages[slide.product_id] : null;
 
   const SlideContent = (
@@ -122,9 +129,9 @@ const BannerCarousel = () => {
             )}
           </h2>
 
-          {slide.subtitle && (
+          {subtitleRaw && (
             <p className="text-muted-foreground text-base sm:text-lg max-w-md mb-8 sm:mb-10 leading-relaxed font-light">
-              {slide.subtitle}
+              {translatedSubtitle || subtitleRaw}
             </p>
           )}
 

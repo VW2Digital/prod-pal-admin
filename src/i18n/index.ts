@@ -57,11 +57,10 @@ i18n
     ns: ['translation'],
     defaultNS: 'translation',
     resources: {
-      'pt-PT': { translation: ptPT },
       es: { translation: es },
       en: { translation: en },
     },
-    fallbackLng: 'pt-PT',
+    fallbackLng: 'es',
     supportedLngs: SUPPORTED_LANGUAGES as unknown as string[],
     nonExplicitSupportedLngs: false,
     load: 'currentOnly',

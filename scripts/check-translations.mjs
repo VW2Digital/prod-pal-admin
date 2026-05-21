@@ -17,7 +17,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 const SRC_DIR = join(ROOT, "src");
 const LOCALES_DIR = join(SRC_DIR, "i18n", "locales");
-const LOCALES = ["pt-PT", "en", "es"];
+const LOCALES = ["es", "en"];
 const EXTS = new Set([".ts", ".tsx", ".js", ".jsx"]);
 
 // Captura t('chave'), t("chave"), t(`chave`) e também {t('chave', {...})}

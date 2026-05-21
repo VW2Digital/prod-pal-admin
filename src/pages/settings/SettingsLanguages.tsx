@@ -72,7 +72,7 @@ const SettingsLanguages = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="space-y-6 w-full">
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate('/admin/configuracoes')}>
           <ArrowLeft className="w-4 h-4" />

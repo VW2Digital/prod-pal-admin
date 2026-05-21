@@ -95,8 +95,11 @@ const STEPS = [
   { key: 'payment', labelKey: 'stepPayment', icon: CreditCard },
 ] as const;
 
-const StepIndicator = ({ currentStep }: { currentStep: CheckoutStep }) => {
+type StepDef = typeof STEPS[number];
+
+const StepIndicator = ({ currentStep, steps }: { currentStep: CheckoutStep; steps: readonly StepDef[] }) => {
   const { t } = useLanguage();
+  const STEPS = steps;
   const currentIndex = STEPS.findIndex(s => s.key === currentStep);
 
   return (

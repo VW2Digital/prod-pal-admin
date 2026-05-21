@@ -88,69 +88,112 @@ const BannerCarousel = () => {
   const productImage = slide.product_id ? productImages[slide.product_id] : null;
 
   const SlideContent = (
-    <div className="relative w-full h-full bg-background overflow-hidden grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] items-center">
-      {/* abstract background shape */}
+    <div className="relative w-full h-full bg-background overflow-hidden flex items-center border-y border-border/40">
+      {/* Decorative background elements */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-[20%] -right-[20%] w-[320px] h-[320px] sm:w-[480px] sm:h-[480px] lg:-top-[10%] lg:-right-[5%] lg:w-[600px] lg:h-[600px] rounded-full opacity-60"
-        style={{
-          background:
-            'radial-gradient(circle, hsl(var(--muted)) 0%, transparent 70%)',
-        }}
+        className="pointer-events-none absolute top-0 right-0 w-1/3 h-full -skew-x-[15deg] translate-x-32"
+        style={{ background: 'hsl(var(--primary) / 0.02)' }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -bottom-24 left-1/4 w-96 h-96 rounded-full blur-3xl"
+        style={{ background: 'hsl(var(--primary) / 0.04)' }}
       />
 
-      {/* Content */}
-      <div className="relative z-10 px-6 sm:px-12 lg:px-[10%] py-8 sm:py-10 lg:py-0 text-center lg:text-left">
-        <h2 className="font-bold leading-[0.95] tracking-[-0.02em] text-foreground text-[clamp(1.75rem,7vw,5rem)] mb-3 sm:mb-5">
-          {headlinePart}
-          {subPart && (
-            <span className="block font-extralight text-muted-foreground">
-              {subPart}
-            </span>
-          )}
-        </h2>
-        {slide.subtitle && (
-          <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-md mx-auto lg:mx-0 mb-6 sm:mb-8 leading-relaxed">
-            {slide.subtitle}
-          </p>
-        )}
-        {linkTo && (
-          <div className="flex items-center justify-center lg:justify-start gap-5">
-            <span className="group inline-flex items-center gap-2 sm:gap-3 px-6 sm:px-10 py-3 sm:py-5 bg-primary text-primary-foreground text-[11px] sm:text-xs font-semibold uppercase tracking-[0.15em] border border-primary transition-colors duration-500 hover:bg-background hover:text-primary">
-              {ctaLabel}
-              <ArrowRight className="w-4 h-4 transition-transform duration-500 group-hover:translate-x-1" />
+      <div className="relative z-10 w-full mx-auto px-6 sm:px-12 lg:px-24 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        {/* Left content column */}
+        <div className="lg:col-span-6 flex flex-col items-center lg:items-start text-center lg:text-left">
+          <div className="flex items-center gap-4 mb-6 sm:mb-8">
+            <span className="h-px w-8 bg-primary" />
+            <span className="text-primary uppercase tracking-[0.3em] text-[10px] font-bold">
+              {t?.('exclusiveCatalog') || 'Exclusive Catalog'}
             </span>
           </div>
-        )}
-      </div>
 
-      {/* Visual: product card */}
-      <div className="relative hidden lg:flex h-full items-center justify-center bg-muted/40">
-        <div className="w-[320px] h-[420px] bg-background shadow-[30px_50px_80px_hsl(var(--foreground)/0.06)] rounded-sm p-8 flex flex-col transition-transform duration-700 hover:-translate-y-2 hover:scale-[1.02]">
-          {productImage ? (
-            <img
-              src={productImage}
-              alt={headlinePart || 'Produto'}
-              className="w-full h-full object-contain"
-            />
-          ) : (
-            <>
-              <div className="w-full h-[250px] bg-muted/60 mb-5 rounded-sm flex items-center justify-center">
-                <ImageIcon className="w-10 h-10 text-muted-foreground/40" />
-              </div>
-              <div className="h-2 w-4/5 bg-muted/60 mb-2.5 rounded-full" />
-              <div className="h-2 w-3/5 bg-muted/60 mb-2.5 rounded-full" />
-              <div className="h-2 w-2/5 bg-muted/60 rounded-full" />
-            </>
+          <h2 className="text-foreground font-light tracking-tight leading-[1.05] mb-5 sm:mb-6 text-[clamp(2rem,6vw,4.5rem)]">
+            {headlinePart}
+            {subPart && (
+              <>
+                {' '}
+                <span className="text-primary font-extralight">|</span>{' '}
+                <span className="font-semibold">{subPart}</span>
+              </>
+            )}
+          </h2>
+
+          {slide.subtitle && (
+            <p className="text-muted-foreground text-base sm:text-lg max-w-md mb-8 sm:mb-10 leading-relaxed font-light">
+              {slide.subtitle}
+            </p>
+          )}
+
+          {linkTo && (
+            <span className="group inline-flex items-center gap-5 sm:gap-6 bg-primary hover:bg-primary/90 text-primary-foreground pl-8 sm:pl-10 pr-6 sm:pr-8 py-4 sm:py-5 transition-all duration-300 rounded-sm shadow-[0_15px_30px_-10px_hsl(var(--primary)/0.3)]">
+              <span className="uppercase tracking-[0.2em] text-[11px] font-bold">
+                {ctaLabel}
+              </span>
+              <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
+            </span>
           )}
         </div>
+
+        {/* Right product column */}
+        <div className="lg:col-span-6 hidden lg:flex justify-center lg:justify-end">
+          <div className="relative group">
+            {/* Layered background frame */}
+            <div className="absolute -top-4 -left-4 w-full h-full border border-primary/20 translate-x-2 translate-y-2 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-700" />
+
+            {/* Main image container */}
+            <div className="relative bg-background p-4 lg:p-6 shadow-[0_50px_100px_-20px_hsl(var(--foreground)/0.1)] border border-border/40 flex items-center justify-center overflow-hidden">
+              <div className="w-[320px] lg:w-[440px] aspect-[4/3] relative flex items-center justify-center">
+                {productImage ? (
+                  <img
+                    src={productImage}
+                    alt={headlinePart || 'Produto'}
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-muted/40 flex items-center justify-center">
+                    <ImageIcon className="w-12 h-12 text-muted-foreground/40" />
+                  </div>
+                )}
+              </div>
+              <div className="absolute bottom-0 left-0 w-full h-1.5 bg-primary" />
+            </div>
+
+            {/* Floating badge */}
+            <div className="absolute -top-8 -right-8 bg-background/80 backdrop-blur-md px-6 py-4 shadow-xl border border-background/50">
+              <span className="text-[9px] font-bold text-primary uppercase tracking-widest block mb-0.5">
+                {t?.('availability') || 'Disponibilidade'}
+              </span>
+              <span className="text-xs font-semibold text-foreground">
+                {t?.('inStock') || 'Em Estoque'}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* Carousel progress indicator */}
+      {slides.length > 1 && (
+        <div className="absolute bottom-8 lg:bottom-12 right-6 lg:right-24 hidden lg:flex items-center gap-3 z-20">
+          {effectiveSlides.map((_, i) => (
+            <div
+              key={i}
+              className={`h-[2px] transition-all duration-500 ${
+                i === current ? 'w-16 bg-primary' : 'w-8 bg-border'
+              }`}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 
   return (
     <div className="relative w-full overflow-hidden bg-background">
-      <div className="relative min-h-[360px] sm:min-h-[440px] lg:min-h-0 lg:aspect-[1920/600]">
+      <div className="relative min-h-[420px] sm:min-h-[500px] lg:min-h-0 lg:aspect-[1920/600]">
         <AnimatePresence initial={false} custom={direction} mode="popLayout">
           <motion.div
             key={current}
@@ -173,35 +216,31 @@ const BannerCarousel = () => {
         </AnimatePresence>
       </div>
 
-
       {slides.length > 1 && (
         <>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/60 backdrop-blur-sm hover:bg-background/80 rounded-full h-8 w-8 md:h-10 md:w-10 z-20"
-            onClick={prev}
+          <button
+            onClick={(e) => { e.preventDefault(); prev(); }}
+            className="absolute left-4 lg:left-8 bottom-8 lg:bottom-12 w-10 h-10 border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-all z-20 bg-background/80 backdrop-blur-sm"
+            aria-label="Previous"
           >
-            <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/60 backdrop-blur-sm hover:bg-background/80 rounded-full h-8 w-8 md:h-10 md:w-10 z-20"
-            onClick={next}
+            <ChevronLeft className="w-[18px] h-[18px]" strokeWidth={1.5} />
+          </button>
+          <button
+            onClick={(e) => { e.preventDefault(); next(); }}
+            className="absolute left-16 lg:left-20 bottom-8 lg:bottom-12 w-10 h-10 border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-all z-20 bg-background/80 backdrop-blur-sm"
+            aria-label="Next"
           >
-            <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
-          </Button>
+            <ChevronRight className="w-[18px] h-[18px]" strokeWidth={1.5} />
+          </button>
 
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
+          {/* Mobile dots */}
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-20 lg:hidden">
             {slides.map((_, i) => (
               <button
                 key={i}
-                onClick={() => { setDirection(i > current ? 1 : -1); setCurrent(i); }}
+                onClick={(e) => { e.preventDefault(); setDirection(i > current ? 1 : -1); setCurrent(i); }}
                 className={`h-2 rounded-full transition-all duration-300 ${
-                  i === current
-                    ? 'bg-primary w-5'
-                    : 'bg-foreground/20 hover:bg-foreground/40 w-2'
+                  i === current ? 'bg-primary w-5' : 'bg-foreground/20 hover:bg-foreground/40 w-2'
                 }`}
               />
             ))}
@@ -211,5 +250,6 @@ const BannerCarousel = () => {
     </div>
   );
 };
+
 
 export default BannerCarousel;

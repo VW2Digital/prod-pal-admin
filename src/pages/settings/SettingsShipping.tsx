@@ -122,10 +122,12 @@ const SettingsShipping = () => {
     Promise.all([
       fetchSetting('melhor_envio_environment'),
       fetchSetting('melhor_envio_sender'),
-    ]).then(async ([meEnv, senderJson]) => {
+      fetchSetting('shipping_enabled'),
+    ]).then(async ([meEnv, senderJson, shipEn]) => {
       const currentMeEnv = meEnv || 'sandbox';
       setMelhorEnvioEnv(currentMeEnv);
       await loadMelhorEnvioCredentials(currentMeEnv);
+      setShippingEnabled(shipEn === '' || shipEn === null || shipEn === undefined ? true : shipEn !== 'false');
       if (senderJson) {
         try {
           const s = JSON.parse(senderJson);

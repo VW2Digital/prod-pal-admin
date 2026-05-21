@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchBannerSlides } from '@/lib/api';
-import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { ChevronLeft, ChevronRight, ArrowRight, ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';

@@ -123,13 +123,25 @@ const BannerCarousel = () => {
         )}
       </div>
 
-      {/* Visual: abstract "product" card */}
+      {/* Visual: product card */}
       <div className="relative hidden lg:flex h-full items-center justify-center bg-muted/40">
         <div className="w-[320px] h-[420px] bg-background shadow-[30px_50px_80px_hsl(var(--foreground)/0.06)] rounded-sm p-8 flex flex-col transition-transform duration-700 hover:-translate-y-2 hover:scale-[1.02]">
-          <div className="w-full h-[250px] bg-muted/60 mb-5 rounded-sm" />
-          <div className="h-2 w-4/5 bg-muted/60 mb-2.5 rounded-full" />
-          <div className="h-2 w-3/5 bg-muted/60 mb-2.5 rounded-full" />
-          <div className="h-2 w-2/5 bg-muted/60 rounded-full" />
+          {productImage ? (
+            <img
+              src={productImage}
+              alt={headlinePart || 'Produto'}
+              className="w-full h-full object-contain"
+            />
+          ) : (
+            <>
+              <div className="w-full h-[250px] bg-muted/60 mb-5 rounded-sm flex items-center justify-center">
+                <ImageIcon className="w-10 h-10 text-muted-foreground/40" />
+              </div>
+              <div className="h-2 w-4/5 bg-muted/60 mb-2.5 rounded-full" />
+              <div className="h-2 w-3/5 bg-muted/60 mb-2.5 rounded-full" />
+              <div className="h-2 w-2/5 bg-muted/60 rounded-full" />
+            </>
+          )}
         </div>
       </div>
     </div>

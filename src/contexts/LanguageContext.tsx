@@ -24,6 +24,8 @@ interface LanguageContextType {
   setLang: (lang: Language) => void;
   t: (key: string, options?: Record<string, unknown>) => string;
   refreshSeoTags: () => void;
+  enabledLanguages: Language[];
+  availableLanguages: LanguageInfo[];
 }
 
 export const LanguageContext = createContext<LanguageContextType | undefined>(undefined);

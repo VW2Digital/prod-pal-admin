@@ -5,7 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Truck, MapPin, Eye, EyeOff, Link2, CheckCircle2, Loader2, Download } from 'lucide-react';
+import { Truck, MapPin, Eye, EyeOff, Link2, CheckCircle2, Loader2, Download, PackageCheck } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/integrations/supabase/client';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import SettingsBackButton from './SettingsBackButton';
@@ -13,6 +14,7 @@ import SettingsSkeleton from '@/components/admin/settings/SettingsSkeleton';
 import WebhookUrlCard from '@/components/admin/WebhookUrlCard';
 import PublicSiteUrlCard from '@/components/admin/PublicSiteUrlCard';
 import { usePublicBaseUrl } from '@/hooks/usePublicBaseUrl';
+import { invalidateShippingEnabledCache } from '@/hooks/useShippingEnabled';
 
 const SettingsShipping = () => {
   const { toast } = useToast();

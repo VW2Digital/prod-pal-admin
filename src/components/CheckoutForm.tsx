@@ -794,14 +794,24 @@ const CheckoutForm = ({ productName, productId, cartProductIds, paymentDescripti
     setHolderPostalCode(addrPostalCode);
     setHolderAddressNumber(addrNumber);
 
-    // Always fetch shipping options so customer can choose the carrier
-    setLoadingShipping(true);
     // Google Ads: add_shipping_info
     gtagEvent('add_shipping_info', {
       currency: 'BRL',
       value: totalValue,
       items: [{ item_id: productId || '', item_name: productName, price: unitPrice, quantity }],
     });
+
+    // Frete desabilitado pelo admin — pula seleção e vai direto ao pagamento.
+    // O rastreio será emitido manualmente usando o endereço do cliente.
+    if (!shippingEnabled) {
+      setShippingOptions([]);
+      setSelectedShipping(null);
+      setStep('payment');
+      return;
+    }
+
+    // Always fetch shipping options so customer can choose the carrier
+    setLoadingShipping(true);
     setStep('shipping');
 
     // Fetch shipping options

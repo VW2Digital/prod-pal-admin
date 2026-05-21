@@ -80,6 +80,8 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     const htmlLangMap: Record<Language, string> = {
       es: 'es',
       en: 'en',
+      pt: 'pt-PT',
+      'pt-BR': 'pt-BR',
     };
     document.documentElement.lang = htmlLangMap[lang];
 
